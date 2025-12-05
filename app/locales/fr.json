@@ -1,0 +1,62 @@
+{
+  "site": {
+    "title": "Loge Goodwood No. 159",
+    "subtitle": "Grande Loge de A.F. & A.M. du Canada dans la Province de l'Ontario"
+  },
+  "nav": {
+    "home": "Accueil",
+    "about": "À Propos",
+    "history": "Histoire",
+    "events": "Événements",
+    "contact": "Contact",
+    "becomeAMason": "Devenir Franc-Maçon"
+  },
+  "home": {
+    "welcome": "Bienvenue à la Loge Goodwood No. 159",
+    "description": "Nous sommes une organisation fraternelle dédiée à améliorer les bons hommes par la fraternité, la charité et la croissance personnelle.",
+    "learnMore": "En Savoir Plus",
+    "contactUs": "Nous Contacter"
+  },
+  "about": {
+    "title": "À Propos de la Loge Goodwood No. 159",
+    "whatIsFreemasonry": "Qu'est-ce que la Franc-Maçonnerie?",
+    "ourLodge": "Notre Loge",
+    "meetingTimes": "Heures de Réunion"
+  },
+  "history": {
+    "title": "Notre Histoire",
+    "description": "La riche histoire de la Loge Goodwood No. 159"
+  },
+  "events": {
+    "title": "Événements à Venir",
+    "noEvents": "Aucun événement à venir pour le moment."
+  },
+  "contact": {
+    "title": "Nous Contacter",
+    "subtitle": "Intéressé à en savoir plus sur la Franc-Maçonnerie?",
+    "name": "Nom",
+    "email": "Courriel",
+    "phone": "Téléphone",
+    "message": "Message",
+    "send": "Envoyer le Message",
+    "successMessage": "Merci pour votre message. Nous vous contacterons bientôt."
+  },
+  "footer": {
+    "copyright": "© {{year}} Loge Goodwood No. 159. Tous droits réservés.",
+    "privacyPolicy": "Politique de Confidentialité",
+    "termsOfUse": "Conditions d'Utilisation"
+  },
+  "privacy": {
+    "title": "Politique de Confidentialité",
+    "lastUpdated": "Dernière Mise à Jour: {{date}}"
+  },
+  "terms": {
+    "title": "Conditions d'Utilisation",
+    "lastUpdated": "Dernière Mise à Jour: {{date}}"
+  },
+  "common": {
+    "loading": "Chargement...",
+    "error": "Une erreur s'est produite",
+    "notFound": "Page non trouvée"
+  }
+}

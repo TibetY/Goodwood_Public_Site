@@ -1,0 +1,62 @@
+{
+  "site": {
+    "title": "Goodwood Lodge No. 159",
+    "subtitle": "Grand Lodge of A.F. & A.M. of Canada in the Province of Ontario"
+  },
+  "nav": {
+    "home": "Home",
+    "about": "About Us",
+    "history": "History",
+    "events": "Events",
+    "contact": "Contact",
+    "becomeAMason": "Become a Mason"
+  },
+  "home": {
+    "welcome": "Welcome to Goodwood Lodge No. 159",
+    "description": "We are a fraternal organization dedicated to making good men better through brotherhood, charity, and personal growth.",
+    "learnMore": "Learn More",
+    "contactUs": "Contact Us"
+  },
+  "about": {
+    "title": "About Goodwood Lodge No. 159",
+    "whatIsFreemasonry": "What is Freemasonry?",
+    "ourLodge": "Our Lodge",
+    "meetingTimes": "Meeting Times"
+  },
+  "history": {
+    "title": "Our History",
+    "description": "The rich history of Goodwood Lodge No. 159"
+  },
+  "events": {
+    "title": "Upcoming Events",
+    "noEvents": "No upcoming events at this time."
+  },
+  "contact": {
+    "title": "Contact Us",
+    "subtitle": "Interested in learning more about Freemasonry?",
+    "name": "Name",
+    "email": "Email",
+    "phone": "Phone",
+    "message": "Message",
+    "send": "Send Message",
+    "successMessage": "Thank you for your message. We will be in touch soon."
+  },
+  "footer": {
+    "copyright": "© {{year}} Goodwood Lodge No. 159. All rights reserved.",
+    "privacyPolicy": "Privacy Policy",
+    "termsOfUse": "Terms of Use"
+  },
+  "privacy": {
+    "title": "Privacy Policy",
+    "lastUpdated": "Last Updated: {{date}}"
+  },
+  "terms": {
+    "title": "Terms of Use",
+    "lastUpdated": "Last Updated: {{date}}"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "notFound": "Page not found"
+  }
+}
