@@ -24,26 +24,6 @@ export default function Footer() {
     >
       <Container maxWidth="lg">
         <Stack spacing={4}>
-          {/* Ontario Masons Wordmark Placeholder */}
-          <Box sx={{ textAlign: 'center' }}>
-            <Box
-              sx={{
-                display: 'inline-block',
-                backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                px: 4,
-                py: 2,
-                borderRadius: 1,
-              }}
-            >
-              <Typography variant="body2" sx={{ fontStyle: 'italic' }}>
-                Ontario Masons Symbol/Wordmark
-              </Typography>
-              <Typography variant="caption" sx={{ opacity: 0.7 }}>
-                (Required by Grand Lodge Policy)
-              </Typography>
-            </Box>
-          </Box>
-
           <Divider sx={{ backgroundColor: 'rgba(255, 255, 255, 0.2)' }} />
 
           {/* Footer Content */}
@@ -62,38 +42,18 @@ export default function Footer() {
               </Typography>
             </Box>
 
-            <Stack
-              direction={{ xs: 'column', sm: 'row' }}
-              spacing={2}
-              alignItems="center"
-            >
-              <Typography
-                component={Link}
-                to="/privacy"
-                sx={{
-                  color: 'white',
-                  textDecoration: 'none',
-                  '&:hover': {
-                    textDecoration: 'underline',
-                  },
-                }}
-              >
-                {t('footer.privacyPolicy')}
-              </Typography>
-              <Typography
-                component={Link}
-                to="/terms"
-                sx={{
-                  color: 'white',
-                  textDecoration: 'none',
-                  '&:hover': {
-                    textDecoration: 'underline',
-                  },
-                }}
-              >
-                {t('footer.termsOfUse')}
-              </Typography>
-            </Stack>
+                      {/* Ontario Masons Wordmark Placeholder */}
+          <Box sx={{ textAlign: 'center' }}>
+            <Box
+              component="img"
+              src="/images/grand_lodge/Ontario-Masons-Wordmark-Colour-300x53.png"
+              sx={{
+                display: 'inline-block',
+                px: 4,
+                py: 2,
+              }}
+            />
+          </Box>
           </Stack>
 
           <Divider sx={{ backgroundColor: 'rgba(255, 255, 255, 0.2)' }} />
