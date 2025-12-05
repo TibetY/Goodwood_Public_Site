@@ -10,12 +10,7 @@ export function meta({}: Route.MetaArgs) {
 }
 
 export default function Home() {
-  const { t, i18n } = useTranslation();
-
-  const toggleLanguage = () => {
-    const newLang = i18n.language === 'en' ? 'fr' : 'en';
-    i18n.changeLanguage(newLang);
-  };
+  const { t } = useTranslation();
 
   return (
     <Container maxWidth="lg">
@@ -27,15 +22,6 @@ export default function Home() {
           <Typography variant="h6" color="text.secondary" gutterBottom>
             {t('site.subtitle')}
           </Typography>
-          <Box sx={{ mt: 3 }}>
-            <Button
-              variant="outlined"
-              onClick={toggleLanguage}
-              size="small"
-            >
-              {i18n.language === 'en' ? 'Français' : 'English'}
-            </Button>
-          </Box>
         </Box>
 
         <Box sx={{ textAlign: 'center', mb: 6 }}>
