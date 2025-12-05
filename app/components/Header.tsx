@@ -68,21 +68,26 @@ export default function Header() {
               flex: 1,
             }}
           >
-            {/* Placeholder for Lodge Crest */}
+            {/* Lodge Crest */}
             <Box
               sx={{
                 width: 80,
                 height: 80,
-                backgroundColor: 'grey.200',
+                backgroundColor: 'transparent',
                 borderRadius: 1,
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
               }}
             >
-              <Typography variant="caption" color="text.secondary">
-                LOGO
-              </Typography>
+              <Box
+                component="img"
+                sx={{
+                  width: '100%',
+                  height: 'auto'
+                }}
+                src="./images/goodwood_logo.png"
+              />
             </Box>
 
             <Box>
@@ -199,10 +204,7 @@ export default function Header() {
               to="/contact"
               sx={{
                 ml: 2,
-                backgroundColor: '#b71c1c',
-                '&:hover': {
-                  backgroundColor: '#8b0000',
-                },
+                backgroundColor: '#1a237e',
                 fontWeight: 600,
               }}
             >

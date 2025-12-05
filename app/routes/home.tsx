@@ -15,14 +15,6 @@ export default function Home() {
   return (
     <Container maxWidth="lg">
       <Box sx={{ py: 8 }}>
-        <Box sx={{ textAlign: 'center', mb: 6 }}>
-          <Typography variant="h2" component="h1" gutterBottom color="primary">
-            {t('site.title')}
-          </Typography>
-          <Typography variant="h6" color="text.secondary" gutterBottom>
-            {t('site.subtitle')}
-          </Typography>
-        </Box>
 
         <Box sx={{ textAlign: 'center', mb: 6 }}>
           <Typography variant="h3" gutterBottom>
@@ -46,24 +38,6 @@ export default function Home() {
             {t('home.contactUs')}
           </Button>
         </Stack>
-
-        <Box sx={{
-          mt: 8,
-          p: 4,
-          backgroundColor: 'grey.50',
-          borderRadius: 2,
-          textAlign: 'center'
-        }}>
-          <Typography variant="h5" gutterBottom color="primary">
-            {t('nav.becomeAMason')}
-          </Typography>
-          <Typography variant="body1" paragraph>
-            Interested in learning more about Freemasonry and membership?
-          </Typography>
-          <Button variant="contained" color="secondary">
-            {t('contact.title')}
-          </Button>
-        </Box>
       </Box>
     </Container>
   );
