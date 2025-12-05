@@ -3,6 +3,10 @@
     "title": "Goodwood Lodge No. 159",
     "subtitle": "Grand Lodge of A.F. & A.M. of Canada in the Province of Ontario"
   },
+  "header": {
+    "title": "Beyond the Square and Compass",
+    "tagline": "Developing our character and serving the greater good."
+  },
   "nav": {
     "home": "Home",
     "about": "About Us",

@@ -14,6 +14,8 @@ import type { Route } from "./+types/root";
 import "./app.css";
 import theme from './theme';
 import './i18n';
+import Header from './components/Header';
+import Footer from './components/Footer';
 
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
@@ -37,7 +39,21 @@ export function Layout({ children }: { children: React.ReactNode }) {
 }
 
 export default function App() {
-  return <Outlet />;
+  return (
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        minHeight: '100vh',
+      }}
+    >
+      <Header />
+      <Box component="main" sx={{ flex: 1 }}>
+        <Outlet />
+      </Box>
+      <Footer />
+    </Box>
+  );
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
