@@ -22,7 +22,6 @@ import MenuIcon from '@mui/icons-material/Menu';
 import LanguageIcon from '@mui/icons-material/Language';
 
 const pages = [
-  { key: 'home', path: '/' },
   { key: 'about', path: '/about' },
   { key: 'history', path: '/history' },
   { key: 'events', path: '/events' },
@@ -86,7 +85,7 @@ export default function Header() {
                   width: '100%',
                   height: 'auto'
                 }}
-                src="./images/goodwood_logo.png"
+                src="./images/goodwood_logo.svg"
               />
             </Box>
 

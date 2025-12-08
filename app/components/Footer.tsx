@@ -22,7 +22,7 @@ export default function Footer() {
         mt: 'auto',
       }}
     >
-      <Container maxWidth="lg">
+      <Container maxWidth="xl">
         <Stack spacing={4}>
           <Divider sx={{ backgroundColor: 'rgba(255, 255, 255, 0.2)' }} />
 

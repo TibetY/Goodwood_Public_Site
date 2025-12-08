@@ -4,11 +4,10 @@
     "subtitle": "Grand Lodge of A.F. & A.M. of Canada in the Province of Ontario"
   },
   "header": {
-    "title": "Goodwood motto maybe",
+    "title": "Goodwood Lodge No. 159",
     "tagline": "Goodwood tagline here"
   },
   "nav": {
-    "home": "Home",
     "about": "About Us",
     "history": "History",
     "events": "Events",
@@ -46,17 +45,7 @@
     "successMessage": "Thank you for your message. We will be in touch soon."
   },
   "footer": {
-    "copyright": "© {{year}} Goodwood Lodge No. 159. All rights reserved.",
-    "privacyPolicy": "Privacy Policy",
-    "termsOfUse": "Terms of Use"
-  },
-  "privacy": {
-    "title": "Privacy Policy",
-    "lastUpdated": "Last Updated: {{date}}"
-  },
-  "terms": {
-    "title": "Terms of Use",
-    "lastUpdated": "Last Updated: {{date}}"
+    "copyright": "© {{year}} Goodwood Lodge No. 159. All rights reserved."
   },
   "common": {
     "loading": "Loading...",
