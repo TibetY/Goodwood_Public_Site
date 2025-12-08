@@ -55,25 +55,32 @@ export default function Header() {
   };
 
   return (
-    <AppBar position="static" color="default" elevation={1} sx={{ backgroundColor: 'white' }}>
+    <AppBar
+      position="static"
+      color="default"
+      elevation={0}
+      sx={{
+        backgroundColor: 'white',
+        borderBottom: '1px solid rgba(0,0,0,0.08)',
+      }}
+    >
       <Container maxWidth="xl">
-        <Toolbar disableGutters sx={{ minHeight: { xs: 64, md: 80 } }}>
+        <Toolbar disableGutters sx={{ minHeight: { xs: 64, md: 90 }, py: 1 }}>
           {/* Logo and Brand - Desktop */}
           <Box
             sx={{
               display: { xs: 'none', md: 'flex' },
               alignItems: 'center',
-              gap: 2,
+              gap: 2.5,
               flex: 1,
             }}
           >
             {/* Lodge Crest */}
             <Box
               sx={{
-                width: 80,
-                height: 80,
+                width: 70,
+                height: 70,
                 backgroundColor: 'transparent',
-                borderRadius: 1,
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -83,7 +90,8 @@ export default function Header() {
                 component="img"
                 sx={{
                   width: '100%',
-                  height: 'auto'
+                  height: 'auto',
+                  filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.1))',
                 }}
                 src="./images/goodwood_logo.svg"
               />
@@ -95,11 +103,17 @@ export default function Header() {
                 component={Link}
                 to="/"
                 sx={{
+                  fontFamily: '"Playfair Display", "Georgia", serif',
                   fontWeight: 700,
-                  color: 'primary.main',
+                  fontSize: '1.5rem',
+                  color: 'primary.dark',
                   textDecoration: 'none',
                   display: 'block',
                   lineHeight: 1.2,
+                  transition: 'color 0.3s ease',
+                  '&:hover': {
+                    color: 'primary.main',
+                  },
                 }}
               >
                 {t('header.title')}
@@ -107,7 +121,11 @@ export default function Header() {
               <Typography
                 variant="body2"
                 color="text.secondary"
-                sx={{ mt: 0.5 }}
+                sx={{
+                  mt: 0.5,
+                  fontSize: '0.875rem',
+                  letterSpacing: '0.3px',
+                }}
               >
                 {t('header.tagline')}
               </Typography>
@@ -145,7 +163,7 @@ export default function Header() {
           {/* Desktop Navigation */}
           <Stack
             direction="row"
-            spacing={1}
+            spacing={0.5}
             sx={{
               display: { xs: 'none', md: 'flex' },
               alignItems: 'center',
@@ -158,9 +176,16 @@ export default function Header() {
                 to={page.path}
                 sx={{
                   color: 'text.primary',
-                  px: 2,
+                  px: 2.5,
+                  py: 1,
+                  fontSize: '0.95rem',
+                  fontWeight: 500,
+                  letterSpacing: '0.3px',
+                  transition: 'all 0.3s ease',
                   '&:hover': {
-                    backgroundColor: 'grey.100',
+                    backgroundColor: 'transparent',
+                    color: 'primary.main',
+                    transform: 'translateY(-1px)',
                   },
                 }}
               >
@@ -173,7 +198,14 @@ export default function Header() {
               onClick={handleOpenLangMenu}
               color="inherit"
               size="small"
-              sx={{ ml: 1 }}
+              sx={{
+                ml: 1,
+                transition: 'all 0.3s ease',
+                '&:hover': {
+                  color: 'primary.main',
+                  transform: 'scale(1.05)',
+                },
+              }}
             >
               <LanguageIcon />
             </IconButton>
@@ -202,9 +234,21 @@ export default function Header() {
               component={Link}
               to="/contact"
               sx={{
-                ml: 2,
-                backgroundColor: '#1a237e',
+                ml: 3,
+                backgroundColor: '#b71c1c',
+                color: 'white',
                 fontWeight: 600,
+                fontSize: '0.95rem',
+                px: 3,
+                py: 1,
+                borderRadius: 1,
+                boxShadow: 'none',
+                transition: 'all 0.3s ease',
+                '&:hover': {
+                  backgroundColor: '#8b0000',
+                  boxShadow: '0 4px 12px rgba(183, 28, 28, 0.3)',
+                  transform: 'translateY(-2px)',
+                },
               }}
             >
               {t('nav.becomeAMason')}
