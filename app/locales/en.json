@@ -27,7 +27,7 @@
       "greeting": "Welcome to",
       "lodgeName": "Goodwood Lodge No. 159, GRQ, A.F. & A.M.",
       "description": "We are a fraternal organization dedicated to making good men better through brotherhood, charity, and personal growth.",
-      "extendedDescription": "Located in the heart of the Goodwood community, our lodge has been a cornerstone of brotherhood and charitable work for generations. We are proud to be part of the Grand Lodge of A.F. & A.M. of Canada in the Province of Ontario."
+      "extendedDescription": "Located in the heart of Richmond, Ontario, our lodge has been a cornerstone of brotherhood and charitable work for generations. We are proud to be part of the Grand Lodge of A.F. & A.M. of Canada in the Province of Ontario."
     },
     "callToAction": {
       "sectionTitle": "Positive Differences",
@@ -41,6 +41,14 @@
       "brotherlyLove": {
         "title": "Brotherly Love",
         "description": "We value respect, freedom, kindness, tolerance, and strive for harmony in our communities."
+      },
+      "relief": {
+        "title": "Relief",
+        "description": "We support those in need through charitable works, community service, and compassion for all."
+      },
+      "truth": {
+        "title": "Truth",
+        "description": "We pursue knowledge, integrity, and moral excellence through self-improvement and enlightenment."
       }
     },
     "learnMore": "Learn More",

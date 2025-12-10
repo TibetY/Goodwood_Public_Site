@@ -83,7 +83,7 @@ export default function Home() {
       >
         <Container maxWidth="lg">
           <Grid container spacing={6}>
-            <Grid size={{ xs: 12, md: 6 }} sx={{justifyContent: 'center', flexAlign: 'center', display: 'flex' }}>
+            <Grid size={{ xs: 12, md: 6 }} sx={{ justifyContent: 'center', flexAlign: 'center', display: 'flex' }}>
               {/* Placeholder for historical building image */}
               <RoundedImage
                 src="images/goodwood/Lodge_Front.jpg"
@@ -259,6 +259,56 @@ export default function Home() {
                   }}
                 >
                   {t('home.values.brotherlyLove.description')}
+                </Typography>
+              </Box>
+              <Box sx={{ mb: 3 }}>
+                <Typography
+                  variant="h4"
+                  sx={{
+                    mb: 1,
+                    fontSize: '1.5rem',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 1,
+                  }}
+                >
+                  <span style={{ fontSize: '1.75rem' }}>🤲</span> {t('home.values.relief.title')}
+                </Typography>
+                <Typography
+                  variant="body1"
+                  sx={{
+                    color: 'rgba(255,255,255,0.8)',
+                    fontSize: '1.05rem',
+                    lineHeight: 1.7,
+                    pl: 5,
+                  }}
+                >
+                  {t('home.values.relief.description')}
+                </Typography>
+              </Box>
+              <Box sx={{ mb: 3 }}>
+                <Typography
+                  variant="h4"
+                  sx={{
+                    mb: 1,
+                    fontSize: '1.5rem',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 1,
+                  }}
+                >
+                  <span style={{ fontSize: '1.75rem' }}>💡</span> {t('home.values.truth.title')}
+                </Typography>
+                <Typography
+                  variant="body1"
+                  sx={{
+                    color: 'rgba(255,255,255,0.8)',
+                    fontSize: '1.05rem',
+                    lineHeight: 1.7,
+                    pl: 5,
+                  }}
+                >
+                  {t('home.values.truth.description')}
                 </Typography>
               </Box>
             </Grid>

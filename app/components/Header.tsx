@@ -132,7 +132,7 @@ export default function Header() {
           </Box>
 
           {/* Mobile Menu Icon */}
-          <Box sx={{ display: { xs: 'flex', md: 'none' }, flex: 1 }}>
+          <Box sx={{ display: { xs: 'flex', md: 'none' }, flex: 0 }}>
             <IconButton
               size="large"
               aria-label="menu"
@@ -144,7 +144,7 @@ export default function Header() {
           </Box>
 
           {/* Mobile Brand */}
-          <Box sx={{ display: { xs: 'flex', md: 'none' }, flex: 1, justifyContent: 'center' }}>
+          <Box sx={{ display: { xs: 'flex', md: 'none' }, flex: 3, justifyContent: 'center' }}>
             <Typography
               variant="h6"
               component={Link}
@@ -155,7 +155,7 @@ export default function Header() {
                 textDecoration: 'none',
               }}
             >
-              {t('site.title')}
+              Goodwood Lodge
             </Typography>
           </Box>
 
