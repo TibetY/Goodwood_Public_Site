@@ -141,7 +141,7 @@
   },
   "officers": {
     "title": "Lodge Officers",
-    "since": "Meet the dedicated officers serving Goodwood Lodge",
+    "description": "Meet the dedicated officers serving Goodwood Lodge for the {{currentYear}} - {{endYear}} Masonic Year.",
     "wm": "Worshipful Master",
     "im": "Imm. Past Master",
     "sw": "Senior Warden",

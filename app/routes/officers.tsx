@@ -97,7 +97,7 @@ export default function Officers() {
                 {t('officers.title')}
             </Typography>
             <Typography variant="body1" color="text.secondary" textAlign="center" sx={{ mb: 6 }}>
-                {t('officers.since')}
+                {t('officers.description', { currentYear, endYear: currentYear + 1 })}
             </Typography>
 
             <Grid container spacing={4}>
