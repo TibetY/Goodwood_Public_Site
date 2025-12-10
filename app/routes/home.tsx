@@ -5,7 +5,7 @@ import { Container, Typography, Box, Button, Grid, Paper } from '@mui/material';
 
 export function meta({}: Route.MetaArgs) {
   return [
-    { title: "Goodwood Lodge No. 159 - Beyond the Square and Compass" },
+    { title: "Goodwood Lodge No. 159" },
     { name: "description", content: "Developing our character and serving the greater good. Grand Lodge of A.F. & A.M. of Canada in the Province of Ontario" },
   ];
 }
@@ -25,17 +25,8 @@ export default function Home() {
       >
         <Container maxWidth="lg">
           <Grid container spacing={4} alignItems="center">
-            <Grid item xs={12} md={6}>
-              <Box
-                component="img"
-                src="./images/goodwood/goodwood_logo.png"
-                alt="Goodwood Lodge Crest"
-                sx={{
-                  width: { xs: 180, md: 220 },
-                  height: 'auto',
-                  mb: 3,
-                }}
-              />
+            <Grid size={{ xs: 12, md: 6 }}>
+             
               <Typography
                 variant="h1"
                 sx={{
@@ -57,12 +48,14 @@ export default function Home() {
                 Developing our character and serving the greater good.
               </Typography>
             </Grid>
-            <Grid item xs={12} md={6}>
+            <Grid size={{ xs: 12, md: 6 }}>
               {/* Placeholder for lodge building image - you can replace this */}
               <Box
-                sx={{
+              component="img"   
+              src="images/goodwood/Lodge_Front.jpg"             
+              sx={{
                   width: '100%',
-                  height: { xs: 250, md: 350 },
+                  height: "auto",
                   backgroundColor: '#1a237e',
                   borderRadius: 2,
                   display: 'flex',
@@ -71,11 +64,8 @@ export default function Home() {
                   color: 'white',
                   fontSize: '1rem',
                   textAlign: 'center',
-                  px: 3,
                 }}
-              >
-                Lodge Building Image
-              </Box>
+/>
             </Grid>
           </Grid>
         </Container>
@@ -91,7 +81,7 @@ export default function Home() {
       >
         <Container maxWidth="lg">
           <Grid container spacing={6}>
-            <Grid item xs={12} md={6}>
+            <Grid size={{ xs: 12, md: 6 }}>
               {/* Placeholder for historical building image */}
               <Box
                 sx={{
@@ -110,9 +100,9 @@ export default function Home() {
                 Historical Lodge Image
               </Box>
             </Grid>
-            <Grid item xs={12} md={6}>
+            <Grid size={{ xs: 12, md: 6 }}>
               <Typography
-                variant="h4"
+                variant="h2"
                 sx={{
                   mb: 2,
                   fontWeight: 400,
@@ -225,7 +215,7 @@ export default function Home() {
       >
         <Container maxWidth="lg">
           <Grid container spacing={6} alignItems="center">
-            <Grid item xs={12} md={6}>
+            <Grid size={{ xs: 12, md: 6 }}>
               <Typography
                 variant="h4"
                 sx={{
@@ -282,12 +272,15 @@ export default function Home() {
                 </Typography>
               </Box>
             </Grid>
-            <Grid item xs={12} md={6}>
+            <Grid size={{ xs: 12, md: 6 }}>
               {/* Placeholder for values image */}
               <Box
+                component="img"   
+                src="images/goodwood/Goodwood_Install_2_2025_DSC_5380.jpg"
+                alt="Goodwood bretheren"
                 sx={{
                   width: '100%',
-                  height: { xs: 300, md: 450 },
+                  height: "auto",
                   backgroundColor: 'rgba(255,255,255,0.1)',
                   borderRadius: 2,
                   display: 'flex',
@@ -297,9 +290,7 @@ export default function Home() {
                   textAlign: 'center',
                   px: 3,
                 }}
-              >
-                Lodge Interior or Symbolic Image
-              </Box>
+              />
             </Grid>
           </Grid>
         </Container>

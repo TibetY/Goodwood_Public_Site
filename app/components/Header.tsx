@@ -93,7 +93,7 @@ export default function Header() {
                   height: 'auto',
                   filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.1))',
                 }}
-                src="./images/goodwood_logo.svg"
+                src="./images/goodwood/goodwood-logo.svg"
               />
             </Box>
 
@@ -103,7 +103,6 @@ export default function Header() {
                 component={Link}
                 to="/"
                 sx={{
-                  fontFamily: '"Playfair Display", "Georgia", serif',
                   fontWeight: 700,
                   fontSize: '1.5rem',
                   color: 'primary.dark',
