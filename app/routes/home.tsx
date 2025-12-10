@@ -2,8 +2,9 @@ import type { Route } from "./+types/home";
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router';
 import { Container, Typography, Box, Button, Grid, Paper } from '@mui/material';
+import RoundedImage from "~/components/RoundedImage";
 
-export function meta({}: Route.MetaArgs) {
+export function meta({ }: Route.MetaArgs) {
   return [
     { title: "Goodwood Lodge No. 159" },
     { name: "description", content: "Developing our character and serving the greater good. Grand Lodge of A.F. & A.M. of Canada in the Province of Ontario" },
@@ -26,7 +27,7 @@ export default function Home() {
         <Container maxWidth="lg">
           <Grid container spacing={4} alignItems="center">
             <Grid size={{ xs: 12, md: 6 }}>
-             
+
               <Typography
                 variant="h1"
                 sx={{
@@ -51,9 +52,8 @@ export default function Home() {
             <Grid size={{ xs: 12, md: 6 }}>
               {/* Placeholder for lodge building image - you can replace this */}
               <Box
-              component="img"   
-              src="images/goodwood/Lodge_Front.jpg"             
-              sx={{
+
+                sx={{
                   width: '100%',
                   height: "auto",
                   backgroundColor: '#1a237e',
@@ -65,7 +65,7 @@ export default function Home() {
                   fontSize: '1rem',
                   textAlign: 'center',
                 }}
-/>
+              />
             </Grid>
           </Grid>
         </Container>
@@ -81,24 +81,12 @@ export default function Home() {
       >
         <Container maxWidth="lg">
           <Grid container spacing={6}>
-            <Grid size={{ xs: 12, md: 6 }}>
+            <Grid size={{ xs: 12, md: 6 }} sx={{justifyContent: 'center', flexAlign: 'center', display: 'flex' }}>
               {/* Placeholder for historical building image */}
-              <Box
-                sx={{
-                  width: '100%',
-                  height: { xs: 300, md: 400 },
-                  backgroundColor: 'rgba(255,255,255,0.1)',
-                  borderRadius: 2,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontSize: '1rem',
-                  textAlign: 'center',
-                  px: 3,
-                }}
-              >
-                Historical Lodge Image
-              </Box>
+              <RoundedImage
+                src="images/goodwood/Lodge_Front.jpg"
+                alt="Goodwood bretheren"
+              />
             </Grid>
             <Grid size={{ xs: 12, md: 6 }}>
               <Typography
@@ -272,24 +260,10 @@ export default function Home() {
                 </Typography>
               </Box>
             </Grid>
-            <Grid size={{ xs: 12, md: 6 }}>
-              {/* Placeholder for values image */}
-              <Box
-                component="img"   
+            <Grid size={{ xs: 12, md: 6 }} >
+              <RoundedImage
                 src="images/goodwood/Goodwood_Install_2_2025_DSC_5380.jpg"
                 alt="Goodwood bretheren"
-                sx={{
-                  width: '100%',
-                  height: "auto",
-                  backgroundColor: 'rgba(255,255,255,0.1)',
-                  borderRadius: 2,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontSize: '1rem',
-                  textAlign: 'center',
-                  px: 3,
-                }}
               />
             </Grid>
           </Grid>
