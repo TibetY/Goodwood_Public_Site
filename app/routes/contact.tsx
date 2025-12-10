@@ -98,7 +98,7 @@ export default function Contact() {
 
                             {/* User will add form inputs here */}
                             <Box sx={{ textAlign: 'center', mt: 4 }}>
-                                <Box sx={{ display: 'flex', flexDirection: 'row', gap: 2 }}>
+                                <Box sx={{ display: 'flex', flexDirection: 'row', gap: { xs: 0, md: 2 }, flexWrap: { xs: 'wrap', md: 'nowrap' }, justifyContent: 'center' }}>
                                     <TextField required label={t('contact.name.first')} fullWidth margin="normal" />
                                     <TextField required label={t('contact.name.last')} fullWidth margin="normal" />
                                 </Box>
