@@ -2,10 +2,7 @@
   "name": "goodwood-public-site",
   "private": true,
   "type": "module",
-  "homepage": "https://tibety.github.io/Goodwood_Public_Site/",
   "scripts": {
-    "predeploy": "npm run build",
-    "deploy": "gh-pages -d build",
     "build": "react-router build",
     "dev": "react-router dev",
     "start": "react-router-serve ./build/server/index.js",
@@ -31,7 +28,6 @@
     "@types/node": "^22",
     "@types/react": "^19.2.7",
     "@types/react-dom": "^19.2.3",
-    "gh-pages": "^6.3.0",
     "typescript": "^5.9.2",
     "vite": "^7.1.7",
     "vite-tsconfig-paths": "^5.1.4"
