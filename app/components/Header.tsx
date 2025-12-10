@@ -29,7 +29,6 @@ const pages = [
 ];
 
 const aboutSubmenu = [
-  { key: 'about', path: '/about' },
   { key: 'history', path: '/history' },
   { key: 'officers', path: '/officers' },
   { key: 'committees', path: '/committees' },
