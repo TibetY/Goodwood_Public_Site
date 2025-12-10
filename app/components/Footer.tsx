@@ -37,7 +37,7 @@ export default function Footer() {
               <Typography variant="h6" gutterBottom>
                 {t('site.title')}
               </Typography>
-              <Typography variant="body2" sx={{ opacity: 0.8 }}>
+              <Typography variant="subtitle1" sx={{color: 'white'}}>
                 {t('site.subtitle')}
               </Typography>
             </Box>
@@ -60,9 +60,9 @@ export default function Footer() {
 
           {/* Copyright */}
           <Typography
-            variant="body2"
+            variant="body1"
             align="center"
-            sx={{ opacity: 0.8 }}
+            sx={{color: "white"}}
           >
             {t('footer.copyright', { year: currentYear })}
           </Typography>
