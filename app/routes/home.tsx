@@ -5,8 +5,10 @@ import { Container, Typography, Box, Button, Grid, Paper } from '@mui/material';
 import RoundedImage from "~/components/RoundedImage";
 
 export function meta({ }: Route.MetaArgs) {
+  // Note: meta tags cannot use translations directly in React Router
+  // Consider using a higher-level handler if dynamic translation is needed
   return [
-    { title: "Goodwood Lodge No. 159" },
+    { title: "Goodwood Lodge No. 159 - Beyond the Square and Compass" },
     { name: "description", content: "Developing our character and serving the greater good. Grand Lodge of A.F. & A.M. of Canada in the Province of Ontario" },
   ];
 }
@@ -36,7 +38,7 @@ export default function Home() {
                   color: 'primary.dark',
                 }}
               >
-                Beyond the Square and Compass
+                {t('home.hero.title')}
               </Typography>
               <Typography
                 variant="body1"
@@ -46,7 +48,7 @@ export default function Home() {
                   mb: 0,
                 }}
               >
-                Developing our character and serving the greater good.
+                {t('home.hero.subtitle')}
               </Typography>
             </Grid>
             <Grid size={{ xs: 12, md: 6 }}>
@@ -97,7 +99,7 @@ export default function Home() {
                   color: '#c5a572',
                 }}
               >
-                Welcome to
+                {t('home.welcome.greeting')}
               </Typography>
               <Typography
                 variant="h2"
@@ -106,7 +108,7 @@ export default function Home() {
                   fontSize: { xs: '2rem', md: '2.75rem' },
                 }}
               >
-                Goodwood Lodge No. 159, GRQ, A.F. & A.M.
+                {t('home.welcome.lodgeName')}
               </Typography>
               <Typography
                 variant="body1"
@@ -117,7 +119,7 @@ export default function Home() {
                   color: 'rgba(255,255,255,0.9)',
                 }}
               >
-                {t('home.description')}
+                {t('home.welcome.description')}
               </Typography>
               <Typography
                 variant="body1"
@@ -127,7 +129,7 @@ export default function Home() {
                   color: 'rgba(255,255,255,0.9)',
                 }}
               >
-                Located in the heart of the Goodwood community, our lodge has been a cornerstone of brotherhood and charitable work for generations. We are proud to be part of the Grand Lodge of A.F. & A.M. of Canada in the Province of Ontario.
+                {t('home.welcome.extendedDescription')}
               </Typography>
             </Grid>
           </Grid>
@@ -151,7 +153,7 @@ export default function Home() {
               fontWeight: 400,
             }}
           >
-            Positive Differences
+            {t('home.callToAction.sectionTitle')}
           </Typography>
           <Typography
             variant="h2"
@@ -160,7 +162,7 @@ export default function Home() {
               fontSize: { xs: '2rem', md: '2.75rem' },
             }}
           >
-            Step into Freemasonry
+            {t('home.callToAction.heading')}
           </Typography>
           <Typography
             variant="body1"
@@ -170,7 +172,7 @@ export default function Home() {
               color: 'text.secondary',
             }}
           >
-            Find Community and Opportunity Nearby.
+            {t('home.callToAction.description')}
           </Typography>
           <Button
             variant="contained"
@@ -188,7 +190,7 @@ export default function Home() {
               },
             }}
           >
-            Become a Mason
+            {t('nav.becomeAMason')}
           </Button>
         </Container>
       </Box>
@@ -212,7 +214,7 @@ export default function Home() {
                   fontWeight: 400,
                 }}
               >
-                Our Values
+                {t('home.values.sectionTitle')}
               </Typography>
               <Typography
                 variant="h2"
@@ -221,7 +223,7 @@ export default function Home() {
                   fontSize: { xs: '2rem', md: '2.5rem' },
                 }}
               >
-                Step Into Freemasonry
+                {t('home.values.heading')}
               </Typography>
               <Typography
                 variant="body1"
@@ -232,7 +234,7 @@ export default function Home() {
                   color: 'rgba(255,255,255,0.9)',
                 }}
               >
-                Freemasonry is built upon a foundation of timeless values that shape our character and guide our actions. These principles are not merely words, but a way of life for every Mason.
+                {t('home.values.description')}
               </Typography>
               <Box sx={{ mb: 3 }}>
                 <Typography
@@ -245,7 +247,7 @@ export default function Home() {
                     gap: 1,
                   }}
                 >
-                  <span style={{ fontSize: '1.75rem' }}>🤝</span> Brotherly Love
+                  <span style={{ fontSize: '1.75rem' }}>🤝</span> {t('home.values.brotherlyLove.title')}
                 </Typography>
                 <Typography
                   variant="body1"
@@ -256,7 +258,7 @@ export default function Home() {
                     pl: 5,
                   }}
                 >
-                  We value respect, freedom, kindness, tolerance, and strive for harmony in our communities.
+                  {t('home.values.brotherlyLove.description')}
                 </Typography>
               </Box>
             </Grid>

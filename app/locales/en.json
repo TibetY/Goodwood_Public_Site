@@ -15,8 +15,34 @@
     "becomeAMason": "Become a Mason"
   },
   "home": {
-    "welcome": "Welcome to Goodwood Lodge No. 159",
-    "description": "We are a fraternal organization dedicated to making good men better through brotherhood, charity, and personal growth.",
+    "meta": {
+      "title": "Goodwood Lodge No. 159 - Beyond the Square and Compass",
+      "description": "Developing our character and serving the greater good. Grand Lodge of A.F. & A.M. of Canada in the Province of Ontario"
+    },
+    "hero": {
+      "title": "Beyond the Square and Compass",
+      "subtitle": "Developing our character and serving the greater good."
+    },
+    "welcome": {
+      "greeting": "Welcome to",
+      "lodgeName": "Goodwood Lodge No. 159, GRQ, A.F. & A.M.",
+      "description": "We are a fraternal organization dedicated to making good men better through brotherhood, charity, and personal growth.",
+      "extendedDescription": "Located in the heart of the Goodwood community, our lodge has been a cornerstone of brotherhood and charitable work for generations. We are proud to be part of the Grand Lodge of A.F. & A.M. of Canada in the Province of Ontario."
+    },
+    "callToAction": {
+      "sectionTitle": "Positive Differences",
+      "heading": "Step into Freemasonry",
+      "description": "Find Community and Opportunity Nearby."
+    },
+    "values": {
+      "sectionTitle": "Our Values",
+      "heading": "Step Into Freemasonry",
+      "description": "Freemasonry is built upon a foundation of timeless values that shape our character and guide our actions. These principles are not merely words, but a way of life for every Mason.",
+      "brotherlyLove": {
+        "title": "Brotherly Love",
+        "description": "We value respect, freedom, kindness, tolerance, and strive for harmony in our communities."
+      }
+    },
     "learnMore": "Learn More",
     "contactUs": "Contact Us"
   },

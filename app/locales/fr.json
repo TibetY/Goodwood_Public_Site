@@ -16,8 +16,34 @@
     "becomeAMason": "Devenir Franc-Maçon"
   },
   "home": {
-    "welcome": "Bienvenue à la Loge Goodwood No. 159",
-    "description": "Nous sommes une organisation fraternelle dédiée à améliorer les bons hommes par la fraternité, la charité et la croissance personnelle.",
+    "meta": {
+      "title": "Loge Goodwood No. 159 - Au-delà de l'Équerre et du Compas",
+      "description": "Développer notre caractère et servir le bien commun. Grande Loge A.F. & A.M. du Canada dans la Province de l'Ontario"
+    },
+    "hero": {
+      "title": "Au-delà de l'Équerre et du Compas",
+      "subtitle": "Développer notre caractère et servir le bien commun."
+    },
+    "welcome": {
+      "greeting": "Bienvenue à",
+      "lodgeName": "Loge Goodwood No. 159, GRQ, A.F. & A.M.",
+      "description": "Nous sommes une organisation fraternelle dédiée à améliorer les bons hommes par la fraternité, la charité et la croissance personnelle.",
+      "extendedDescription": "Située au cœur de la communauté de Goodwood, notre loge est une pierre angulaire de la fraternité et du travail caritatif depuis des générations. Nous sommes fiers de faire partie de la Grande Loge A.F. & A.M. du Canada dans la Province de l'Ontario."
+    },
+    "callToAction": {
+      "sectionTitle": "Différences Positives",
+      "heading": "Entrez dans la Franc-Maçonnerie",
+      "description": "Trouvez Communauté et Opportunité à Proximité."
+    },
+    "values": {
+      "sectionTitle": "Nos Valeurs",
+      "heading": "Entrez dans la Franc-Maçonnerie",
+      "description": "La Franc-Maçonnerie est construite sur une fondation de valeurs intemporelles qui façonnent notre caractère et guident nos actions. Ces principes ne sont pas de simples mots, mais un mode de vie pour chaque Franc-Maçon.",
+      "brotherlyLove": {
+        "title": "Amour Fraternel",
+        "description": "Nous valorisons le respect, la liberté, la gentillesse, la tolérance et nous efforçons d'atteindre l'harmonie dans nos communautés."
+      }
+    },
     "learnMore": "En Savoir Plus",
     "contactUs": "Nous Contacter"
   },
