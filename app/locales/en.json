@@ -71,7 +71,10 @@
   "contact": {
     "title": "Contact Us",
     "subtitle": "Interested in learning more about Freemasonry?",
-    "name": "Name",
+    "name": {
+      "first": "First name",
+      "last": "Last name"
+    },
     "email": "Email",
     "phone": "Phone",
     "message": "Message",
