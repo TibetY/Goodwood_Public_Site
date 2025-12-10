@@ -116,7 +116,7 @@
   },
   "events": {
     "title": "Upcoming Events",
-    "noEvents": "No upcoming events at this time."
+    "viewEvents": "View our calendar of upcoming lodge meetings and events."
   },
   "contact": {
     "title": "Contact Us",
@@ -138,5 +138,23 @@
     "loading": "Loading...",
     "error": "An error occurred",
     "notFound": "Page not found"
+  },
+  "officers": {
+    "title": "Lodge Officers",
+    "since": "Meet the dedicated officers serving Goodwood Lodge for {{year}}",
+    "wm": "Worshipful Master",
+    "im": "Imm. Past Master",
+    "sw": "Senior Warden",
+    "jw": "Junior Warden",
+    "sec": "Secretary",
+    "treas": "Treasurer",
+    "doc": "Dir. of Ceremonies",
+    "sd": "Senior Deacon",
+    "jd": "Junior Deacon",
+    "chaplain": "Chaplain",
+    "ig": "Inner Guard",
+    "tyler": "Tyler",
+    "ss": "Senior Steward",
+    "js": "Junior Steward"
   }
 }
