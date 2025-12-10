@@ -81,6 +81,7 @@ const officers: Officer[] = [
 ];
 
 export default function Officers() {
+    const currentYear = new Date().getFullYear();
     const getInitials = (name: string) => {
         // Remove titles like "W. Bro.", "V.W. Bro.", "Bro."
         const cleanName = name.replace(/^(V\.W\.|W\.|R\.W\.)?\s*Bro\.\s*/i, '');
@@ -93,10 +94,10 @@ export default function Officers() {
     return (
         <Container maxWidth="lg" sx={{ py: 8 }}>
             <Typography variant="h3" component="h1" gutterBottom fontWeight="bold" textAlign="center">
-                Lodge Officers
+                {t('officers.title')}
             </Typography>
-            <Typography variant="body1" color="text.secondary" paragraph textAlign="center" sx={{ mb: 6 }}>
-                Meet the dedicated officers serving Goodwood Lodge
+            <Typography variant="body1" color="text.secondary" textAlign="center" sx={{ mb: 6 }}>
+                {t('officers.since')}
             </Typography>
 
             <Grid container spacing={4}>
