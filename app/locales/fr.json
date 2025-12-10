@@ -57,8 +57,55 @@
     "meetingTimes": "Heures de Réunion"
   },
   "history": {
-    "title": "Notre Histoire",
-    "description": "La riche histoire de la Loge Goodwood No. 159"
+    "title": "Histoire de la Loge Goodwood",
+    "masonryInRichmond": {
+      "title": "La Franc-Maçonnerie à Richmond depuis plus de 200 ans",
+      "p1": "La Franc-Maçonnerie dans la région de Richmond a en fait commencé avant l'existence de Richmond avec les soldats du 89e Régiment d'infanterie qui avaient une Loge de Métier garantie par la Grande Loge d'Irlande, le numéro de Charte étant 863 et existant de 1798 à 1818.",
+      "p2": "Le mandat original ayant été perdu lorsque le navire du régiment a coulé au large de la côte néerlandaise en 1805, un mandat en double a été délivré en 1806. Ce mandat en double a été annulé en 1818 car la Grande Loge n'avait pas reçu de cotisations depuis 1808.",
+      "p3": "C'est le mandat qui a été utilisé pendant les trois premières années par les Maçons de Richmond pour les trois premières années de la colonie (1818, 1819 et 1820). Il semble que bien que le mandat ait été annulé, il n'a jamais été retourné."
+    },
+    "dukeVisit": {
+      "title": "La Visite du Duc de Richmond",
+      "p1": "En 1819, le Très Vénérable Frère Charles Lennox, le quatrième Duc de Richmond a visité le village et aurait trouvé à redire à l'utilisation de l'ancien mandat par les frères. À cette époque, des réunions régulières se tenaient à la Taverne des Armes Maçonniques à Richmond.",
+      "p2": "Les efforts pour faire légaliser la Charte n'ayant pas abouti, ils ont demandé et reçu de \"La Grande Convention Maçonnique de Kingston\" une Charte datée du 29 avril 1821, et ainsi la Loge de Richmond a vu le jour."
+    },
+    "earlyDays": {
+      "title": "Les Premiers Jours",
+      "p1": "Aux premiers jours, la loge était préparée avec du badigeon et un pinceau, et des tableaux sur le sol couverts de paille. Au moment approprié, d'un coup de pied, le tableau était exposé pour être utilisé par le ritualiste.",
+      "p2": "Ce sont ces frères qui ont posé la pierre angulaire de la première église anglicane à Richmond en 1823, les frères empruntant des regalia de la \"Loge sur le Rideau\" de Stephen Burritt aux rapides de Burritt. Cela semble être la première pierre angulaire posée par des maçons dans la région d'Ottawa.",
+      "p3": "Peu après, les Frères ont décidé d'acheter un ensemble complet de Bijoux de Collier, dont certains ont été perdus au fil des ans, mais plusieurs sont encore utilisés par la Loge Goodwood, ceux-ci sont estampillés \"Grande Loge du Haut-Canada\"."
+    },
+    "darkPeriod": {
+      "title": "La Période Sombre",
+      "p1": "Il semblerait que la Loge de Richmond ait tenu des réunions jusqu'aux années 1840. En 1845, les Frères ne se réunissaient plus qu'de façon intermittente, réticents à abandonner jusqu'à ce qu'un autre lieu de réunion devienne disponible.",
+      "p2": "Fin 1846, une nouvelle Loge a vu le jour à Kempville. D'abord comme Kempville 25, puis plus tard comme Kempville 7, et maintenant connue sous le nom de Mount Zion 28. Avec la nouvelle Loge à Kempville, la Loge de Richmond est passée dans l'obscurité lorsque les frères ont commencé à fréquenter Kempville. La Grande Convention Maçonnique, l'autorité sous laquelle la Loge de Richmond existait, avait cessé de fonctionner et la charte est devenue inopérante."
+    },
+    "revival": {
+      "title": "Renaissance et Naissance de la Loge Goodwood",
+      "p1": "En 1855, la Grande Loge du Canada a vu le jour, et bien que la loge de Richmond n'ait pas existé depuis des années, les frères de Richmond étaient toujours actifs. Beaucoup d'entre eux se rendaient à Ottawa au moins une fois par mois pour assister à la Loge Doric. Ed Reilly qui dirigeait l'écurie de louage assurait le transport. Ces frères de la Loge Doric (Frère Rév. C.B. Pettit, Frère John McElroy, Frère Edward Reilly, Frère John Torney et Frère Johnson Fenton) sont responsables de l'existence de l'actuelle Loge Goodwood.",
+      "p2": "Il existe un certain nombre d'extraits des procès-verbaux de la Loge Doric concernant ces frères. L'entrée la plus significative étant celle demandant aux officiers de la Loge Doric d'aider à établir une Loge à Richmond et de transmettre une pétition à la Grande Loge. Cela a été sanctionné à l'unanimité.",
+      "p3": "La dispense pour former la Loge Goodwood est datée du 29 septembre 1863.",
+      "p4": "Le 4 novembre 1863, la Loge Doric a accepté d'accorder à la Loge Goodwood tout le mobilier excédentaire qu'ils possédaient et ainsi est revenu à Richmond le contenu de notre première Loge qui avait été donné pour aider Doric dans ses premières années."
+    },
+    "notableMembers": {
+      "title": "Membres Notables",
+      "p1": "Le premier maître de la Loge Goodwood était le Révérend C.B. Pettit, le recteur de l'église anglicane St. John's à Richmond. Le frère a été un pilier de la loge pendant de nombreuses années.",
+      "p2": "Le deuxième fondateur de la Loge Goodwood était Robert Lyon, le fils du Capitaine George Lyon, un colon original de Richmond. R.V.Frère Robert Lyon était DDGM en 1864 lorsque Ottawa faisait partie du district central. Il était également membre de la Loge Builders et était celui qui a présenté la pétition pour la Loge Builders à la Grande Loge. Il a été maire d'Ottawa en 1867 et membre de la première législature de l'Ontario après la confédération.",
+      "p3": "Arthur Lyon, le frère cadet de Robert Lyon, a rejoint Goodwood en 1864 à l'âge de 26 ans. Il a déménagé à Shawville en 1867 et a été membre fondateur et premier vénérable maître de la Loge Pontiac à Shawville. Il a servi quatre mandats en tant que DDGM pour le district Ottawa-Hull.",
+      "p4": "R.V.Frère R.H.Grant était maître de Goodwood en 1896 et 1897. Il est ensuite devenu membre fondateur de la Loge Hazeldean 517 lorsqu'elle a été instituée en 1914. En 1917, il était DDGM pour le district d'Ottawa."
+    },
+    "modernEra": {
+      "title": "Ère Moderne",
+      "p1": "En 1918, la pierre angulaire de la Loge Goodwood a été posée par le Très Vénérable Frère W.H. Wardhope.",
+      "p2": "Le 24 octobre 1941, une motion a été faite pour changer la nuit de réunion du mardi avant la pleine lune, elle a été rejetée et ainsi la loge a continué à se réunir le mardi avant la pleine lune.",
+      "p3": "Lors d'une réunion le 19 juin 1956, les frères ont décidé de remplacer la fournaise au bois par un appareil moderne. Un chauffage d'appoint à l'huile a été acheté. Le 11 juin 1957, lors d'une autre réunion, le problème de chauffage apparemment pas résolu de manière satisfaisante, ils ont décidé d'installer un chauffage central approprié. Il semblerait que le problème de chauffage et de refroidissement de la loge soit un problème chronique de la Loge que certains prétendent avoir persisté pendant près de 100 ans. Je dois dire que je pense que nous avons maintenant résolu le problème cependant."
+    },
+    "footer": {
+      "detailedHistory": "Pour une histoire plus détaillée, veuillez consulter",
+      "detailedHistoryLink": "La Franc-Maçonnerie dans la Loge Goodwood No. 159 A.F. & A.M GRC 1989 - 2014.",
+      "artifactsIntro": "Un autre document qui mérite d'être consulté est une présentation sur",
+      "artifactsLink": "Les Artefacts de la Loge Goodwood."
+    }
   },
   "events": {
     "title": "Événements à Venir",
