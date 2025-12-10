@@ -7,8 +7,6 @@ import {
   Toolbar,
   IconButton,
   Typography,
-  Menu,
-  MenuItem,
   Container,
   Button,
   Drawer,
@@ -193,7 +191,8 @@ export default function Header() {
             ))}
 
             {/* Language Switcher */}
-            <IconButton
+            {/* TODO: Translate locale files first with Marc */}
+            {/* <IconButton
               onClick={handleOpenLangMenu}
               color="inherit"
               size="small"
@@ -225,7 +224,7 @@ export default function Header() {
               >
                 Français
               </MenuItem>
-            </Menu>
+            </Menu> */}
 
             {/* Become a Mason CTA */}
             <Button
