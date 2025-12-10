@@ -20,18 +20,26 @@ import {
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import LanguageIcon from '@mui/icons-material/Language';
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 
 const pages = [
-  { key: 'about', path: '/about' },
-  { key: 'history', path: '/history' },
   { key: 'events', path: '/events' },
   { key: 'contact', path: '/contact' },
+];
+
+const aboutSubmenu = [
+  { key: 'about', path: '/about' },
+  { key: 'history', path: '/history' },
+  { key: 'officers', path: '/officers' },
+  { key: 'committees', path: '/committees' },
+  { key: 'pastMasters', path: '/past-masters' },
 ];
 
 export default function Header() {
   const { t, i18n } = useTranslation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [langMenuAnchor, setLangMenuAnchor] = useState<null | HTMLElement>(null);
+  const [aboutMenuAnchor, setAboutMenuAnchor] = useState<null | HTMLElement>(null);
 
   const handleOpenMobileMenu = () => {
     setMobileMenuOpen(true);
@@ -52,6 +60,14 @@ export default function Header() {
   const changeLanguage = (lang: string) => {
     i18n.changeLanguage(lang);
     handleCloseLangMenu();
+  };
+
+  const handleOpenAboutMenu = (event: React.MouseEvent<HTMLElement>) => {
+    setAboutMenuAnchor(event.currentTarget);
+  };
+
+  const handleCloseAboutMenu = () => {
+    setAboutMenuAnchor(null);
   };
 
   return (
@@ -168,6 +184,62 @@ export default function Header() {
               alignItems: 'center',
             }}
           >
+            {/* About Us Dropdown */}
+            <Button
+              onClick={handleOpenAboutMenu}
+              endIcon={<ArrowDropDownIcon />}
+              sx={{
+                color: 'text.primary',
+                px: 2.5,
+                py: 1,
+                fontSize: '0.95rem',
+                fontWeight: 500,
+                letterSpacing: '0.3px',
+                transition: 'all 0.3s ease',
+                '&:hover': {
+                  backgroundColor: 'transparent',
+                  color: 'primary.main',
+                  transform: 'translateY(-1px)',
+                },
+              }}
+            >
+              {t('nav.about')}
+            </Button>
+            <Menu
+              anchorEl={aboutMenuAnchor}
+              open={Boolean(aboutMenuAnchor)}
+              onClose={handleCloseAboutMenu}
+              sx={{
+                '& .MuiMenu-paper': {
+                  mt: 1,
+                  boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
+                  borderRadius: 2,
+                },
+              }}
+            >
+              {aboutSubmenu.map((item) => (
+                <MenuItem
+                  key={item.key}
+                  component={Link}
+                  to={item.path}
+                  onClick={handleCloseAboutMenu}
+                  sx={{
+                    py: 1.5,
+                    px: 3,
+                    fontSize: '0.95rem',
+                    transition: 'all 0.2s ease',
+                    '&:hover': {
+                      backgroundColor: 'primary.light',
+                      color: 'white',
+                    },
+                  }}
+                >
+                  {t(`nav.${item.key}`)}
+                </MenuItem>
+              ))}
+            </Menu>
+
+            {/* Other pages */}
             {pages.map((page) => (
               <Button
                 key={page.key}
@@ -279,6 +351,38 @@ export default function Header() {
             </Typography>
           </Box>
           <List>
+            {/* About Us Section */}
+            <ListItem disablePadding>
+              <ListItemButton disabled>
+                <ListItemText
+                  primary={t('nav.about')}
+                  primaryTypographyProps={{
+                    fontWeight: 600,
+                    color: 'primary.main',
+                    fontSize: '0.9rem',
+                  }}
+                />
+              </ListItemButton>
+            </ListItem>
+            {aboutSubmenu.map((item) => (
+              <ListItem key={item.key} disablePadding>
+                <ListItemButton
+                  component={Link}
+                  to={item.path}
+                  onClick={handleCloseMobileMenu}
+                  sx={{ pl: 4 }}
+                >
+                  <ListItemText
+                    primary={t(`nav.${item.key}`)}
+                    primaryTypographyProps={{
+                      fontSize: '0.9rem',
+                    }}
+                  />
+                </ListItemButton>
+              </ListItem>
+            ))}
+
+            {/* Other pages */}
             {pages.map((page) => (
               <ListItem key={page.key} disablePadding>
                 <ListItemButton
@@ -290,6 +394,8 @@ export default function Header() {
                 </ListItemButton>
               </ListItem>
             ))}
+
+            {/* Become a Mason CTA */}
             <ListItem disablePadding>
               <ListItemButton
                 component={Link}
