@@ -16,13 +16,13 @@ export default function History() {
                         <Typography variant="h4" component="h2" gutterBottom fontWeight="semibold">
                             {t('history.masonryInRichmond.title')}
                         </Typography>
-                        <Typography variant="body1" >
+                        <Typography variant="body1" gutterBottom>
                             {t('history.masonryInRichmond.p1')}
                         </Typography>
-                        <Typography variant="body1" >
+                        <Typography variant="body1" gutterBottom>
                             {t('history.masonryInRichmond.p2')}
                         </Typography>
-                        <Typography variant="body1" >
+                        <Typography variant="body1" gutterBottom>
                             {t('history.masonryInRichmond.p3')}
                         </Typography>
                     </Box>
@@ -31,10 +31,10 @@ export default function History() {
                         <Typography variant="h5" component="h3" gutterBottom fontWeight="semibold">
                             {t('history.dukeVisit.title')}
                         </Typography>
-                        <Typography variant="body1" >
+                        <Typography variant="body1" gutterBottom>
                             {t('history.dukeVisit.p1')}
                         </Typography>
-                        <Typography variant="body1" >
+                        <Typography variant="body1" gutterBottom>
                             {t('history.dukeVisit.p2')}
                         </Typography>
                     </Box>
@@ -43,13 +43,13 @@ export default function History() {
                         <Typography variant="h5" component="h3" gutterBottom fontWeight="semibold">
                             {t('history.earlyDays.title')}
                         </Typography>
-                        <Typography variant="body1" >
+                        <Typography variant="body1" gutterBottom>
                             {t('history.earlyDays.p1')}
                         </Typography>
-                        <Typography variant="body1" >
+                        <Typography variant="body1" gutterBottom>
                             {t('history.earlyDays.p2')}
                         </Typography>
-                        <Typography variant="body1" >
+                        <Typography variant="body1" gutterBottom>
                             {t('history.earlyDays.p3')}
                         </Typography>
                     </Box>
@@ -58,10 +58,10 @@ export default function History() {
                         <Typography variant="h5" component="h3" gutterBottom fontWeight="semibold">
                             {t('history.darkPeriod.title')}
                         </Typography>
-                        <Typography variant="body1" >
+                        <Typography variant="body1" gutterBottom>
                             {t('history.darkPeriod.p1')}
                         </Typography>
-                        <Typography variant="body1" >
+                        <Typography variant="body1" gutterBottom>
                             {t('history.darkPeriod.p2')}
                         </Typography>
                     </Box>
@@ -70,16 +70,16 @@ export default function History() {
                         <Typography variant="h5" component="h3" gutterBottom fontWeight="semibold">
                             {t('history.revival.title')}
                         </Typography>
-                        <Typography variant="body1" >
+                        <Typography variant="body1" gutterBottom>
                             {t('history.revival.p1')}
                         </Typography>
-                        <Typography variant="body1" >
+                        <Typography variant="body1" gutterBottom>
                             {t('history.revival.p2')}
                         </Typography>
-                        <Typography variant="body1" >
+                        <Typography variant="body1" gutterBottom>
                             {t('history.revival.p3')}
                         </Typography>
-                        <Typography variant="body1" >
+                        <Typography variant="body1" gutterBottom>
                             {t('history.revival.p4')}
                         </Typography>
                     </Box>
@@ -88,16 +88,16 @@ export default function History() {
                         <Typography variant="h5" component="h3" gutterBottom fontWeight="semibold">
                             {t('history.notableMembers.title')}
                         </Typography>
-                        <Typography variant="body1" >
+                        <Typography variant="body1" gutterBottom>
                             {t('history.notableMembers.p1')}
                         </Typography>
-                        <Typography variant="body1" >
+                        <Typography variant="body1" gutterBottom>
                             {t('history.notableMembers.p2')}
                         </Typography>
-                        <Typography variant="body1" >
+                        <Typography variant="body1" gutterBottom>
                             {t('history.notableMembers.p3')}
                         </Typography>
-                        <Typography variant="body1" >
+                        <Typography variant="body1" gutterBottom>
                             {t('history.notableMembers.p4')}
                         </Typography>
                     </Box>
@@ -106,13 +106,13 @@ export default function History() {
                         <Typography variant="h5" component="h3" gutterBottom fontWeight="semibold">
                             {t('history.modernEra.title')}
                         </Typography>
-                        <Typography variant="body1" >
+                        <Typography variant="body1" gutterBottom>
                             {t('history.modernEra.p1')}
                         </Typography>
-                        <Typography variant="body1" >
+                        <Typography variant="body1" gutterBottom>
                             {t('history.modernEra.p2')}
                         </Typography>
-                        <Typography variant="body1" >
+                        <Typography variant="body1" gutterBottom>
                             {t('history.modernEra.p3')}
                         </Typography>
                     </Box>
@@ -123,6 +123,7 @@ export default function History() {
                         <Typography variant="body1" fontStyle="italic">
                             {t('history.footer.detailedHistory')} <a href="files/Goodwood Lodge History 1989 - 2014 Version 1.0.pdf">{t('history.footer.detailedHistoryLink')}</a>
                         </Typography>
+
                         <Typography variant="body1" fontStyle="italic">
                             {t('history.footer.artifactsIntro')} <a href="files/Lodge Artifacts.pdf">{t('history.footer.artifactsLink')}</a>
                         </Typography>
