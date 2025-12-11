@@ -1,91 +1,61 @@
 import { Container, Typography, Box, Grid, Card, CardContent, Chip, Stack, Divider, Paper } from '@mui/material';
-import { createClient } from '@supabase/supabase-js'
+import { createClient } from '@supabase/supabase-js';
+import { useLoaderData } from 'react-router';
+import type { Route } from "./+types/committees";
 
 interface CommitteeMember {
+    id: number;
+    committee_id: number;
     name: string;
+    position: number;
 }
 
 interface Committee {
-    id?: string;
+    id: number;
     title: string;
     members: CommitteeMember[];
 }
 
-const committees: Committee[] = [
-    {
-        title: 'Committee of General Purposes',
-        members: [
-            { name: 'Senior Warden' },
-            { name: 'All Lodge Members' }
-        ]
-    },
-    {
-        title: 'Finance Committee',
-        members: [
-            { name: 'Worshipful Master' },
-            { name: 'Secretary' },
-            { name: 'Treasurer' }
-        ]
-    },
-    {
-        title: 'Benevolence',
-        members: [
-            { name: 'Bro. Joe Burchill' },
-            { name: 'Bro. Ted Burch' }
-        ]
-    },
-    {
-        title: 'Bro. to Bro.',
-        members: [
-            { name: 'W. Bro. Jordan McConnell' },
-            { name: 'Bro. Brad McBride' }
-        ]
-    },
-    {
-        title: 'Officer Progression',
-        members: [
-            { name: 'R. W. Bro Don Healey' },
-            { name: 'V. W. Bro. Ken Burchill' }
-        ]
-    },
-    {
-        title: 'Sick & Visiting',
-        members: [
-            { name: 'Bro. Ted Burch' },
-            { name: 'W. Bro. Greg Skelly' }
-        ]
-    },
-    {
-        title: 'Website Development',
-        members: [
-            { name: 'Bro. Tibet Akyurekli' }
-        ]
-    },
-    {
-        title: 'Ottawa Masonic Association Representative',
-        members: [
-            { name: 'Bro. Joe Burchill' }
-        ]
-    },
-    {
-        title: 'Candidate Progression',
-        members: [
-            { name: 'V.W. Bro. Ivan Harris' },
-            { name: 'Bro. Rod Costain' }
-        ]
-    },
-    {
-        title: 'Director of the Work',
-        members: []
+// Loader function to fetch data from Supabase
+export async function loader({ }: Route.LoaderArgs) {
+    const supabaseUrl = process.env.VITE_SUPABASE_URL!;
+    const supabaseKey = process.env.VITE_SUPABASE_ANON_KEY!;
+    const supabase = createClient(supabaseUrl, supabaseKey);
+
+    // Fetch committees
+    const { data: committeesData, error: committeesError } = await supabase
+        .from('committees')
+        .select('*')
+        .order('id');
+
+    if (committeesError) {
+        console.error('Error fetching committees:', committeesError);
+        return { committees: [] };
     }
-];
+
+    // Fetch all committee members
+    const { data: membersData, error: membersError } = await supabase
+        .from('committee_members')
+        .select('*')
+        .order('position');
+
+    if (membersError) {
+        console.error('Error fetching committee members:', membersError);
+        return { committees: committeesData.map(c => ({ ...c, members: [] })) };
+    }
+
+    // Combine committees with their members
+    const committeesWithMembers: Committee[] = committeesData.map(committee => ({
+        id: committee.id,
+        title: committee.title,
+        members: membersData.filter(member => member.committee_id === committee.id)
+    }));
+
+    return { committees: committeesWithMembers };
+}
 
 export default function Committees() {
-
-    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
-    const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY
-    const supabase = createClient(supabaseUrl, supabaseKey)
-
+    const { committees } = useLoaderData<typeof loader>();
     const masonicYear = `${new Date().getFullYear()} - ${new Date().getFullYear() + 1}`;
 
     return (
@@ -99,7 +69,7 @@ export default function Committees() {
 
             <Paper elevation={2} sx={{ p: 4 }}>
                 {committees.map((committee, index) => (
-                    <Box key={index}>
+                    <Box key={committee.id || index}>
                         <Box sx={{ mb: 3 }}>
                             <Typography
                                 variant="h6"
@@ -112,9 +82,9 @@ export default function Committees() {
 
                             {committee.members.length > 0 ? (
                                 <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
-                                    {committee.members.map((member, memberIndex) => (
+                                    {committee.members.map((member) => (
                                         <Chip
-                                            key={memberIndex}
+                                            key={member.id}
                                             label={member.name}
                                             variant="outlined"
                                             size="small"
