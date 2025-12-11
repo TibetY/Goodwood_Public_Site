@@ -114,6 +114,10 @@
       "artifactsLink": "Artifacts in Goodwood Lodge."
     }
   },
+  "committees": {
+    "title": "Lodge Committees",
+    "description": "The following committees and Chairmen in place for the Masonic Year."
+  },
   "events": {
     "title": "Upcoming Events",
     "viewEvents": "View our calendar of upcoming lodge meetings and events."

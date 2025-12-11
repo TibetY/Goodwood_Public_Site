@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Container, Typography, Box, Stack, Divider, Paper, Chip, CircularProgress } from '@mui/material';
 import { createClient } from '@supabase/supabase-js';
+import { t } from 'i18next';
 
 interface CommitteeMember {
     id: number;
@@ -92,10 +93,10 @@ export default function Committees() {
     return (
         <Container maxWidth="md" sx={{ py: 8 }}>
             <Typography variant="h3" component="h1" gutterBottom fontWeight="bold" textAlign="center">
-                Lodge Committees
+                {t("committees.title")}
             </Typography>
             <Typography variant="body1" color="text.secondary" textAlign="center" sx={{ mb: 6 }}>
-                The following committees and Chairmen are in place for the {masonicYear} Masonic Year.
+                {t("committees.description")}
             </Typography>
 
             <Paper elevation={2} sx={{ p: 4 }}>
