@@ -1,7 +1,6 @@
-import { Container, Typography, Box, Grid, Card, CardContent, Chip, Stack, Divider, Paper } from '@mui/material';
+import { useState, useEffect } from 'react';
+import { Container, Typography, Box, Stack, Divider, Paper, Chip, CircularProgress } from '@mui/material';
 import { createClient } from '@supabase/supabase-js';
-import { useLoaderData } from 'react-router';
-import type { Route } from "./+types/committees";
 
 interface CommitteeMember {
     id: number;
@@ -16,47 +15,82 @@ interface Committee {
     members: CommitteeMember[];
 }
 
-// Loader function to fetch data from Supabase
-export async function loader({ }: Route.LoaderArgs) {
-    const supabaseUrl = process.env.VITE_SUPABASE_URL!;
-    const supabaseKey = process.env.VITE_SUPABASE_ANON_KEY!;
-    const supabase = createClient(supabaseUrl, supabaseKey);
-
-    // Fetch committees
-    const { data: committeesData, error: committeesError } = await supabase
-        .from('committees')
-        .select('*')
-        .order('id');
-
-    if (committeesError) {
-        console.error('Error fetching committees:', committeesError);
-        return { committees: [] };
-    }
-
-    // Fetch all committee members
-    const { data: membersData, error: membersError } = await supabase
-        .from('committee_members')
-        .select('*')
-        .order('position');
-
-    if (membersError) {
-        console.error('Error fetching committee members:', membersError);
-        return { committees: committeesData.map(c => ({ ...c, members: [] })) };
-    }
-
-    // Combine committees with their members
-    const committeesWithMembers: Committee[] = committeesData.map(committee => ({
-        id: committee.id,
-        title: committee.title,
-        members: membersData.filter(member => member.committee_id === committee.id)
-    }));
-
-    return { committees: committeesWithMembers };
-}
-
 export default function Committees() {
-    const { committees } = useLoaderData<typeof loader>();
+    const [committees, setCommittees] = useState<Committee[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+
+    useEffect(() => {
+        async function fetchCommittees() {
+            try {
+                const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+                const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+
+                if (!supabaseUrl || !supabaseKey) {
+                    throw new Error('Supabase configuration is missing');
+                }
+
+                const supabase = createClient(supabaseUrl, supabaseKey);
+
+                // Fetch committees
+                const { data: committeesData, error: committeesError } = await supabase
+                    .from('committees')
+                    .select('*')
+                    .order('id');
+
+                if (committeesError) {
+                    throw committeesError;
+                }
+
+                // Fetch all committee members
+                const { data: membersData, error: membersError } = await supabase
+                    .from('committee_members')
+                    .select('*')
+                    .order('position');
+
+                if (membersError) {
+                    throw membersError;
+                }
+
+                // Combine committees with their members
+                const committeesWithMembers: Committee[] = committeesData.map(committee => ({
+                    id: committee.id,
+                    title: committee.title,
+                    members: membersData.filter(member => member.committee_id === committee.id)
+                }));
+
+                setCommittees(committeesWithMembers);
+            } catch (err) {
+                console.error('Error fetching committees:', err);
+                setError(err instanceof Error ? err.message : 'Failed to load committees');
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        fetchCommittees();
+    }, []);
+
     const masonicYear = `${new Date().getFullYear()} - ${new Date().getFullYear() + 1}`;
+
+    if (loading) {
+        return (
+            <Container maxWidth="md" sx={{ py: 8, textAlign: 'center' }}>
+                <CircularProgress />
+                <Typography variant="body1" sx={{ mt: 2 }}>Loading committees...</Typography>
+            </Container>
+        );
+    }
+
+    if (error) {
+        return (
+            <Container maxWidth="md" sx={{ py: 8 }}>
+                <Typography variant="h5" color="error" textAlign="center">
+                    Error loading committees: {error}
+                </Typography>
+            </Container>
+        );
+    }
 
     return (
         <Container maxWidth="md" sx={{ py: 8 }}>
