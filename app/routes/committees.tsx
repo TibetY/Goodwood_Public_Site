@@ -1,13 +1,14 @@
 import { Container, Typography, Box, Grid, Card, CardContent, Chip, Stack, Divider, Paper } from '@mui/material';
+import { createClient } from '@supabase/supabase-js'
 
 interface CommitteeMember {
     name: string;
 }
 
 interface Committee {
+    id?: string;
     title: string;
     members: CommitteeMember[];
-    description?: string;
 }
 
 const committees: Committee[] = [
@@ -80,6 +81,11 @@ const committees: Committee[] = [
 ];
 
 export default function Committees() {
+
+    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
+    const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY
+    const supabase = createClient(supabaseUrl, supabaseKey)
+
     const masonicYear = `${new Date().getFullYear()} - ${new Date().getFullYear() + 1}`;
 
     return (

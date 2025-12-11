@@ -15,6 +15,7 @@
     "@mui/material": "^7.3.6",
     "@react-router/node": "7.10.1",
     "@react-router/serve": "7.10.1",
+    "@supabase/supabase-js": "^2.87.1",
     "i18next": "^25.7.1",
     "i18next-browser-languagedetector": "^8.2.0",
     "isbot": "^5.1.31",
