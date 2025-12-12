@@ -136,6 +136,22 @@
     "successMessage": "Thank you for your message. We will be in touch soon."
   },
   "footer": {
+    "address": {
+      "title": "Visit Us",
+      "street": "3494 McBean St,",
+      "city": "Richmond, ON",
+      "postal": "K0A 2Z0"
+    },
+    "contact": {
+      "title": "Contact",
+      "email": "secretary@goodwoodlodge159.ca"
+    },
+    "links": {
+      "title": "Links",
+      "grandLodge": "Grand Lodge of Ontario",
+      "instagram": "Follow us on Instagram",
+      "becomeAMason": "Becoming a Mason"
+    },
     "copyright": "© {{year}} Goodwood Lodge No. 159. All rights reserved."
   },
   "common": {
