@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Container, Typography, Box, Stack, Divider, Paper, Chip, CircularProgress } from '@mui/material';
-import { createClient } from '@supabase/supabase-js';
+import { supabase } from '../utils/supabase';
 import { t } from 'i18next';
 
 interface CommitteeMember {
@@ -21,40 +21,25 @@ export default function Committees() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
+
+
     useEffect(() => {
         async function fetchCommittees() {
             try {
-                const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-                const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-
-                if (!supabaseUrl || !supabaseKey) {
-                    throw new Error('Supabase configuration is missing');
-                }
-
-                const supabase = createClient(supabaseUrl, supabaseKey);
-
-                const { data: committeesData, error: committeesError } = await supabase
+                const { data, error } = await supabase
                     .from('committees')
-                    .select('*')
-                    .order('id');
+                    .select(`
+                    id,
+                    title,
+                    members:committee_members(*)
+                `)
+                    .order('title');
 
-                if (committeesError) {
-                    throw committeesError;
-                }
+                if (error) throw error;
 
-                const { data: membersData, error: membersError } = await supabase
-                    .from('committee_members')
-                    .select('*')
-                    .order('position');
-
-                if (membersError) {
-                    throw membersError;
-                }
-
-                const committeesWithMembers: Committee[] = committeesData.map(committee => ({
-                    id: committee.id,
-                    title: committee.title,
-                    members: membersData.filter(member => member.committee_id === committee.id)
+                const committeesWithMembers = data.map(committee => ({
+                    ...committee,
+                    members: committee.members.sort((a, b) => a.position - b.position)
                 }));
 
                 setCommittees(committeesWithMembers);
@@ -68,8 +53,6 @@ export default function Committees() {
 
         fetchCommittees();
     }, []);
-
-    const masonicYear = `${new Date().getFullYear()} - ${new Date().getFullYear() + 1}`;
 
     if (loading) {
         return (

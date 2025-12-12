@@ -1,87 +1,24 @@
 import { Container, Typography, Box, Grid, Card, CardContent, CardMedia, Avatar } from '@mui/material';
 import { t } from 'i18next';
+import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { supabase } from '../utils/supabase';
 
 interface Officer {
+    id?: string
     title: string;
     name: string;
-    image?: string; // Optional - we'll use placeholder if not provided
+    image?: string;
+    positionL: number;
 }
 
-const officers: Officer[] = [
-    {
-        title: t('officers.wm'),
-        name: 'W. Bro. Joe Burchill',
-        image: 'https://goodwood159.ca/images/2024_2025/250401/Goodwood_Install_10_2025_DSC_5416.jpg'
-    },
-    {
-        title: t('officers.im'),
-        name: 'W. Bro. Jim McConnell',
-        image: undefined
-    },
-    {
-        title: t('officers.sw'),
-        name: 'Bro. Rod Costain',
-        image: undefined
-    },
-    {
-        title: t('officers.jw'),
-        name: 'Bro. Paul Henry',
-        image: undefined
-    },
-    {
-        title: t('officers.sec'),
-        name: 'W. Bro. Greg Skelly',
-        image: undefined
-    },
-    {
-        title: t('officers.treas'),
-        name: 'W. Bro. Art Gosling',
-        image: undefined
-    },
-    {
-        title: t('officers.doc'),
-        name: 'W. Bro. Jordan McConnell',
-        image: undefined
-    },
-    {
-        title: t('officers.sd'),
-        name: 'Bro. Ted Burch',
-        image: undefined
-    },
-    {
-        title: t('officers.jd'),
-        name: 'Bro. Dax Morfé',
-        image: undefined
-    },
-    {
-        title: t('officers.chaplain'),
-        name: 'W. Bro. Roger Coo',
-        image: undefined
-    },
-    {
-        title: t('officers.ig'),
-        name: 'Bro. Tyler Moule',
-        image: undefined
-    },
-    {
-        title: t('officers.tyler'),
-        name: 'V.W. Bro. Ken Burchill',
-        image: undefined
-    },
-    {
-        title: t('officers.ss'),
-        name: 'TBA',
-        image: undefined
-    },
-    {
-        title: t('officers.js'),
-        name: 'TBA',
-        image: undefined
-    }
-];
-
 export default function Officers() {
+    const [officers, setOfficers] = useState<Officer[]>([]);
+    const [error, setError] = useState<string | null>(null);
+    const [loading, setLoading] = useState(true);
+    const { t } = useTranslation();
     const currentYear = new Date().getFullYear();
+
     const getInitials = (name: string) => {
         // Remove titles like "W. Bro.", "V.W. Bro.", "Bro."
         const cleanName = name.replace(/^(V\.W\.|W\.|R\.W\.)?\s*Bro\.\s*/i, '');
@@ -90,6 +27,30 @@ export default function Officers() {
         const parts = cleanName.split(' ');
         return parts.map(part => part[0]).join('').toUpperCase();
     };
+
+
+    useEffect(() => {
+        async function fetchOfficers() {
+            try {
+                const { data, error } = await supabase
+                    .from('officers')
+                    .select('*')
+                    .order('position', { ascending: true });
+
+                if (error) throw error;
+
+                setOfficers(data);
+            } catch (err) {
+                console.error('Error fetching officers:', err);
+                setError(err instanceof Error ? err.message : 'Failed to load officers');
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        fetchOfficers();
+    }, []);
+    if (loading) return <div>Loading...</div>;
 
     return (
         <Container maxWidth="lg" sx={{ py: 8 }}>
@@ -122,7 +83,7 @@ export default function Officers() {
                                     height="300"
                                     image={officer.image}
                                     alt={officer.name}
-                                    sx={{ objectFit: 'cover' }}
+                                    sx={{ objectFit: 'cover', objectPosition: 'center top' }}
                                 />
                             ) : (
                                 <Box
