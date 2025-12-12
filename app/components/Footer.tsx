@@ -34,7 +34,7 @@ export default function Footer() {
           {/* Footer Content Grid */}
           <Grid container spacing={4}>
             {/* Address Column */}
-            <Grid item xs={12} sm={6} md={3}>
+            <Grid size={{ xs: 12, sm: 6, md: 3 }}>
               <Stack spacing={1}>
                 <Stack direction="row" spacing={1} alignItems="center">
                   <LocationOnIcon />
@@ -52,7 +52,7 @@ export default function Footer() {
             </Grid>
 
             {/* Contact Column */}
-            <Grid item xs={12} sm={6} md={3}>
+            <Grid size={{ xs: 12, sm: 6, md: 3 }}>
               <Stack spacing={1}>
                 <Stack direction="row" spacing={1} alignItems="center">
                   <EmailIcon />
@@ -80,14 +80,14 @@ export default function Footer() {
             </Grid>
 
             {/* Links Column */}
-            <Grid item xs={12} sm={6} md={3}>
+            <Grid size={{ xs: 12, sm: 6, md: 3 }}>
               <Stack spacing={1}>
                 <Typography variant="h6" sx={{ color: 'white' }}>
                   {t('footer.links.title')}
                 </Typography>
                 <Box
                   component="a"
-                  href="https://freemasons.on.ca"
+                  href="https://ontariomasons.ca"
                   target="_blank"
                   rel="noopener noreferrer"
                   sx={{
@@ -105,7 +105,7 @@ export default function Footer() {
                 </Box>
                 <Box
                   component="a"
-                  href="https://freemasons.on.ca/becoming-a-freemason/"
+                  href="https://ontariomasons.ca/becoming-a-mason/"
                   target="_blank"
                   rel="noopener noreferrer"
                   sx={{
@@ -125,12 +125,9 @@ export default function Footer() {
             </Grid>
 
             {/* Grand Lodge Logo Column */}
-            <Grid item xs={12} sm={6} md={3}>
+            <Grid size={{ xs: 12, sm: 6, md: 3 }}>
               <Stack spacing={2} alignItems={{ xs: 'center', md: 'flex-start' }}>
                 <Box
-                  component="a"
-                  href="https://freemasons.on.ca"
-                  target="_blank"
                   rel="noopener noreferrer"
                   sx={{
                     display: 'block',
@@ -153,7 +150,7 @@ export default function Footer() {
                 <Stack direction="row" spacing={1}>
                   <IconButton
                     component="a"
-                    href="https://www.instagram.com/goodwoodlodge159/"
+                    href="https://www.instagram.com/goodwood_lodge_159/"
                     target="_blank"
                     rel="noopener noreferrer"
                     sx={{
@@ -183,6 +180,6 @@ export default function Footer() {
           </Typography>
         </Stack>
       </Container>
-    </Box>
+    </Box >
   );
 }
