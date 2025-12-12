@@ -122,6 +122,22 @@
     "successMessage": "Merci pour votre message. Nous vous contacterons bientôt."
   },
   "footer": {
+    "address": {
+      "title": "Visitez-nous",
+      "street": "6032 Perth Road 180",
+      "city": "Richmond, ON",
+      "postal": "K0A 2Z0"
+    },
+    "contact": {
+      "title": "Contact",
+      "email": "secretary@goodwoodlodge159.ca"
+    },
+    "links": {
+      "title": "Liens",
+      "grandLodge": "Grande Loge de l'Ontario",
+      "instagram": "Suivez-nous sur Instagram",
+      "becomeAMason": "Devenir Franc-Maçon"
+    },
     "copyright": "© {{year}} Loge Goodwood No. 159. Tous droits réservés.",
     "privacyPolicy": "Politique de Confidentialité",
     "termsOfUse": "Conditions d'Utilisation"
