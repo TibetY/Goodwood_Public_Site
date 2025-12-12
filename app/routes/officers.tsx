@@ -109,7 +109,7 @@ export default function Officers() {
                             )}
                             <CardContent sx={{ flexGrow: 1, textAlign: 'center' }}>
                                 <Typography variant="h6" component="h2" gutterBottom>
-                                    {officer.title}
+                                    {t(officer.title)}
                                 </Typography>
                                 <Typography variant="body1" color="text.secondary">
                                     {officer.name}
