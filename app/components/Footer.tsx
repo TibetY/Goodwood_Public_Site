@@ -9,7 +9,6 @@ import {
   Grid,
   IconButton,
 } from '@mui/material';
-import EmailIcon from '@mui/icons-material/Email';
 import InstagramIcon from '@mui/icons-material/Instagram';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 
@@ -51,31 +50,29 @@ export default function Footer() {
               </Stack>
             </Grid>
 
-            {/* Contact Column */}
+            {/* Social Media Column */}
             <Grid size={{ xs: 12, sm: 6, md: 3 }}>
               <Stack spacing={1}>
-                <Stack direction="row" spacing={1} alignItems="center">
-                  <EmailIcon />
-                  <Typography variant="h6" sx={{ color: 'white' }}>
-                    {t('footer.contact.title')}
-                  </Typography>
-                </Stack>
-                <Box
-                  component="a"
-                  href={`mailto:${t('footer.contact.email')}`}
-                  sx={{
-                    color: 'rgba(255, 255, 255, 0.8)',
-                    textDecoration: 'none',
-                    '&:hover': {
+                <Typography variant="h6" sx={{ color: 'white' }}>
+                  Follow Us
+                </Typography>
+                <Stack direction="row" spacing={1}>
+                  <IconButton
+                    component="a"
+                    href="https://www.instagram.com/goodwood_lodge_159/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    sx={{
                       color: 'white',
-                      textDecoration: 'underline',
-                    },
-                  }}
-                >
-                  <Typography variant="body2">
-                    {t('footer.contact.email')}
-                  </Typography>
-                </Box>
+                      '&:hover': {
+                        color: 'rgba(255, 255, 255, 0.7)',
+                      },
+                    }}
+                    aria-label={t('footer.links.instagram')}
+                  >
+                    <InstagramIcon />
+                  </IconButton>
+                </Stack>
               </Stack>
             </Grid>
 
@@ -128,6 +125,9 @@ export default function Footer() {
             <Grid size={{ xs: 12, sm: 6, md: 3 }}>
               <Stack spacing={2} alignItems={{ xs: 'center', md: 'flex-start' }}>
                 <Box
+                  component="a"
+                  href="https://ontariomasons.ca"
+                  target="_blank"
                   rel="noopener noreferrer"
                   sx={{
                     display: 'block',
@@ -147,23 +147,6 @@ export default function Footer() {
                     }}
                   />
                 </Box>
-                <Stack direction="row" spacing={1}>
-                  <IconButton
-                    component="a"
-                    href="https://www.instagram.com/goodwood_lodge_159/"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    sx={{
-                      color: 'white',
-                      '&:hover': {
-                        color: 'rgba(255, 255, 255, 0.7)',
-                      },
-                    }}
-                    aria-label={t('footer.links.instagram')}
-                  >
-                    <InstagramIcon />
-                  </IconButton>
-                </Stack>
               </Stack>
             </Grid>
           </Grid>
