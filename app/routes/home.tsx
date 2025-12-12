@@ -207,19 +207,9 @@ export default function Home() {
           <Grid container spacing={6} alignItems="center">
             <Grid size={{ xs: 12, md: 6 }}>
               <Typography
-                variant="h4"
-                sx={{
-                  mb: 2,
-                  color: '#c5a572',
-                  fontWeight: 400,
-                }}
-              >
-                {t('home.values.sectionTitle')}
-              </Typography>
-              <Typography
                 variant="h2"
                 sx={{
-                  mb: 4,
+                  mb: 2,
                   fontSize: { xs: '2rem', md: '2.5rem' },
                 }}
               >
