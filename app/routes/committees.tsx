@@ -1,7 +1,8 @@
-import { useState, useEffect } from 'react';
-import { Container, Typography, Box, Stack, Divider, Paper, Chip, CircularProgress } from '@mui/material';
+import { useLoaderData } from 'react-router';
+import { Container, Typography, Box, Stack, Divider, Paper } from '@mui/material';
 import { supabase } from '../utils/supabase';
 import { t } from 'i18next';
+import type { Route } from './+types/committees';
 
 interface CommitteeMember {
     id: number;
@@ -16,62 +17,33 @@ interface Committee {
     members: CommitteeMember[];
 }
 
+export async function loader({ request }: Route.LoaderArgs) {
+    try {
+        const { data, error } = await supabase
+            .from('committees')
+            .select(`
+                id,
+                title,
+                members:committee_members(*)
+            `)
+            .order('title');
+
+        if (error) throw error;
+
+        const committeesWithMembers = data.map(committee => ({
+            ...committee,
+            members: committee.members.sort((a: CommitteeMember, b: CommitteeMember) => a.position - b.position)
+        }));
+
+        return { committees: committeesWithMembers };
+    } catch (err) {
+        console.error('Error fetching committees:', err);
+        throw new Response('Failed to load committees', { status: 500 });
+    }
+}
+
 export default function Committees() {
-    const [committees, setCommittees] = useState<Committee[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
-
-
-
-    useEffect(() => {
-        async function fetchCommittees() {
-            try {
-                const { data, error } = await supabase
-                    .from('committees')
-                    .select(`
-                    id,
-                    title,
-                    members:committee_members(*)
-                `)
-                    .order('title');
-
-                if (error) throw error;
-
-                const committeesWithMembers = data.map(committee => ({
-                    ...committee,
-                    members: committee.members.sort((a, b) => a.position - b.position)
-                }));
-
-                setCommittees(committeesWithMembers);
-            } catch (err) {
-                console.error('Error fetching committees:', err);
-                setError(err instanceof Error ? err.message : 'Failed to load committees');
-            } finally {
-                setLoading(false);
-            }
-        }
-
-        fetchCommittees();
-    }, []);
-
-    if (loading) {
-        return (
-            <Container maxWidth="md" sx={{ py: 8, textAlign: 'center' }}>
-                <CircularProgress />
-                <Typography variant="body1" sx={{ mt: 2 }}>Loading committees...</Typography>
-            </Container>
-        );
-    }
-
-    if (error) {
-        return (
-            <Container maxWidth="md" sx={{ py: 8 }}>
-                <Typography variant="h5" color="error" textAlign="center">
-                    Error loading committees: {error}
-                </Typography>
-            </Container>
-        );
-    }
+    const { committees } = useLoaderData<typeof loader>();
 
     return (
         <Container maxWidth="md" sx={{ py: 8 }}>
@@ -83,7 +55,7 @@ export default function Committees() {
             </Typography>
 
             <Paper elevation={2} sx={{ p: 4 }}>
-                {committees.map((committee, index) => (
+                {committees.map((committee: Committee, index: number) => (
                     <Box key={committee.id || index}>
                         <Box sx={{ mb: 3 }}>
                             <Typography
