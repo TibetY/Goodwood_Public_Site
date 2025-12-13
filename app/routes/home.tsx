@@ -51,35 +51,28 @@ export default function Home() {
                 {t('home.hero.subtitle')}
               </Typography>
             </Grid>
-            <Grid size={{ xs: 12, md: 6 }}>
-              {/* Placeholder for lodge building image - you can replace this */}
+            <Grid size={{ xs: 12, md: 6 }} sx={{ display: 'flex', justifyContent: 'center' }}>
               <Box
-
+                component="img"
+                src="images/goodwood/goodwood-logo.svg"
                 sx={{
-                  width: '100%',
+                  width: '50%',
                   height: "auto",
-                  backgroundColor: '#1a237e',
-                  borderRadius: 2,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  color: 'white',
-                  fontSize: '1rem',
-                  textAlign: 'center',
                 }}
               />
             </Grid>
           </Grid>
         </Container>
-      </Box>
+      </Box >
 
       {/* Welcome Section */}
-      <Box
+      < Box
         sx={{
           backgroundColor: '#13294b',
           color: 'white',
           py: { xs: 6, md: 10 },
-        }}
+        }
+        }
       >
         <Container maxWidth="lg">
           <Grid container spacing={6}>
@@ -134,10 +127,10 @@ export default function Home() {
             </Grid>
           </Grid>
         </Container>
-      </Box>
+      </Box >
 
       {/* Step into Freemasonry Section */}
-      <Box
+      < Box
         sx={{
           backgroundColor: '#f5f5f5',
           py: { xs: 6, md: 10 },
@@ -193,10 +186,10 @@ export default function Home() {
             {t('nav.becomeAMason')}
           </Button>
         </Container>
-      </Box>
+      </Box >
 
       {/* Values Section */}
-      <Box
+      < Box
         sx={{
           backgroundColor: '#13294b',
           color: 'white',
@@ -310,7 +303,7 @@ export default function Home() {
             </Grid>
           </Grid>
         </Container>
-      </Box>
+      </Box >
     </>
   );
 }
