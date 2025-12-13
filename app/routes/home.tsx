@@ -302,7 +302,7 @@ export default function Home() {
             <Grid size={{ xs: 12, md: 6 }} >
               <RoundedImage
                 src="images/goodwood/Goodwood_Install_2_2025_DSC_5380.jpg"
-                alt="Goodwood bretheren"
+                alt="Goodwood Bretheren"
               />
             </Grid>
           </Grid>
