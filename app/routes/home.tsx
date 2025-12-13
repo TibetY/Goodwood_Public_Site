@@ -1,8 +1,12 @@
 import type { Route } from "./+types/home";
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router';
-import { Container, Typography, Box, Button, Grid, Paper } from '@mui/material';
+import { Container, Typography, Box, Button, Grid } from '@mui/material';
 import RoundedImage from "~/components/RoundedImage";
+import HandshakeIcon from '@mui/icons-material/Handshake';
+import Diversity3Icon from '@mui/icons-material/Diversity3';
+import GavelIcon from '@mui/icons-material/Gavel';
+
 
 export function meta({ }: Route.MetaArgs) {
   // Note: meta tags cannot use translations directly in React Router
@@ -230,7 +234,7 @@ export default function Home() {
                     gap: 1,
                   }}
                 >
-                  <span style={{ fontSize: '1.75rem' }}>🤝</span> {t('home.values.brotherlyLove.title')}
+                  <HandshakeIcon sx={{ fontSize: '1.75rem' }} /> {t('home.values.brotherlyLove.title')}
                 </Typography>
                 <Typography
                   variant="body1"
@@ -255,7 +259,7 @@ export default function Home() {
                     gap: 1,
                   }}
                 >
-                  <span style={{ fontSize: '1.75rem' }}>🤲</span> {t('home.values.relief.title')}
+                  <Diversity3Icon sx={{ fontSize: '1.75rem' }} /> {t('home.values.relief.title')}
                 </Typography>
                 <Typography
                   variant="body1"
@@ -280,7 +284,7 @@ export default function Home() {
                     gap: 1,
                   }}
                 >
-                  <span style={{ fontSize: '1.75rem' }}>💡</span> {t('home.values.truth.title')}
+                  <GavelIcon sx={{ fontSize: '1.75rem' }} /> {t('home.values.truth.title')}
                 </Typography>
                 <Typography
                   variant="body1"
