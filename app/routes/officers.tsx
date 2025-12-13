@@ -1,21 +1,36 @@
+import { useLoaderData } from 'react-router';
 import { Container, Typography, Box, Grid, Card, CardContent, CardMedia, Avatar } from '@mui/material';
 import { t } from 'i18next';
-import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { supabase } from '../utils/supabase';
+import type { Route } from './+types/officers';
 
 interface Officer {
     id?: string
     title: string;
     name: string;
     image?: string;
-    positionL: number;
+    position: number;
+}
+
+export async function loader({ request }: Route.LoaderArgs) {
+    try {
+        const { data, error } = await supabase
+            .from('officers')
+            .select('*')
+            .order('position', { ascending: true });
+
+        if (error) throw error;
+
+        return { officers: data || [] };
+    } catch (err) {
+        console.error('Error fetching officers:', err);
+        throw new Response('Failed to load officers', { status: 500 });
+    }
 }
 
 export default function Officers() {
-    const [officers, setOfficers] = useState<Officer[]>([]);
-    const [error, setError] = useState<string | null>(null);
-    const [loading, setLoading] = useState(true);
+    const { officers } = useLoaderData<typeof loader>();
     const { t } = useTranslation();
     const currentYear = new Date().getFullYear();
 
@@ -28,30 +43,6 @@ export default function Officers() {
         return parts.map(part => part[0]).join('').toUpperCase();
     };
 
-
-    useEffect(() => {
-        async function fetchOfficers() {
-            try {
-                const { data, error } = await supabase
-                    .from('officers')
-                    .select('*')
-                    .order('position', { ascending: true });
-
-                if (error) throw error;
-
-                setOfficers(data);
-            } catch (err) {
-                console.error('Error fetching officers:', err);
-                setError(err instanceof Error ? err.message : 'Failed to load officers');
-            } finally {
-                setLoading(false);
-            }
-        }
-
-        fetchOfficers();
-    }, []);
-    if (loading) return <div>Loading...</div>;
-
     return (
         <Container maxWidth="lg" sx={{ py: 8 }}>
             <Typography variant="h3" component="h1" gutterBottom fontWeight="bold" textAlign="center">
@@ -62,7 +53,7 @@ export default function Officers() {
             </Typography>
 
             <Grid container spacing={4}>
-                {officers.map((officer, index) => (
+                {officers.map((officer: Officer, index: number) => (
                     <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }} key={index}>
                         <Card
                             elevation={2}
