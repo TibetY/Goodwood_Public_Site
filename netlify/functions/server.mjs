@@ -1,17 +1,16 @@
 import { createRequestHandler } from "@react-router/node";
-import { readFileSync } from "fs";
 import { dirname, join } from "path";
 import { fileURLToPath } from "url";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const serverBuildPath = join(__dirname, "../../build/server/index.js");
 
-let handler;
+let requestHandler;
 
 export async function handler(event, context) {
-  if (!handler) {
+  if (!requestHandler) {
     const build = await import(serverBuildPath);
-    handler = createRequestHandler({
+    requestHandler = createRequestHandler({
       build,
     });
   }
@@ -26,7 +25,7 @@ export async function handler(event, context) {
         : undefined,
   });
 
-  const response = await handler(request, {
+  const response = await requestHandler(request, {
     event,
     context,
   });
