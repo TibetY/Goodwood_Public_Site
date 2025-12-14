@@ -37,8 +37,8 @@ export default function LoginPage() {
 
                 if (signInError) throw signInError;
 
-                // Redirect to home or dashboard
-                navigate('/');
+                // Redirect to portal
+                navigate('/portal');
             } else {
                 // Signup
                 const { data, error: signUpError } = await supabase.auth.signUp({
