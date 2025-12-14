@@ -298,14 +298,14 @@ export default function Header() {
               </MenuItem>
             </Menu> */}
 
-            {/* Become a Mason CTA */}
+            {/* Login */}
             <Button
               variant="contained"
               component={Link}
-              to="/contact"
+              to="/login"
               sx={{
                 ml: 3,
-                backgroundColor: '#b71c1c',
+                backgroundColor: '#13294b',
                 color: 'white',
                 fontWeight: 600,
                 fontSize: '0.95rem',
@@ -315,13 +315,12 @@ export default function Header() {
                 boxShadow: 'none',
                 transition: 'all 0.3s ease',
                 '&:hover': {
-                  backgroundColor: '#8b0000',
-                  boxShadow: '0 4px 12px rgba(183, 28, 28, 0.3)',
+                  backgroundColor: '#1c3f72ff',
                   transform: 'translateY(-2px)',
                 },
               }}
             >
-              {t('nav.becomeAMason')}
+              {t('nav.login')}
             </Button>
           </Stack>
 

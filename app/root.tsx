@@ -16,6 +16,7 @@ import theme from './theme';
 import './i18n';
 import Header from './components/Header';
 import Footer from './components/Footer';
+import { AuthProvider } from "./context/auth-context";
 
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
@@ -35,10 +36,12 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Links />
       </head>
       <body>
-        <ThemeProvider theme={theme}>
-          <CssBaseline />
-          {children}
-        </ThemeProvider>
+        <AuthProvider>
+          <ThemeProvider theme={theme}>
+            <CssBaseline />
+            {children}
+          </ThemeProvider>
+        </AuthProvider>
         <ScrollRestoration />
         <Scripts />
       </body>

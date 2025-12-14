@@ -8,4 +8,5 @@ export default [
     route("past-masters", "routes/pastMasters.tsx"),
     route("events", "routes/events.tsx"),
     route("contact", "routes/contact.tsx"),
+    route("login", "routes/login.tsx"),
 ] satisfies RouteConfig;
