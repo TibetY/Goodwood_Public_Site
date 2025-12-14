@@ -7,15 +7,13 @@
   SECRETS_SCAN_OMIT_KEYS = "VITE_SUPABASE_ANON_KEY,VITE_GOOGLE_CAL"
 
 [functions]
-  directory = "build/server"
-  node_bundler = "none"
+  directory = "netlify/functions"
+  node_bundler = "esbuild"
 
 [[redirects]]
   from = "/*"
   to = "/.netlify/functions/server"
   status = 200
-  force = false
-  conditions = {Role = []}
 
 # Serve static assets directly
 [[redirects]]
