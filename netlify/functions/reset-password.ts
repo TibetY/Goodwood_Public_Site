@@ -2,7 +2,6 @@ import type { Handler, HandlerEvent } from '@netlify/functions';
 import { createClient } from '@supabase/supabase-js';
 
 export const handler: Handler = async (event: HandlerEvent) => {
-  // Initialize Supabase client inside handler to access runtime env vars
   const supabaseUrl = process.env.VITE_SUPABASE_URL!;
   const supabaseServiceKey = process.env.VITE_SUPABASE_SERVICE_ROLE_KEY!;
 
