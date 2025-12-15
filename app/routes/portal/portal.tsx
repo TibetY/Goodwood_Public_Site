@@ -91,10 +91,10 @@ export default function Portal() {
         <Container maxWidth="lg" sx={{ py: 8 }}>
             <Box sx={{ mb: 6, textAlign: 'center' }}>
                 <Typography variant="h3" component="h1" gutterBottom fontWeight="bold">
-                    Lodge Portal
+                    Goodwood Lodge Portal
                 </Typography>
                 <Typography variant="h6" color="text.secondary">
-                    Welcome, {user.email}
+                    Welcome, Bro. {user.user_metadata.display_name}
                 </Typography>
             </Box>
 
