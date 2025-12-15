@@ -4,7 +4,8 @@
   "type": "module",
   "scripts": {
     "build": "react-router build",
-    "dev": "react-router dev",
+    "dev": "npx netlify dev",
+    "dev:vite": "react-router dev",
     "start": "react-router-serve ./build/server/index.js",
     "typecheck": "react-router typegen && tsc"
   },
@@ -25,11 +26,13 @@
     "react-router": "7.10.1"
   },
   "devDependencies": {
+    "@netlify/functions": "^5.1.1",
     "@netlify/vite-plugin-react-router": "^2.1.2",
     "@react-router/dev": "7.10.1",
     "@types/node": "^22",
     "@types/react": "^19.2.7",
     "@types/react-dom": "^19.2.3",
+    "netlify-cli": "^23.12.3",
     "typescript": "^5.9.2",
     "vite": "^7.1.7",
     "vite-tsconfig-paths": "^5.1.4"
