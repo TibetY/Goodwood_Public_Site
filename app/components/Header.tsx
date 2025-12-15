@@ -270,6 +270,33 @@ export default function Header() {
               </Button>
             ))}
 
+            {user && (
+              <Button
+                component={Link}
+                to="/portal"
+                sx={{
+                  color: 'white',
+                  backgroundColor: 'primary.main',
+                  px: 2.5,
+                  py: 1,
+                  ml: 1,
+                  fontSize: '0.95rem',
+                  fontWeight: 600,
+                  letterSpacing: '0.3px',
+                  borderRadius: 1,
+                  transition: 'all 0.3s ease',
+                  '&:hover': {
+                    backgroundColor: 'primary.dark',
+                    transform: 'translateY(-1px)',
+                    boxShadow: 2,
+                  },
+                }}
+              >
+                Portal
+              </Button>
+            )}
+
+
             {/* Language Switcher */}
             {/* TODO: Translate locale files first with Marc */}
             {/* <IconButton
@@ -424,6 +451,30 @@ export default function Header() {
                 </ListItemButton>
               </ListItem>
             ))}
+
+            {user && (
+              <ListItem disablePadding>
+                <ListItemButton
+                  component={Link}
+                  to="/portal"
+                  onClick={handleCloseMobileMenu}
+                  sx={{
+                    mt: 2,
+                    mx: 2,
+                    backgroundColor: 'primary.main',
+                    color: 'white',
+                    borderRadius: 1,
+                    fontWeight: 600,
+                    '&:hover': {
+                      backgroundColor: 'primary.dark',
+                    },
+                  }}
+                >
+                  <ListItemText primary="Portal" />
+                </ListItemButton>
+              </ListItem>
+            )}
+
             <ListItem disablePadding>
               <ListItemButton
                 component={Link}
