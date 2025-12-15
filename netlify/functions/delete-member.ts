@@ -1,17 +1,17 @@
 import type { Handler, HandlerEvent } from '@netlify/functions';
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = process.env.VITE_SUPABASE_URL!;
-const supabaseServiceKey = process.env.VITE_SUPABASE_SERVICE_ROLE_KEY!;
-
-const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey, {
-  auth: {
-    autoRefreshToken: false,
-    persistSession: false
-  }
-});
-
 export const handler: Handler = async (event: HandlerEvent) => {
+  // Initialize Supabase client inside handler to access runtime env vars
+  const supabaseUrl = process.env.VITE_SUPABASE_URL!;
+  const supabaseServiceKey = process.env.VITE_SUPABASE_SERVICE_ROLE_KEY!;
+
+  const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey, {
+    auth: {
+      autoRefreshToken: false,
+      persistSession: false
+    }
+  });
   // Only allow DELETE requests
   if (event.httpMethod !== 'DELETE') {
     return {
