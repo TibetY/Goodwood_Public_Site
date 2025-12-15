@@ -14,6 +14,8 @@ import { supabase } from '../utils/supabase';
 export default function SetPassword() {
     const [searchParams] = useSearchParams();
     const navigate = useNavigate();
+    const [displayName, setDisplayName] = useState('');
+    const [phoneNumber, setPhoneNumber] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [loading, setLoading] = useState(false);
@@ -54,9 +56,13 @@ export default function SetPassword() {
         setLoading(true);
 
         try {
-            // Update the user's password
+            // Update the user's password and metadata
             const { error } = await supabase.auth.updateUser({
-                password: password
+                password: password,
+                data: {
+                    display_name: displayName,
+                    phone_number: phoneNumber
+                }
             });
 
             if (error) throw error;
@@ -128,6 +134,25 @@ export default function SetPassword() {
 
                 {/* Form */}
                 <Box component="form" onSubmit={handleSetPassword}>
+                    <TextField
+                        fullWidth
+                        label="Display Name"
+                        type="text"
+                        value={displayName}
+                        onChange={(e) => setDisplayName(e.target.value)}
+                        required
+                        margin="normal"
+                        helperText="e.g., John Smith or W. Bro. John Smith"
+                    />
+                    <TextField
+                        fullWidth
+                        label="Phone Number"
+                        type="tel"
+                        value={phoneNumber}
+                        onChange={(e) => setPhoneNumber(e.target.value)}
+                        margin="normal"
+                        helperText="Optional - for lodge communications"
+                    />
                     <TextField
                         fullWidth
                         label="Password"
