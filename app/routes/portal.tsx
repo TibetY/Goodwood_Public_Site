@@ -75,7 +75,7 @@ export default function Portal() {
 
             <Grid container spacing={4}>
                 {managementOptions.map((option, index) => (
-                    <Grid item xs={12} md={4} key={index}>
+                    <Grid size={{ xs: 12, md: 4 }} key={index}>
                         <Card
                             elevation={3}
                             sx={{
