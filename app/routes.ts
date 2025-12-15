@@ -11,4 +11,5 @@ export default [
     route("login", "routes/login.tsx"),
     route("set-password", "routes/setPassword.tsx"),
     route("portal", "routes/portal/portal.tsx"),
+    route("portal/members", "routes/portal/manageMembers.tsx"),
 ] satisfies RouteConfig;
