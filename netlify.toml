@@ -5,3 +5,11 @@
 [build.environment]
   NODE_VERSION = "20"
   SECRETS_SCAN_OMIT_KEYS = "VITE_SUPABASE_ANON_KEY,VITE_GOOGLE_CAL"
+
+[dev]
+  command = "npm run dev:vite"
+  targetPort = 5173
+  publish = "build/client"
+
+[functions]
+  directory = "netlify/functions"
