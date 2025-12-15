@@ -440,7 +440,7 @@ export default function Header() {
                   },
                 }}
               >
-                <ListItemText primary={t('nav.becomeAMason')} />
+                <ListItemText primary={t('nav.login')} />
               </ListItemButton>
             </ListItem>
           </List>
