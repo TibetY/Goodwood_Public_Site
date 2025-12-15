@@ -61,8 +61,8 @@ export default function SetPassword() {
 
             if (error) throw error;
 
-            // Success! Redirect to home or dashboard
-            navigate('/');
+            // Success! Redirect to portal
+            navigate('/portal');
         } catch (err: any) {
             setError(err.message || 'Failed to set password');
         } finally {
