@@ -13,7 +13,10 @@ import {
 import PeopleIcon from '@mui/icons-material/People';
 import GroupsIcon from '@mui/icons-material/Groups';
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
-import { useAuth } from '../context/auth-context';
+import SquareFootIcon from '@mui/icons-material/SquareFoot';
+import EventIcon from '@mui/icons-material/Event';
+import DescriptionIcon from '@mui/icons-material/Description';
+import { useAuth } from '../../context/auth-context';
 
 export default function Portal() {
     const { user, loading } = useAuth();
@@ -59,7 +62,29 @@ export default function Portal() {
             icon: <AdminPanelSettingsIcon sx={{ fontSize: 60 }} />,
             path: '/portal/officers',
             color: '#01579b'
+        },
+        {
+            title: 'Degree Work',
+            description: 'Practice degree ceremonies',
+            icon: <SquareFootIcon sx={{ fontSize: 60 }} />,
+            path: '/portal/degree-work',
+            color: '#01579b'
+        },
+        {
+            title: 'Manage Events',
+            description: 'Manage lodge events and calendar',
+            icon: <EventIcon sx={{ fontSize: 60 }} />,
+            path: '/portal/events',
+            color: '#01579b'
+        },
+        {
+            title: 'Send Summons',
+            description: 'Create and send event summons to members',
+            icon: <DescriptionIcon sx={{ fontSize: 60 }} />,
+            path: '/portal/summons',
+            color: '#01579b'
         }
+
     ];
 
     return (
