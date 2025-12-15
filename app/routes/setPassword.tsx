@@ -29,6 +29,8 @@ export default function SetPassword() {
 
             if (session) {
                 setValidToken(true);
+
+                // Pre-populate display name and phone if they were set in the invitation
                 if (session.user?.user_metadata?.display_name) {
                     setDisplayName(session.user.user_metadata.display_name);
                 }
