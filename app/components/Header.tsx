@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link } from 'react-router';
+import { Link, useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import {
   AppBar,
@@ -21,6 +21,7 @@ import {
 import MenuIcon from '@mui/icons-material/Menu';
 import LanguageIcon from '@mui/icons-material/Language';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import { useAuth } from '../context/auth-context';
 
 
 const pages = [
@@ -37,6 +38,8 @@ const aboutSubmenu = [
 
 export default function Header() {
   const { t, i18n } = useTranslation();
+  const { user, signOut } = useAuth();
+  const navigate = useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [langMenuAnchor, setLangMenuAnchor] = useState<null | HTMLElement>(null);
   const [aboutMenuAnchor, setAboutMenuAnchor] = useState<null | HTMLElement>(null);
@@ -68,6 +71,11 @@ export default function Header() {
 
   const handleCloseAboutMenu = () => {
     setAboutMenuAnchor(null);
+  };
+
+  const handleLogout = async () => {
+    await signOut();
+    navigate('/');
   };
 
   return (
@@ -298,30 +306,55 @@ export default function Header() {
               </MenuItem>
             </Menu> */}
 
-            {/* Login */}
-            <Button
-              variant="contained"
-              component={Link}
-              to="/login"
-              sx={{
-                ml: 3,
-                backgroundColor: '#13294b',
-                color: 'white',
-                fontWeight: 600,
-                fontSize: '0.95rem',
-                px: 3,
-                py: 1,
-                borderRadius: 1,
-                boxShadow: 'none',
-                transition: 'all 0.3s ease',
-                '&:hover': {
-                  backgroundColor: '#1c3f72ff',
-                  transform: 'translateY(-2px)',
-                },
-              }}
-            >
-              {t('nav.login')}
-            </Button>
+            {/* Login/Logout */}
+            {user ? (
+              <Button
+                variant="contained"
+                onClick={handleLogout}
+                sx={{
+                  ml: 3,
+                  backgroundColor: '#13294b',
+                  color: 'white',
+                  fontWeight: 600,
+                  fontSize: '0.95rem',
+                  px: 3,
+                  py: 1,
+                  borderRadius: 1,
+                  boxShadow: 'none',
+                  transition: 'all 0.3s ease',
+                  '&:hover': {
+                    backgroundColor: '#1c3f72ff',
+                    transform: 'translateY(-2px)',
+                  },
+                }}
+              >
+                Logout
+              </Button>
+            ) : (
+              <Button
+                variant="contained"
+                component={Link}
+                to="/login"
+                sx={{
+                  ml: 3,
+                  backgroundColor: '#13294b',
+                  color: 'white',
+                  fontWeight: 600,
+                  fontSize: '0.95rem',
+                  px: 3,
+                  py: 1,
+                  borderRadius: 1,
+                  boxShadow: 'none',
+                  transition: 'all 0.3s ease',
+                  '&:hover': {
+                    backgroundColor: '#1c3f72ff',
+                    transform: 'translateY(-2px)',
+                  },
+                }}
+              >
+                {t('nav.login')}
+              </Button>
+            )}
           </Stack>
 
           {/* Mobile Language Icon */}
