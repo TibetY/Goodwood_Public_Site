@@ -295,10 +295,8 @@ export default function ManageMembers() {
                                     <TableCell>
                                         {member.email_confirmed_at ? (
                                             <Chip label="Active" color="success" size="small" />
-                                        ) : member.invited_at ? (
-                                            <Chip label="Invited" color="warning" size="small" />
                                         ) : (
-                                            <Chip label="Pending" color="default" size="small" />
+                                            <Chip label="Pending" color="warning" size="small" />
                                         )}
                                     </TableCell>
                                     <TableCell>
