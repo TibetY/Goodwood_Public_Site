@@ -29,6 +29,12 @@ export default function SetPassword() {
 
             if (session) {
                 setValidToken(true);
+                if (session.user?.user_metadata?.display_name) {
+                    setDisplayName(session.user.user_metadata.display_name);
+                }
+                if (session.user?.user_metadata?.phone_number) {
+                    setPhoneNumber(session.user.user_metadata.phone_number);
+                }
             } else {
                 setValidToken(false);
                 setError('Invalid or expired invitation link. Please request a new invitation.');
