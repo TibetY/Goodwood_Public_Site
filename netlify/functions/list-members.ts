@@ -43,38 +43,59 @@ export const handler: Handler = async (event: HandlerEvent) => {
     // Get pagination parameters
     const page = parseInt(event.queryStringParameters?.page || '1');
     const perPage = parseInt(event.queryStringParameters?.perPage || '50');
+    const offset = (page - 1) * perPage;
 
-    // List all users
-    const { data, error } = await supabaseAdmin.auth.admin.listUsers({
-      page,
-      perPage
-    });
+    // Fetch profiles with pagination
+    const { data: profiles, error: profilesError, count } = await supabaseAdmin
+      .from('profiles')
+      .select('*', { count: 'exact' })
+      .order('display_name')
+      .range(offset, offset + perPage - 1);
 
-    if (error) {
-      console.error('Error listing users:', error);
+    if (profilesError) {
+      console.error('Error fetching profiles:', profilesError);
       return {
         statusCode: 500,
-        body: JSON.stringify({ error: error.message })
+        body: JSON.stringify({ error: profilesError.message })
       };
     }
 
-    // Transform users data to include relevant information
-    const users = data.users.map(u => ({
-      id: u.id,
-      email: u.email,
-      created_at: u.created_at,
-      last_sign_in_at: u.last_sign_in_at,
-      display_name: u.user_metadata?.display_name || '',
-      phone_number: u.user_metadata?.phone_number || '',
-      email_confirmed_at: u.email_confirmed_at,
-      invited_at: u.invited_at
-    }));
+    // Fetch auth users data to get email and last sign in
+    const { data: authData, error: authListError } = await supabaseAdmin.auth.admin.listUsers();
+
+    if (authListError) {
+      console.error('Error listing auth users:', authListError);
+      return {
+        statusCode: 500,
+        body: JSON.stringify({ error: authListError.message })
+      };
+    }
+
+    // Merge profile data with auth data
+    const members = profiles.map(profile => {
+      const authUser = authData.users.find(u => u.id === profile.id);
+      return {
+        id: profile.id,
+        email: authUser?.email || '',
+        display_name: profile.display_name || '',
+        phone_number: profile.phone_number || '',
+        title: profile.title || '',
+        position: profile.position || '',
+        dues_paid: profile.dues_paid || false,
+        dues_paid_date: profile.dues_paid_date || null,
+        member_number: profile.member_number || '',
+        join_date: profile.join_date || null,
+        created_at: profile.created_at,
+        last_sign_in_at: authUser?.last_sign_in_at || null,
+        email_confirmed_at: authUser?.email_confirmed_at || null
+      };
+    });
 
     return {
       statusCode: 200,
       body: JSON.stringify({
-        users,
-        total: data.users.length,
+        members,
+        total: count || 0,
         page,
         perPage
       })

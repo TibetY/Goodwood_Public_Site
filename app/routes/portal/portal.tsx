@@ -16,6 +16,7 @@ import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import SquareFootIcon from '@mui/icons-material/SquareFoot';
 import EventIcon from '@mui/icons-material/Event';
 import DescriptionIcon from '@mui/icons-material/Description';
+import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import { useAuth } from '../../context/auth-context';
 import { useTranslation } from 'react-i18next';
 
@@ -89,7 +90,7 @@ export default function Portal() {
         {
             title: t('portal.payDues.title'),
             description: t('portal.payDues.description'),
-            icon: <DescriptionIcon sx={{ fontSize: 60 }} />,
+            icon: <AttachMoneyIcon sx={{ fontSize: 60 }} />,
             path: '/portal/dues',
             color: '#01579b'
         }
