@@ -35,12 +35,17 @@ import { useTranslation } from 'react-i18next';
 interface Member {
     id: string;
     email: string;
-    created_at: string;
-    last_sign_in_at: string | null;
     display_name: string;
     phone_number: string;
+    title: string;
+    position: string;
+    dues_paid: boolean;
+    dues_paid_date: string | null;
+    member_number: string;
+    join_date: string | null;
+    created_at: string;
+    last_sign_in_at: string | null;
     email_confirmed_at: string | null;
-    invited_at: string | null;
 }
 
 export default function ManageMembers() {
@@ -91,7 +96,7 @@ export default function ManageMembers() {
             }
 
             const data = await response.json();
-            setMembers(data.users);
+            setMembers(data.members);
         } catch (err: any) {
             setError(err.message || 'Failed to load members');
         } finally {
