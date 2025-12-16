@@ -83,6 +83,13 @@ export default function Portal() {
             icon: <DescriptionIcon sx={{ fontSize: 60 }} />,
             path: '/portal/summons',
             color: '#01579b'
+        },
+        {
+            title: 'Pay Dues',
+            description: 'Pay your annual lodge dues online',
+            icon: <DescriptionIcon sx={{ fontSize: 60 }} />,
+            path: '/portal/dues',
+            color: '#01579b'
         }
 
     ];

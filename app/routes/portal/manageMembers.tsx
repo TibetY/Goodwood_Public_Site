@@ -262,8 +262,8 @@ export default function ManageMembers() {
                 <Table>
                     <TableHead>
                         <TableRow sx={{ backgroundColor: '#f5f5f5' }}>
-                            <TableCell><strong>Email</strong></TableCell>
                             <TableCell><strong>Display Name</strong></TableCell>
+                            <TableCell><strong>Email</strong></TableCell>
                             <TableCell><strong>Phone</strong></TableCell>
                             <TableCell><strong>Status</strong></TableCell>
                             <TableCell><strong>Last Sign In</strong></TableCell>
@@ -282,8 +282,8 @@ export default function ManageMembers() {
                         ) : (
                             members.map((member) => (
                                 <TableRow key={member.id} hover>
-                                    <TableCell>{member.email}</TableCell>
                                     <TableCell>{member.display_name || '-'}</TableCell>
+                                    <TableCell>{member.email}</TableCell>
                                     <TableCell>{member.phone_number || '-'}</TableCell>
                                     <TableCell>
                                         {member.email_confirmed_at ? (

@@ -462,7 +462,6 @@ export default function Header() {
                     mt: 2,
                     mx: 2,
                     backgroundColor: 'primary.main',
-                    color: 'white',
                     borderRadius: 1,
                     fontWeight: 600,
                     '&:hover': {
@@ -470,7 +469,9 @@ export default function Header() {
                     },
                   }}
                 >
-                  <ListItemText primary="Portal" />
+                  <ListItemText primary="Portal" primaryTypographyProps={{
+                    color: '#ffffff',
+                  }} />
                 </ListItemButton>
               </ListItem>
             )}
@@ -483,15 +484,12 @@ export default function Header() {
                 sx={{
                   mt: 2,
                   mx: 2,
-                  backgroundColor: '#b71c1c',
-                  color: 'white',
-                  borderRadius: 1,
-                  '&:hover': {
-                    backgroundColor: '#8b0000',
-                  },
+                  backgroundColor: '#13294b',
                 }}
               >
-                <ListItemText primary={t('nav.login')} />
+                <ListItemText primary={t('nav.login')} primaryTypographyProps={{
+                  color: '#ffffff',
+                }} />
               </ListItemButton>
             </ListItem>
           </List>
