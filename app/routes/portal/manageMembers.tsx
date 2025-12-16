@@ -30,6 +30,7 @@ import LockResetIcon from '@mui/icons-material/LockReset';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { useAuth } from '../../context/auth-context';
 import { supabase } from '../../utils/supabase';
+import { useTranslation } from 'react-i18next';
 
 interface Member {
     id: string;
@@ -43,6 +44,7 @@ interface Member {
 }
 
 export default function ManageMembers() {
+    const { t } = useTranslation();
     const { user, loading: authLoading, session } = useAuth();
     const navigate = useNavigate();
     const [members, setMembers] = useState<Member[]>([]);

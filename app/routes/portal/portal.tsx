@@ -17,8 +17,10 @@ import SquareFootIcon from '@mui/icons-material/SquareFoot';
 import EventIcon from '@mui/icons-material/Event';
 import DescriptionIcon from '@mui/icons-material/Description';
 import { useAuth } from '../../context/auth-context';
+import { useTranslation } from 'react-i18next';
 
 export default function Portal() {
+    const { t } = useTranslation();
     const { user, loading } = useAuth();
     const navigate = useNavigate();
 
@@ -32,7 +34,7 @@ export default function Portal() {
         return (
             <Container maxWidth="md" sx={{ py: 8, textAlign: 'center' }}>
                 <CircularProgress />
-                <Typography variant="body1" sx={{ mt: 2 }}>Loading...</Typography>
+                <Typography variant="body1" sx={{ mt: 2 }}>{t('common.loading')}</Typography>
             </Container>
         );
     }
@@ -43,50 +45,50 @@ export default function Portal() {
 
     const managementOptions = [
         {
-            title: 'Manage Members',
-            description: 'View and manage lodge members',
+            title: t('portal.manageMembers.title'),
+            description: t('portal.manageMembers.description'),
             icon: <PeopleIcon sx={{ fontSize: 60 }} />,
             path: '/portal/members',
             color: '#1a237e'
         },
         {
-            title: 'Manage Committees',
-            description: 'Update committee information and assignments',
+            title: t('portal.manageCommittees.title'),
+            description: t('portal.manageCommittees.description'),
             icon: <GroupsIcon sx={{ fontSize: 60 }} />,
             path: '/portal/committees',
             color: '#0d47a1'
         },
         {
-            title: 'Manage Officers',
-            description: 'Update lodge officers and positions',
+            title: t('portal.manageOfficers.title'),
+            description: t('portal.manageOfficers.description'),
             icon: <AdminPanelSettingsIcon sx={{ fontSize: 60 }} />,
             path: '/portal/officers',
             color: '#01579b'
         },
         {
-            title: 'Degree Work',
-            description: 'Practice degree ceremonies',
+            title: t('portal.degreeWork.title'),
+            description: t('portal.degreeWork.description'),
             icon: <SquareFootIcon sx={{ fontSize: 60 }} />,
             path: '/portal/degree-work',
             color: '#01579b'
         },
         {
-            title: 'Manage Events',
-            description: 'Manage lodge events and calendar',
+            title: t('portal.manageEvents.title'),
+            description: t('portal.manageEvents.description'),
             icon: <EventIcon sx={{ fontSize: 60 }} />,
             path: '/portal/events',
             color: '#01579b'
         },
         {
-            title: 'Send Summons',
-            description: 'Create and send event summons to members',
+            title: t('portal.sendSummons.title'),
+            description: t('portal.sendSummons.description'),
             icon: <DescriptionIcon sx={{ fontSize: 60 }} />,
             path: '/portal/summons',
             color: '#01579b'
         },
         {
-            title: 'Pay Dues',
-            description: 'Pay your annual lodge dues online',
+            title: t('portal.payDues.title'),
+            description: t('portal.payDues.description'),
             icon: <DescriptionIcon sx={{ fontSize: 60 }} />,
             path: '/portal/dues',
             color: '#01579b'
@@ -98,10 +100,10 @@ export default function Portal() {
         <Container maxWidth="lg" sx={{ py: 8 }}>
             <Box sx={{ mb: 6, textAlign: 'center' }}>
                 <Typography variant="h3" component="h1" gutterBottom fontWeight="bold">
-                    Goodwood Lodge Portal
+                    {t('portal.title')}
                 </Typography>
                 <Typography variant="h6" color="text.secondary">
-                    Welcome, Bro. {user.user_metadata.display_name}
+                    {t('portal.welcome', { name: user.user_metadata.display_name })}
                 </Typography>
             </Box>
 

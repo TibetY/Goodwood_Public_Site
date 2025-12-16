@@ -10,8 +10,10 @@ import {
     Alert
 } from '@mui/material';
 import { supabase } from '../utils/supabase';
+import { useTranslation } from 'react-i18next';
 
 export default function SetPassword() {
+    const { t } = useTranslation();
     const [searchParams] = useSearchParams();
     const navigate = useNavigate();
     const [displayName, setDisplayName] = useState('');
@@ -39,12 +41,12 @@ export default function SetPassword() {
                 }
             } else {
                 setValidToken(false);
-                setError('Invalid or expired invitation link. Please request a new invitation.');
+                setError(t('setPassword.invalidToken'));
             }
         };
 
         checkToken();
-    }, []);
+    }, [t]);
 
     const handleSetPassword = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -52,12 +54,12 @@ export default function SetPassword() {
 
         // Validation
         if (password.length < 8) {
-            setError('Password must be at least 8 characters long');
+            setError(t('setPassword.passwordTooShort'));
             return;
         }
 
         if (password !== confirmPassword) {
-            setError('Passwords do not match');
+            setError(t('setPassword.passwordsDoNotMatch'));
             return;
         }
 
@@ -78,7 +80,7 @@ export default function SetPassword() {
             // Success! Redirect to portal
             navigate('/portal');
         } catch (err: any) {
-            setError(err.message || 'Failed to set password');
+            setError(err.message || t('setPassword.failedToSetPassword'));
         } finally {
             setLoading(false);
         }
@@ -88,7 +90,7 @@ export default function SetPassword() {
         return (
             <Container maxWidth="sm" sx={{ mt: 8 }}>
                 <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                    <Typography>Loading...</Typography>
+                    <Typography>{t('common.loading')}</Typography>
                 </Box>
             </Container>
         );
@@ -100,7 +102,7 @@ export default function SetPassword() {
                 <Paper elevation={3} sx={{ p: 4 }}>
                     <Box sx={{ textAlign: 'center', mb: 3 }}>
                         <Typography variant="h4" component="h1" gutterBottom fontWeight="bold">
-                            Goodwood Lodge No. 159
+                            {t('site.title')}
                         </Typography>
                     </Box>
                     <Alert severity="error">
@@ -108,7 +110,7 @@ export default function SetPassword() {
                     </Alert>
                     <Box sx={{ mt: 3, textAlign: 'center' }}>
                         <Button variant="outlined" onClick={() => navigate('/login')}>
-                            Back to Login
+                            {t('setPassword.backToLogin')}
                         </Button>
                     </Box>
                 </Paper>
@@ -122,15 +124,15 @@ export default function SetPassword() {
                 {/* Header */}
                 <Box sx={{ mb: 3, textAlign: 'center' }}>
                     <Typography variant="h4" component="h1" gutterBottom fontWeight="bold">
-                        Goodwood Lodge No. 159
+                        {t('site.title')}
                     </Typography>
                     <Typography variant="h6" color="text.secondary">
-                        Set Your Password
+                        {t('setPassword.title')}
                     </Typography>
                 </Box>
 
                 <Typography variant="body1" sx={{ mb: 3 }}>
-                    Welcome! Please create a password for your account.
+                    {t('setPassword.welcomeMessage')}
                 </Typography>
 
                 {/* Error Message */}
@@ -144,36 +146,36 @@ export default function SetPassword() {
                 <Box component="form" onSubmit={handleSetPassword}>
                     <TextField
                         fullWidth
-                        label="Display Name"
+                        label={t('setPassword.displayName')}
                         type="text"
                         value={displayName}
                         onChange={(e) => setDisplayName(e.target.value)}
                         required
                         margin="normal"
-                        helperText="e.g., John Smith or W. Bro. John Smith"
+                        helperText={t('setPassword.displayNameHelper')}
                     />
                     <TextField
                         fullWidth
-                        label="Phone Number"
+                        label={t('setPassword.phoneNumber')}
                         type="tel"
                         value={phoneNumber}
                         onChange={(e) => setPhoneNumber(e.target.value)}
                         margin="normal"
-                        helperText="Optional - for lodge communications"
+                        helperText={t('setPassword.phoneHelper')}
                     />
                     <TextField
                         fullWidth
-                        label="Password"
+                        label={t('setPassword.password')}
                         type="password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         required
                         margin="normal"
-                        helperText="Minimum 8 characters"
+                        helperText={t('setPassword.passwordHelper')}
                     />
                     <TextField
                         fullWidth
-                        label="Confirm Password"
+                        label={t('setPassword.confirmPassword')}
                         type="password"
                         value={confirmPassword}
                         onChange={(e) => setConfirmPassword(e.target.value)}
@@ -189,7 +191,7 @@ export default function SetPassword() {
                         disabled={loading}
                         sx={{ mt: 3 }}
                     >
-                        {loading ? 'Setting Password...' : 'Complete Setup'}
+                        {loading ? t('setPassword.settingPassword') : t('setPassword.completeSetup')}
                     </Button>
                 </Box>
             </Paper>

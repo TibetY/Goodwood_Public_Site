@@ -176,5 +176,119 @@
     "tyler": "Tyler",
     "ss": "Senior Steward",
     "js": "Junior Steward"
+  },
+  "login": {
+    "emailAddress": "Email Address",
+    "password": "Password",
+    "pleaseWait": "Please wait...",
+    "signIn": "Sign In",
+    "signUp": "Sign Up",
+    "forgotPassword": "Forgot Password?",
+    "registrationNote": "Registration is by invitation only. Please contact the lodge secretary if you need assistance.",
+    "checkEmailConfirmation": "Check your email for the confirmation link!",
+    "errorOccurred": "An error occurred"
+  },
+  "setPassword": {
+    "title": "Set Your Password",
+    "welcomeMessage": "Welcome! Please create a password for your account.",
+    "displayName": "Display Name",
+    "phoneNumber": "Phone Number",
+    "password": "Password",
+    "confirmPassword": "Confirm Password",
+    "settingPassword": "Setting Password...",
+    "completeSetup": "Complete Setup",
+    "displayNameHelper": "e.g., John Smith or W. Bro. John Smith",
+    "phoneHelper": "Optional - for lodge communications",
+    "passwordHelper": "Minimum 8 characters",
+    "invalidToken": "Invalid or expired invitation link. Please request a new invitation.",
+    "backToLogin": "Back to Login",
+    "passwordTooShort": "Password must be at least 8 characters long",
+    "passwordsDoNotMatch": "Passwords do not match",
+    "failedToSetPassword": "Failed to set password"
+  },
+  "portal": {
+    "title": "Goodwood Lodge Portal",
+    "welcome": "Welcome, Bro. {{name}}",
+    "manageMembers": {
+      "title": "Manage Members",
+      "description": "View and manage lodge members"
+    },
+    "manageCommittees": {
+      "title": "Manage Committees",
+      "description": "Update committee information and assignments"
+    },
+    "manageOfficers": {
+      "title": "Manage Officers",
+      "description": "Update lodge officers and positions"
+    },
+    "degreeWork": {
+      "title": "Degree Work",
+      "description": "Practice degree ceremonies"
+    },
+    "manageEvents": {
+      "title": "Manage Events",
+      "description": "Manage lodge events and calendar"
+    },
+    "sendSummons": {
+      "title": "Send Summons",
+      "description": "Create and send event summons to members"
+    },
+    "payDues": {
+      "title": "Pay Dues",
+      "description": "Pay your annual lodge dues online"
+    }
+  },
+  "manageMembers": {
+    "title": "Manage Members",
+    "description": "View and manage lodge members",
+    "inviteMember": "Invite Member",
+    "tableHeaders": {
+      "displayName": "Display Name",
+      "email": "Email",
+      "phone": "Phone",
+      "status": "Status",
+      "lastSignIn": "Last Sign In",
+      "actions": "Actions"
+    },
+    "status": {
+      "active": "Active",
+      "invited": "Invited",
+      "pending": "Pending"
+    },
+    "noMembers": "No members found. Click \"Invite Member\" to add members.",
+    "never": "Never",
+    "tooltips": {
+      "sendPasswordReset": "Send Password Reset",
+      "deleteMember": "Delete Member"
+    },
+    "inviteDialog": {
+      "title": "Invite New Member",
+      "emailAddress": "Email Address",
+      "displayNameOptional": "Display Name (Optional)",
+      "displayNameHelper": "e.g., W. Bro. John Smith",
+      "cancel": "Cancel",
+      "sending": "Sending...",
+      "sendInvitation": "Send Invitation"
+    },
+    "deleteDialog": {
+      "title": "Confirm Delete",
+      "message": "Are you sure you want to delete member {{email}}? This action cannot be undone.",
+      "cancel": "Cancel",
+      "deleting": "Deleting...",
+      "delete": "Delete"
+    },
+    "errors": {
+      "emailRequired": "Email is required",
+      "failedToFetch": "Failed to fetch members",
+      "failedToSendInvitation": "Failed to send invitation",
+      "failedToDelete": "Failed to delete member",
+      "failedToSendPasswordReset": "Failed to send password reset",
+      "failedToLoadMembers": "Failed to load members"
+    },
+    "success": {
+      "invitationSent": "Invitation sent to {{email}}",
+      "memberDeleted": "Member {{email}} deleted successfully",
+      "passwordResetSent": "Password reset email sent to {{email}}"
+    }
   }
 }
