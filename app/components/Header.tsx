@@ -296,43 +296,6 @@ export default function Header() {
               </Button>
             )}
 
-
-            {/* Language Switcher */}
-            {/* TODO: Translate locale files first with Marc */}
-            {/* <IconButton
-              onClick={handleOpenLangMenu}
-              color="inherit"
-              size="small"
-              sx={{
-                ml: 1,
-                transition: 'all 0.3s ease',
-                '&:hover': {
-                  color: 'primary.main',
-                  transform: 'scale(1.05)',
-                },
-              }}
-            >
-              <LanguageIcon />
-            </IconButton>
-            <Menu
-              anchorEl={langMenuAnchor}
-              open={Boolean(langMenuAnchor)}
-              onClose={handleCloseLangMenu}
-            >
-              <MenuItem
-                onClick={() => changeLanguage('en')}
-                selected={i18n.language === 'en'}
-              >
-                English
-              </MenuItem>
-              <MenuItem
-                onClick={() => changeLanguage('fr')}
-                selected={i18n.language === 'fr'}
-              >
-                Français
-              </MenuItem>
-            </Menu> */}
-
             {/* Login/Logout */}
             {user ? (
               <Button
@@ -382,6 +345,43 @@ export default function Header() {
                 {t('nav.login')}
               </Button>
             )}
+
+            {/* Language Switcher */}
+            <IconButton
+              onClick={handleOpenLangMenu}
+              color="inherit"
+              size="small"
+              sx={{
+                ml: 1,
+                transition: 'all 0.3s ease',
+                '&:hover': {
+                  color: 'primary.main',
+                  transform: 'scale(1.05)',
+                },
+              }}
+            >
+              <LanguageIcon />
+            </IconButton>
+            <Menu
+              anchorEl={langMenuAnchor}
+              open={Boolean(langMenuAnchor)}
+              onClose={handleCloseLangMenu}
+            >
+              <MenuItem
+                onClick={() => changeLanguage('en')}
+                selected={i18n.language === 'en'}
+              >
+                English
+              </MenuItem>
+              <MenuItem
+                onClick={() => changeLanguage('fr')}
+                selected={i18n.language === 'fr'}
+              >
+                Français
+              </MenuItem>
+            </Menu>
+
+
           </Stack>
 
           {/* Mobile Language Icon */}

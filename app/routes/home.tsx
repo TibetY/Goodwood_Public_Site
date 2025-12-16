@@ -37,7 +37,7 @@ export default function Home() {
               <Typography
                 variant="h1"
                 sx={{
-                  fontSize: { xs: '2.5rem', md: '3.5rem' },
+                  fontSize: { xs: '2.5rem', md: '3rem' },
                   mb: 2,
                   color: 'primary.dark',
                 }}
