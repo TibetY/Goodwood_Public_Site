@@ -154,5 +154,137 @@
     "loading": "Chargement...",
     "error": "Une erreur s'est produite",
     "notFound": "Page non trouvée"
+  },
+  "officers": {
+    "title": "Officiers de la Loge",
+    "description": "Rencontrez les officiers dévoués servant la Loge Goodwood pour l'année maçonnique {{currentYear}} - {{endYear}}.",
+    "wm": "Vénérable Maître",
+    "im": "Premier Surveillant Passé",
+    "sw": "Premier Surveillant",
+    "jw": "Deuxième Surveillant",
+    "sec": "Secrétaire",
+    "treas": "Trésorier",
+    "doc": "Dir. des Cérémonies",
+    "sd": "Premier Diacre",
+    "jd": "Deuxième Diacre",
+    "chaplain": "Chapelain",
+    "ig": "Garde Intérieur",
+    "tyler": "Tuileur",
+    "ss": "Premier Steward",
+    "js": "Deuxième Steward"
+  },
+  "login": {
+    "emailAddress": "Adresse Courriel",
+    "password": "Mot de Passe",
+    "pleaseWait": "Veuillez patienter...",
+    "signIn": "Se Connecter",
+    "signUp": "S'inscrire",
+    "forgotPassword": "Mot de Passe Oublié?",
+    "registrationNote": "L'inscription se fait uniquement sur invitation. Veuillez contacter le secrétaire de la loge si vous avez besoin d'aide.",
+    "checkEmailConfirmation": "Vérifiez votre courriel pour le lien de confirmation!",
+    "errorOccurred": "Une erreur s'est produite"
+  },
+  "setPassword": {
+    "title": "Définir Votre Mot de Passe",
+    "welcomeMessage": "Bienvenue! Veuillez créer un mot de passe pour votre compte.",
+    "displayName": "Nom d'Affichage",
+    "phoneNumber": "Numéro de Téléphone",
+    "password": "Mot de Passe",
+    "confirmPassword": "Confirmer le Mot de Passe",
+    "settingPassword": "Définition du Mot de Passe...",
+    "completeSetup": "Terminer la Configuration",
+    "displayNameHelper": "par ex., John Smith ou V. Fr. John Smith",
+    "phoneHelper": "Optionnel - pour les communications de la loge",
+    "passwordHelper": "Minimum 8 caractères",
+    "invalidToken": "Lien d'invitation invalide ou expiré. Veuillez demander une nouvelle invitation.",
+    "backToLogin": "Retour à la Connexion",
+    "passwordTooShort": "Le mot de passe doit contenir au moins 8 caractères",
+    "passwordsDoNotMatch": "Les mots de passe ne correspondent pas",
+    "failedToSetPassword": "Échec de la définition du mot de passe"
+  },
+  "portal": {
+    "title": "Portail de la Loge Goodwood",
+    "welcome": "Bienvenue, Fr. {{name}}",
+    "manageMembers": {
+      "title": "Gérer les Membres",
+      "description": "Voir et gérer les membres de la loge"
+    },
+    "manageCommittees": {
+      "title": "Gérer les Comités",
+      "description": "Mettre à jour les informations et les affectations des comités"
+    },
+    "manageOfficers": {
+      "title": "Gérer les Officiers",
+      "description": "Mettre à jour les officiers et les positions de la loge"
+    },
+    "degreeWork": {
+      "title": "Travail des Degrés",
+      "description": "Pratiquer les cérémonies des degrés"
+    },
+    "manageEvents": {
+      "title": "Gérer les Événements",
+      "description": "Gérer les événements et le calendrier de la loge"
+    },
+    "sendSummons": {
+      "title": "Envoyer les Convocations",
+      "description": "Créer et envoyer des convocations d'événements aux membres"
+    },
+    "payDues": {
+      "title": "Payer les Cotisations",
+      "description": "Payez vos cotisations annuelles de loge en ligne"
+    }
+  },
+  "manageMembers": {
+    "title": "Gérer les Membres",
+    "description": "Voir et gérer les membres de la loge",
+    "inviteMember": "Inviter un Membre",
+    "tableHeaders": {
+      "displayName": "Nom d'Affichage",
+      "email": "Courriel",
+      "phone": "Téléphone",
+      "status": "Statut",
+      "lastSignIn": "Dernière Connexion",
+      "actions": "Actions"
+    },
+    "status": {
+      "active": "Actif",
+      "invited": "Invité",
+      "pending": "En Attente"
+    },
+    "noMembers": "Aucun membre trouvé. Cliquez sur \"Inviter un Membre\" pour ajouter des membres.",
+    "never": "Jamais",
+    "tooltips": {
+      "sendPasswordReset": "Envoyer la Réinitialisation du Mot de Passe",
+      "deleteMember": "Supprimer le Membre"
+    },
+    "inviteDialog": {
+      "title": "Inviter un Nouveau Membre",
+      "emailAddress": "Adresse Courriel",
+      "displayNameOptional": "Nom d'Affichage (Optionnel)",
+      "displayNameHelper": "par ex., V. Fr. John Smith",
+      "cancel": "Annuler",
+      "sending": "Envoi...",
+      "sendInvitation": "Envoyer l'Invitation"
+    },
+    "deleteDialog": {
+      "title": "Confirmer la Suppression",
+      "message": "Êtes-vous sûr de vouloir supprimer le membre {{email}}? Cette action ne peut pas être annulée.",
+      "cancel": "Annuler",
+      "deleting": "Suppression...",
+      "delete": "Supprimer"
+    },
+    "errors": {
+      "emailRequired": "Le courriel est requis",
+      "failedToFetch": "Échec de la récupération des membres",
+      "failedToSendInvitation": "Échec de l'envoi de l'invitation",
+      "failedToDelete": "Échec de la suppression du membre",
+      "failedToSendPasswordReset": "Échec de l'envoi de la réinitialisation du mot de passe",
+      "failedToLoadMembers": "Échec du chargement des membres"
+    },
+    "success": {
+      "invitationSent": "Invitation envoyée à {{email}}",
+      "memberDeleted": "Membre {{email}} supprimé avec succès",
+      "passwordResetSent": "Courriel de réinitialisation du mot de passe envoyé à {{email}}"
+    }
   }
 }

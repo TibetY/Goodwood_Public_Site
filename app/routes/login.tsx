@@ -11,8 +11,10 @@ import {
 } from '@mui/material';
 import { supabase } from '../utils/supabase';
 import { useNavigate } from 'react-router';
+import { useTranslation } from 'react-i18next';
 
 export default function LoginPage() {
+    const { t } = useTranslation();
     const [isLogin, setIsLogin] = useState(true);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -48,12 +50,12 @@ export default function LoginPage() {
 
                 if (signUpError) throw signUpError;
 
-                setMessage('Check your email for the confirmation link!');
+                setMessage(t('login.checkEmailConfirmation'));
                 setEmail('');
                 setPassword('');
             }
         } catch (err: any) {
-            setError(err.message || 'An error occurred');
+            setError(err.message || t('login.errorOccurred'));
         } finally {
             setLoading(false);
         }
@@ -92,7 +94,7 @@ export default function LoginPage() {
                 <Box component="form" onSubmit={handleAuth} sx={{ width: '100%' }}>
                     <TextField
                         fullWidth
-                        label="Email Address"
+                        label={t('login.emailAddress')}
                         type="email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
@@ -102,7 +104,7 @@ export default function LoginPage() {
                     />
                     <TextField
                         fullWidth
-                        label="Password"
+                        label={t('login.password')}
                         type="password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
@@ -119,7 +121,7 @@ export default function LoginPage() {
                         disabled={loading}
                         sx={{ mt: 3, mb: 2 }}
                     >
-                        {loading ? 'Please wait...' : isLogin ? 'Sign In' : 'Sign Up'}
+                        {loading ? t('login.pleaseWait') : isLogin ? t('login.signIn') : t('login.signUp')}
                     </Button>
 
                     {/* Forgot Password */}
@@ -132,7 +134,7 @@ export default function LoginPage() {
                                     onClick={() => navigate('/forgot-password')}
                                     sx={{ cursor: 'pointer' }}
                                 >
-                                    Forgot Password?
+                                    {t('login.forgotPassword')}
                                 </Link>
                             </Typography>
                         </Box>
@@ -142,7 +144,7 @@ export default function LoginPage() {
                 {/* Footer Note */}
                 <Box sx={{ mt: 4, textAlign: 'center' }}>
                     <Typography variant="caption" color="text.secondary">
-                        {'Registration is by invitation only. Please contact the lodge secretary if you need assistance.'}
+                        {t('login.registrationNote')}
                     </Typography>
                 </Box>
             </Paper>
