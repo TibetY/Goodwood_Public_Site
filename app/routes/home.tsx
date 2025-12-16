@@ -187,7 +187,7 @@ export default function Home() {
               },
             }}
           >
-            {t('nav.becomeAMason')}
+            {t('home.callToAction.buttonText')}
           </Button>
         </Container>
       </Box >
