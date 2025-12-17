@@ -23,12 +23,12 @@ import {
     Tooltip,
     Avatar
 } from '@mui/material';
-import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
-import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import UploadIcon from '@mui/icons-material/Upload';
 import { useAuth } from '../../context/auth-context';
 import { useTranslation } from 'react-i18next';
+import { supabase } from '../../utils/supabase';
 
 interface Officer {
     id?: string;
@@ -47,7 +47,7 @@ export default function ManageOfficers() {
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState<string | null>(null);
 
-    // Add/Edit officer dialog state
+    // Edit officer dialog state
     const [dialogOpen, setDialogOpen] = useState(false);
     const [editingOfficer, setEditingOfficer] = useState<Officer | null>(null);
     const [formData, setFormData] = useState<Officer>({
@@ -58,10 +58,10 @@ export default function ManageOfficers() {
     });
     const [saving, setSaving] = useState(false);
 
-    // Delete dialog state
-    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-    const [officerToDelete, setOfficerToDelete] = useState<Officer | null>(null);
-    const [deleting, setDeleting] = useState(false);
+    // Image upload state
+    const [selectedFile, setSelectedFile] = useState<File | null>(null);
+    const [imagePreview, setImagePreview] = useState<string | null>(null);
+    const [uploading, setUploading] = useState(false);
 
     useEffect(() => {
         if (!authLoading && !user) {
@@ -99,28 +99,15 @@ export default function ManageOfficers() {
         }
     };
 
-    const handleOpenDialog = (officer?: Officer) => {
-        if (officer) {
-            setEditingOfficer(officer);
-            setFormData({
-                id: officer.id,
-                title: officer.title,
-                name: officer.name,
-                image: officer.image || '',
-                position: officer.position
-            });
-        } else {
-            setEditingOfficer(null);
-            const maxPosition = officers.length > 0
-                ? Math.max(...officers.map(o => o.position)) + 1
-                : 1;
-            setFormData({
-                title: '',
-                name: '',
-                image: '',
-                position: maxPosition
-            });
-        }
+    const handleOpenDialog = (officer: Officer) => {
+        setEditingOfficer(officer);
+        setFormData({
+            id: officer.id,
+            title: officer.title,
+            name: officer.name || '',
+            image: officer.image || '',
+            position: officer.position
+        });
         setDialogOpen(true);
     };
 
@@ -133,11 +120,92 @@ export default function ManageOfficers() {
             image: '',
             position: 0
         });
+        setSelectedFile(null);
+        setImagePreview(null);
+    };
+
+    const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (!file) return;
+
+        // Validate file type
+        if (!file.type.startsWith('image/')) {
+            setError('Please select an image file');
+            return;
+        }
+
+        // Validate file size (5MB)
+        if (file.size > 5 * 1024 * 1024) {
+            setError('Image size must be less than 5MB');
+            return;
+        }
+
+        setSelectedFile(file);
+
+        // Create preview
+        const reader = new FileReader();
+        reader.onloadend = () => {
+            setImagePreview(reader.result as string);
+        };
+        reader.readAsDataURL(file);
+    };
+
+    const handleUploadImage = async () => {
+        if (!selectedFile) return;
+
+        setUploading(true);
+        setError(null);
+
+        try {
+            // Convert file to base64
+            const reader = new FileReader();
+            reader.readAsDataURL(selectedFile);
+
+            await new Promise((resolve, reject) => {
+                reader.onload = async () => {
+                    try {
+                        const base64Data = reader.result as string;
+
+                        const response = await fetch('/.netlify/functions/upload-officer-image', {
+                            method: 'POST',
+                            headers: {
+                                'Authorization': `Bearer ${session?.access_token}`,
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                fileName: selectedFile.name,
+                                fileData: base64Data,
+                                fileType: selectedFile.type
+                            })
+                        });
+
+                        if (!response.ok) {
+                            const errorData = await response.json();
+                            throw new Error(errorData.error || 'Failed to upload image');
+                        }
+
+                        const data = await response.json();
+                        setFormData({ ...formData, image: data.url });
+                        setSuccess('Image uploaded successfully');
+                        setSelectedFile(null);
+                        setImagePreview(null);
+                        resolve(data);
+                    } catch (err) {
+                        reject(err);
+                    }
+                };
+                reader.onerror = reject;
+            });
+        } catch (err: any) {
+            setError(err.message || 'Failed to upload image');
+        } finally {
+            setUploading(false);
+        }
     };
 
     const handleSaveOfficer = async () => {
-        if (!formData.title || !formData.name) {
-            setError('Title and name are required');
+        if (!formData.title) {
+            setError('Title is required');
             return;
         }
 
@@ -152,7 +220,10 @@ export default function ManageOfficers() {
                     'Authorization': `Bearer ${session?.access_token}`,
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify(formData)
+                body: JSON.stringify({
+                    ...formData,
+                    name: formData.name || 'TBA'
+                })
             });
 
             if (!response.ok) {
@@ -160,7 +231,7 @@ export default function ManageOfficers() {
                 throw new Error(errorData.error || 'Failed to save officer');
             }
 
-            setSuccess(editingOfficer ? 'Officer updated successfully' : 'Officer added successfully');
+            setSuccess('Officer updated successfully');
             handleCloseDialog();
             fetchOfficers();
         } catch (err: any) {
@@ -168,46 +239,6 @@ export default function ManageOfficers() {
         } finally {
             setSaving(false);
         }
-    };
-
-    const handleDeleteOfficer = async () => {
-        if (!officerToDelete) return;
-
-        setDeleting(true);
-        setError(null);
-        setSuccess(null);
-
-        try {
-            const response = await fetch('/.netlify/functions/delete-officer', {
-                method: 'DELETE',
-                headers: {
-                    'Authorization': `Bearer ${session?.access_token}`,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    officerId: officerToDelete.id
-                })
-            });
-
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.error || 'Failed to delete officer');
-            }
-
-            setSuccess(`Officer ${officerToDelete.name} deleted successfully`);
-            setDeleteDialogOpen(false);
-            setOfficerToDelete(null);
-            fetchOfficers();
-        } catch (err: any) {
-            setError(err.message || 'Failed to delete officer');
-        } finally {
-            setDeleting(false);
-        }
-    };
-
-    const openDeleteDialog = (officer: Officer) => {
-        setOfficerToDelete(officer);
-        setDeleteDialogOpen(true);
     };
 
     const getInitials = (name: string) => {
@@ -242,22 +273,9 @@ export default function ManageOfficers() {
                         Manage Officers
                     </Typography>
                     <Typography variant="body2" color="text.secondary">
-                        View and manage lodge officers
+                        Edit officer names and images
                     </Typography>
                 </Box>
-                <Button
-                    variant="contained"
-                    startIcon={<PersonAddIcon />}
-                    onClick={() => handleOpenDialog()}
-                    sx={{
-                        backgroundColor: '#13294b',
-                        '&:hover': {
-                            backgroundColor: '#1c3f72ff'
-                        }
-                    }}
-                >
-                    Add Officer
-                </Button>
             </Box>
 
             {/* Alerts */}
@@ -289,7 +307,7 @@ export default function ManageOfficers() {
                             <TableRow>
                                 <TableCell colSpan={5} align="center" sx={{ py: 4 }}>
                                     <Typography color="text.secondary">
-                                        No officers found. Click "Add Officer" to add officers.
+                                        No officers found.
                                     </Typography>
                                 </TableCell>
                             </TableRow>
@@ -329,15 +347,6 @@ export default function ManageOfficers() {
                                                 <EditIcon />
                                             </IconButton>
                                         </Tooltip>
-                                        <Tooltip title="Delete Officer">
-                                            <IconButton
-                                                size="small"
-                                                color="error"
-                                                onClick={() => openDeleteDialog(officer)}
-                                            >
-                                                <DeleteIcon />
-                                            </IconButton>
-                                        </Tooltip>
                                     </TableCell>
                                 </TableRow>
                             ))
@@ -346,22 +355,11 @@ export default function ManageOfficers() {
                 </Table>
             </TableContainer>
 
-            {/* Add/Edit Officer Dialog */}
+            {/* Edit Officer Dialog */}
             <Dialog open={dialogOpen} onClose={() => !saving && handleCloseDialog()} maxWidth="sm" fullWidth>
-                <DialogTitle>{editingOfficer ? 'Edit Officer' : 'Add New Officer'}</DialogTitle>
+                <DialogTitle>Edit Officer</DialogTitle>
                 <DialogContent>
                     <Box sx={{ pt: 2 }}>
-                        <TextField
-                            fullWidth
-                            label="Position (Order)"
-                            type="number"
-                            value={formData.position}
-                            onChange={(e) => setFormData({ ...formData, position: parseInt(e.target.value) })}
-                            required
-                            margin="normal"
-                            helperText="Lower numbers appear first"
-                            disabled={saving}
-                        />
                         <TextField
                             fullWidth
                             label="Title"
@@ -374,21 +372,75 @@ export default function ManageOfficers() {
                         />
                         <TextField
                             fullWidth
-                            label="Name"
+                            label="Name (Optional)"
                             value={formData.name}
                             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                            required
                             margin="normal"
-                            helperText="e.g., W. Bro. John Smith or TBA"
+                            helperText="e.g., W. Bro. John Smith or leave blank for TBA"
                             disabled={saving}
                         />
+
+                        {/* Image Upload Section */}
+                        <Box sx={{ mt: 3, mb: 2 }}>
+                            <Typography variant="subtitle2" sx={{ mb: 1 }}>
+                                Officer Image
+                            </Typography>
+
+                            {/* Current or preview image */}
+                            {(imagePreview || formData.image) && (
+                                <Box sx={{ mb: 2, textAlign: 'center' }}>
+                                    <Avatar
+                                        src={imagePreview || formData.image}
+                                        sx={{ width: 120, height: 120, mx: 'auto' }}
+                                    />
+                                </Box>
+                            )}
+
+                            {/* File input */}
+                            <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+                                <Button
+                                    component="label"
+                                    variant="outlined"
+                                    startIcon={<UploadIcon />}
+                                    disabled={saving || uploading}
+                                >
+                                    Choose Image
+                                    <input
+                                        type="file"
+                                        hidden
+                                        accept="image/*"
+                                        onChange={handleFileSelect}
+                                    />
+                                </Button>
+                                {selectedFile && (
+                                    <>
+                                        <Typography variant="body2" sx={{ flex: 1 }}>
+                                            {selectedFile.name}
+                                        </Typography>
+                                        <Button
+                                            variant="contained"
+                                            size="small"
+                                            onClick={handleUploadImage}
+                                            disabled={uploading}
+                                            startIcon={uploading ? <CircularProgress size={16} /> : <UploadIcon />}
+                                        >
+                                            {uploading ? 'Uploading...' : 'Upload'}
+                                        </Button>
+                                    </>
+                                )}
+                            </Box>
+                            <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: 'block' }}>
+                                Max file size: 5MB. Supported formats: JPG, PNG, WebP
+                            </Typography>
+                        </Box>
+
                         <TextField
                             fullWidth
                             label="Image URL (Optional)"
                             value={formData.image}
                             onChange={(e) => setFormData({ ...formData, image: e.target.value })}
                             margin="normal"
-                            helperText="Full URL to officer's photo"
+                            helperText="Or enter a direct URL to an image"
                             disabled={saving}
                         />
                     </Box>
@@ -403,32 +455,7 @@ export default function ManageOfficers() {
                         disabled={saving}
                         startIcon={saving ? <CircularProgress size={16} /> : null}
                     >
-                        {saving ? 'Saving...' : editingOfficer ? 'Update' : 'Add'}
-                    </Button>
-                </DialogActions>
-            </Dialog>
-
-            {/* Delete Confirmation Dialog */}
-            <Dialog open={deleteDialogOpen} onClose={() => !deleting && setDeleteDialogOpen(false)}>
-                <DialogTitle>Confirm Delete</DialogTitle>
-                <DialogContent>
-                    <Typography>
-                        Are you sure you want to delete officer <strong>{officerToDelete?.name}</strong>?
-                        This action cannot be undone.
-                    </Typography>
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={() => setDeleteDialogOpen(false)} disabled={deleting}>
-                        Cancel
-                    </Button>
-                    <Button
-                        onClick={handleDeleteOfficer}
-                        variant="contained"
-                        color="error"
-                        disabled={deleting}
-                        startIcon={deleting ? <CircularProgress size={16} /> : <DeleteIcon />}
-                    >
-                        {deleting ? 'Deleting...' : 'Delete'}
+                        {saving ? 'Saving...' : 'Update'}
                     </Button>
                 </DialogActions>
             </Dialog>
