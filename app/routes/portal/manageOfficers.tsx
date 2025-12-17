@@ -25,8 +25,10 @@ import {
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import UploadIcon from '@mui/icons-material/Upload';
 import { useAuth } from '../../context/auth-context';
 import { useTranslation } from 'react-i18next';
+import { supabase } from '../../utils/supabase';
 
 interface Officer {
     id?: string;
@@ -55,6 +57,11 @@ export default function ManageOfficers() {
         position: 0
     });
     const [saving, setSaving] = useState(false);
+
+    // Image upload state
+    const [selectedFile, setSelectedFile] = useState<File | null>(null);
+    const [imagePreview, setImagePreview] = useState<string | null>(null);
+    const [uploading, setUploading] = useState(false);
 
     useEffect(() => {
         if (!authLoading && !user) {
@@ -113,6 +120,87 @@ export default function ManageOfficers() {
             image: '',
             position: 0
         });
+        setSelectedFile(null);
+        setImagePreview(null);
+    };
+
+    const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (!file) return;
+
+        // Validate file type
+        if (!file.type.startsWith('image/')) {
+            setError('Please select an image file');
+            return;
+        }
+
+        // Validate file size (5MB)
+        if (file.size > 5 * 1024 * 1024) {
+            setError('Image size must be less than 5MB');
+            return;
+        }
+
+        setSelectedFile(file);
+
+        // Create preview
+        const reader = new FileReader();
+        reader.onloadend = () => {
+            setImagePreview(reader.result as string);
+        };
+        reader.readAsDataURL(file);
+    };
+
+    const handleUploadImage = async () => {
+        if (!selectedFile) return;
+
+        setUploading(true);
+        setError(null);
+
+        try {
+            // Convert file to base64
+            const reader = new FileReader();
+            reader.readAsDataURL(selectedFile);
+
+            await new Promise((resolve, reject) => {
+                reader.onload = async () => {
+                    try {
+                        const base64Data = reader.result as string;
+
+                        const response = await fetch('/.netlify/functions/upload-officer-image', {
+                            method: 'POST',
+                            headers: {
+                                'Authorization': `Bearer ${session?.access_token}`,
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                fileName: selectedFile.name,
+                                fileData: base64Data,
+                                fileType: selectedFile.type
+                            })
+                        });
+
+                        if (!response.ok) {
+                            const errorData = await response.json();
+                            throw new Error(errorData.error || 'Failed to upload image');
+                        }
+
+                        const data = await response.json();
+                        setFormData({ ...formData, image: data.url });
+                        setSuccess('Image uploaded successfully');
+                        setSelectedFile(null);
+                        setImagePreview(null);
+                        resolve(data);
+                    } catch (err) {
+                        reject(err);
+                    }
+                };
+                reader.onerror = reject;
+            });
+        } catch (err: any) {
+            setError(err.message || 'Failed to upload image');
+        } finally {
+            setUploading(false);
+        }
     };
 
     const handleSaveOfficer = async () => {
@@ -291,13 +379,68 @@ export default function ManageOfficers() {
                             helperText="e.g., W. Bro. John Smith or leave blank for TBA"
                             disabled={saving}
                         />
+
+                        {/* Image Upload Section */}
+                        <Box sx={{ mt: 3, mb: 2 }}>
+                            <Typography variant="subtitle2" sx={{ mb: 1 }}>
+                                Officer Image
+                            </Typography>
+
+                            {/* Current or preview image */}
+                            {(imagePreview || formData.image) && (
+                                <Box sx={{ mb: 2, textAlign: 'center' }}>
+                                    <Avatar
+                                        src={imagePreview || formData.image}
+                                        sx={{ width: 120, height: 120, mx: 'auto' }}
+                                    />
+                                </Box>
+                            )}
+
+                            {/* File input */}
+                            <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+                                <Button
+                                    component="label"
+                                    variant="outlined"
+                                    startIcon={<UploadIcon />}
+                                    disabled={saving || uploading}
+                                >
+                                    Choose Image
+                                    <input
+                                        type="file"
+                                        hidden
+                                        accept="image/*"
+                                        onChange={handleFileSelect}
+                                    />
+                                </Button>
+                                {selectedFile && (
+                                    <>
+                                        <Typography variant="body2" sx={{ flex: 1 }}>
+                                            {selectedFile.name}
+                                        </Typography>
+                                        <Button
+                                            variant="contained"
+                                            size="small"
+                                            onClick={handleUploadImage}
+                                            disabled={uploading}
+                                            startIcon={uploading ? <CircularProgress size={16} /> : <UploadIcon />}
+                                        >
+                                            {uploading ? 'Uploading...' : 'Upload'}
+                                        </Button>
+                                    </>
+                                )}
+                            </Box>
+                            <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: 'block' }}>
+                                Max file size: 5MB. Supported formats: JPG, PNG, WebP
+                            </Typography>
+                        </Box>
+
                         <TextField
                             fullWidth
                             label="Image URL (Optional)"
                             value={formData.image}
                             onChange={(e) => setFormData({ ...formData, image: e.target.value })}
                             margin="normal"
-                            helperText="Full URL to officer's photo"
+                            helperText="Or enter a direct URL to an image"
                             disabled={saving}
                         />
                     </Box>
