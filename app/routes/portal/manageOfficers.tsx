@@ -23,9 +23,7 @@ import {
     Tooltip,
     Avatar
 } from '@mui/material';
-import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
-import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { useAuth } from '../../context/auth-context';
 import { useTranslation } from 'react-i18next';
@@ -47,7 +45,7 @@ export default function ManageOfficers() {
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState<string | null>(null);
 
-    // Add/Edit officer dialog state
+    // Edit officer dialog state
     const [dialogOpen, setDialogOpen] = useState(false);
     const [editingOfficer, setEditingOfficer] = useState<Officer | null>(null);
     const [formData, setFormData] = useState<Officer>({
@@ -57,11 +55,6 @@ export default function ManageOfficers() {
         position: 0
     });
     const [saving, setSaving] = useState(false);
-
-    // Delete dialog state
-    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-    const [officerToDelete, setOfficerToDelete] = useState<Officer | null>(null);
-    const [deleting, setDeleting] = useState(false);
 
     useEffect(() => {
         if (!authLoading && !user) {
@@ -99,28 +92,15 @@ export default function ManageOfficers() {
         }
     };
 
-    const handleOpenDialog = (officer?: Officer) => {
-        if (officer) {
-            setEditingOfficer(officer);
-            setFormData({
-                id: officer.id,
-                title: officer.title,
-                name: officer.name,
-                image: officer.image || '',
-                position: officer.position
-            });
-        } else {
-            setEditingOfficer(null);
-            const maxPosition = officers.length > 0
-                ? Math.max(...officers.map(o => o.position)) + 1
-                : 1;
-            setFormData({
-                title: '',
-                name: '',
-                image: '',
-                position: maxPosition
-            });
-        }
+    const handleOpenDialog = (officer: Officer) => {
+        setEditingOfficer(officer);
+        setFormData({
+            id: officer.id,
+            title: officer.title,
+            name: officer.name || '',
+            image: officer.image || '',
+            position: officer.position
+        });
         setDialogOpen(true);
     };
 
@@ -136,8 +116,8 @@ export default function ManageOfficers() {
     };
 
     const handleSaveOfficer = async () => {
-        if (!formData.title || !formData.name) {
-            setError('Title and name are required');
+        if (!formData.title) {
+            setError('Title is required');
             return;
         }
 
@@ -152,7 +132,10 @@ export default function ManageOfficers() {
                     'Authorization': `Bearer ${session?.access_token}`,
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify(formData)
+                body: JSON.stringify({
+                    ...formData,
+                    name: formData.name || 'TBA'
+                })
             });
 
             if (!response.ok) {
@@ -160,7 +143,7 @@ export default function ManageOfficers() {
                 throw new Error(errorData.error || 'Failed to save officer');
             }
 
-            setSuccess(editingOfficer ? 'Officer updated successfully' : 'Officer added successfully');
+            setSuccess('Officer updated successfully');
             handleCloseDialog();
             fetchOfficers();
         } catch (err: any) {
@@ -168,46 +151,6 @@ export default function ManageOfficers() {
         } finally {
             setSaving(false);
         }
-    };
-
-    const handleDeleteOfficer = async () => {
-        if (!officerToDelete) return;
-
-        setDeleting(true);
-        setError(null);
-        setSuccess(null);
-
-        try {
-            const response = await fetch('/.netlify/functions/delete-officer', {
-                method: 'DELETE',
-                headers: {
-                    'Authorization': `Bearer ${session?.access_token}`,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    officerId: officerToDelete.id
-                })
-            });
-
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.error || 'Failed to delete officer');
-            }
-
-            setSuccess(`Officer ${officerToDelete.name} deleted successfully`);
-            setDeleteDialogOpen(false);
-            setOfficerToDelete(null);
-            fetchOfficers();
-        } catch (err: any) {
-            setError(err.message || 'Failed to delete officer');
-        } finally {
-            setDeleting(false);
-        }
-    };
-
-    const openDeleteDialog = (officer: Officer) => {
-        setOfficerToDelete(officer);
-        setDeleteDialogOpen(true);
     };
 
     const getInitials = (name: string) => {
@@ -242,22 +185,9 @@ export default function ManageOfficers() {
                         Manage Officers
                     </Typography>
                     <Typography variant="body2" color="text.secondary">
-                        View and manage lodge officers
+                        Edit officer names and images
                     </Typography>
                 </Box>
-                <Button
-                    variant="contained"
-                    startIcon={<PersonAddIcon />}
-                    onClick={() => handleOpenDialog()}
-                    sx={{
-                        backgroundColor: '#13294b',
-                        '&:hover': {
-                            backgroundColor: '#1c3f72ff'
-                        }
-                    }}
-                >
-                    Add Officer
-                </Button>
             </Box>
 
             {/* Alerts */}
@@ -289,7 +219,7 @@ export default function ManageOfficers() {
                             <TableRow>
                                 <TableCell colSpan={5} align="center" sx={{ py: 4 }}>
                                     <Typography color="text.secondary">
-                                        No officers found. Click "Add Officer" to add officers.
+                                        No officers found.
                                     </Typography>
                                 </TableCell>
                             </TableRow>
@@ -329,15 +259,6 @@ export default function ManageOfficers() {
                                                 <EditIcon />
                                             </IconButton>
                                         </Tooltip>
-                                        <Tooltip title="Delete Officer">
-                                            <IconButton
-                                                size="small"
-                                                color="error"
-                                                onClick={() => openDeleteDialog(officer)}
-                                            >
-                                                <DeleteIcon />
-                                            </IconButton>
-                                        </Tooltip>
                                     </TableCell>
                                 </TableRow>
                             ))
@@ -346,22 +267,11 @@ export default function ManageOfficers() {
                 </Table>
             </TableContainer>
 
-            {/* Add/Edit Officer Dialog */}
+            {/* Edit Officer Dialog */}
             <Dialog open={dialogOpen} onClose={() => !saving && handleCloseDialog()} maxWidth="sm" fullWidth>
-                <DialogTitle>{editingOfficer ? 'Edit Officer' : 'Add New Officer'}</DialogTitle>
+                <DialogTitle>Edit Officer</DialogTitle>
                 <DialogContent>
                     <Box sx={{ pt: 2 }}>
-                        <TextField
-                            fullWidth
-                            label="Position (Order)"
-                            type="number"
-                            value={formData.position}
-                            onChange={(e) => setFormData({ ...formData, position: parseInt(e.target.value) })}
-                            required
-                            margin="normal"
-                            helperText="Lower numbers appear first"
-                            disabled={saving}
-                        />
                         <TextField
                             fullWidth
                             label="Title"
@@ -374,12 +284,11 @@ export default function ManageOfficers() {
                         />
                         <TextField
                             fullWidth
-                            label="Name"
+                            label="Name (Optional)"
                             value={formData.name}
                             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                            required
                             margin="normal"
-                            helperText="e.g., W. Bro. John Smith or TBA"
+                            helperText="e.g., W. Bro. John Smith or leave blank for TBA"
                             disabled={saving}
                         />
                         <TextField
@@ -403,32 +312,7 @@ export default function ManageOfficers() {
                         disabled={saving}
                         startIcon={saving ? <CircularProgress size={16} /> : null}
                     >
-                        {saving ? 'Saving...' : editingOfficer ? 'Update' : 'Add'}
-                    </Button>
-                </DialogActions>
-            </Dialog>
-
-            {/* Delete Confirmation Dialog */}
-            <Dialog open={deleteDialogOpen} onClose={() => !deleting && setDeleteDialogOpen(false)}>
-                <DialogTitle>Confirm Delete</DialogTitle>
-                <DialogContent>
-                    <Typography>
-                        Are you sure you want to delete officer <strong>{officerToDelete?.name}</strong>?
-                        This action cannot be undone.
-                    </Typography>
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={() => setDeleteDialogOpen(false)} disabled={deleting}>
-                        Cancel
-                    </Button>
-                    <Button
-                        onClick={handleDeleteOfficer}
-                        variant="contained"
-                        color="error"
-                        disabled={deleting}
-                        startIcon={deleting ? <CircularProgress size={16} /> : <DeleteIcon />}
-                    >
-                        {deleting ? 'Deleting...' : 'Delete'}
+                        {saving ? 'Saving...' : 'Update'}
                     </Button>
                 </DialogActions>
             </Dialog>

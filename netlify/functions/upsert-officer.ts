@@ -45,17 +45,17 @@ export const handler: Handler = async (event: HandlerEvent) => {
         const { id, title, name, image, position } = JSON.parse(event.body || '{}');
 
         // Validate required fields
-        if (!title || !name || position === undefined) {
+        if (!title || position === undefined) {
             return {
                 statusCode: 400,
-                body: JSON.stringify({ error: 'Title, name, and position are required' })
+                body: JSON.stringify({ error: 'Title and position are required' })
             };
         }
 
         // Upsert officer
         const officerData = {
             title,
-            name,
+            name: name || 'TBA',
             image: image || null,
             position: parseInt(position)
         };
