@@ -52,9 +52,9 @@ export const handler: Handler = async (event) => {
 
 Key facts about Goodwood Lodge No. 159:
 - Established in 1858
-- Located at Nepean Masonic Centre, 2140 Baseline Road, Nepean, Ontario
+- Located at Goodwood Masonic Lodge, 3494 McBean St, Richmond, ON K0A 2Z0
 - A.F. & A.M. (Ancient Free and Accepted Masons) under G.R.C. (Grand Lodge of Canada in the Province of Ontario)
-- Regular meetings typically held monthly
+- Regular meetings typically held on the first Tuesday of every month (September to June)
 - Values: Brotherly Love, Relief, and Truth
 
 When answering:
