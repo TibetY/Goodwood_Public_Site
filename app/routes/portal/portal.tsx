@@ -67,17 +67,17 @@ export default function Portal() {
             color: '#01579b'
         },
         {
-            title: t('portal.degreeWork.title'),
-            description: t('portal.degreeWork.description'),
-            icon: <SquareFootIcon sx={{ fontSize: 60 }} />,
-            path: '/portal/degree-work',
-            color: '#01579b'
-        },
-        {
             title: t('portal.manageEvents.title'),
             description: t('portal.manageEvents.description'),
             icon: <EventIcon sx={{ fontSize: 60 }} />,
             path: '/portal/events',
+            color: '#01579b'
+        },
+        {
+            title: t('portal.degreeWork.title'),
+            description: t('portal.degreeWork.description'),
+            icon: <SquareFootIcon sx={{ fontSize: 60 }} />,
+            path: '/portal/degree-work',
             color: '#01579b'
         },
         {
@@ -112,6 +112,7 @@ export default function Portal() {
                 {managementOptions.map((option, index) => (
                     <Grid size={{ xs: 12, md: 4 }} key={index}>
                         <Card
+                        
                             elevation={3}
                             sx={{
                                 height: '100%',
@@ -132,6 +133,7 @@ export default function Portal() {
                                     alignItems: 'center',
                                     justifyContent: 'center',
                                     minHeight: 280
+                                    
                                 }}
                             >
                                 <Box
