@@ -56,8 +56,6 @@ export default function ManageMembers() {
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState<string | null>(null);
 
-    console.log('Members:', members);
-
     // Add member dialog state
     const [addDialogOpen, setAddDialogOpen] = useState(false);
     const [newMemberEmail, setNewMemberEmail] = useState('');

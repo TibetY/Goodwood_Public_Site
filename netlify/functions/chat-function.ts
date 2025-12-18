@@ -29,8 +29,6 @@ export const handler: Handler = async (event) => {
       };
     }
 
-    console.log(process.env.ANTHROPIC_API_KEY)
-
     // Call Anthropic API from the server
     const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
