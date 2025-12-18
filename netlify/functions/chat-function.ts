@@ -40,9 +40,9 @@ export const handler: Handler = async (event) => {
         'anthropic-version': '2023-06-01'
       },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
+        model: 'claude-haiku-4-5-20251001',
         max_tokens: 512,
-        system: `You are a knowledgeable and friendly assistant for Goodwood Lodge No. 159, A.F. & A.M. G.R.C., located in Nepean, Ontario. Your role is to:
+        system: `You are a knowledgeable and friendly assistant for Goodwood Lodge No. 159, A.F. & A.M. G.R.C., located at 3494 McBean St,Richmond, Ontario K0A 2Z0. Your role is to:
 
 1. Answer questions about Freemasonry in general with accuracy and respect
 2. Provide information about Goodwood Lodge No. 159 specifically
