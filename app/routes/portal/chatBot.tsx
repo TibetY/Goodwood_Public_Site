@@ -350,7 +350,6 @@ export default function RateLimitedChatbot() {
                         <Alert severity="info">
                             For more questions, please contact:<br/>
                             <strong>W. Bro. Greg Skelly, Secretary</strong><br/>
-                            Or visit us at 2140 Baseline Road, Nepean
                         </Alert>
                     )}
 
