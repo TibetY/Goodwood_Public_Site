@@ -419,12 +419,11 @@ export default function ManageCommittees() {
                                     </Typography>
                                 ) : (
                                     <List dense>
-                                        {committee.members.map((member, index) => (
+                                        {committee.members.map((member) => (
                                             <Box key={member.id}>
                                                 <ListItem>
                                                     <ListItemText
                                                         primary={member.name}
-                                                        secondary={`Position: ${member.position}`}
                                                     />
                                                     <ListItemSecondaryAction>
                                                         <Tooltip title="Edit Member">
@@ -451,7 +450,6 @@ export default function ManageCommittees() {
                                                         </Tooltip>
                                                     </ListItemSecondaryAction>
                                                 </ListItem>
-                                                {index < committee.members.length - 1 && <Divider />}
                                             </Box>
                                         ))}
                                     </List>
@@ -507,7 +505,7 @@ export default function ManageCommittees() {
                             margin="normal"
                             disabled={savingMember}
                         />
-                        <TextField
+                        {/* <TextField
                             fullWidth
                             label="Position (Order)"
                             type="number"
@@ -517,7 +515,7 @@ export default function ManageCommittees() {
                             margin="normal"
                             helperText="Lower numbers appear first"
                             disabled={savingMember}
-                        />
+                        /> */}
                     </Box>
                 </DialogContent>
                 <DialogActions>
