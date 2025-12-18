@@ -1,6 +1,6 @@
 import { useLoaderData } from 'react-router';
 import { Container, Typography, Box, Stack, Divider, Paper } from '@mui/material';
-import { supabase } from '../utils/supabase';
+import { supabase } from '../../utils/supabase';
 import { t } from 'i18next';
 import type { Route } from './+types/committees';
 

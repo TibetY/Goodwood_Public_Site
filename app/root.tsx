@@ -17,7 +17,7 @@ import './i18n';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import { AuthProvider } from "./context/auth-context";
-import FreemasonryChatbot from "./routes/portal/chatBot";
+import FreemasonryChatbot from "./routes/chatBot";
 
 export function Layout({ children }: { children: React.ReactNode }) {
   return (

@@ -1,5 +1,5 @@
 import { Container, Typography, Box, Paper, Grid, Divider } from '@mui/material';
-import type { Route } from '../+types/root';
+import type { Route } from '../../+types/root';
 import { supabase } from '~/utils/supabase';
 import { useLoaderData } from 'react-router';
 
