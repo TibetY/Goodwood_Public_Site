@@ -53,7 +53,7 @@ export const handler: Handler = async (event: HandlerEvent) => {
     }
 
     const body = JSON.parse(event.body || '{}');
-    const { fileName, fileData, fileType } = body;
+    const { fileName, fileData, fileType, officerName } = body;
 
     if (!fileName || !fileData || !fileType) {
       return {
@@ -85,7 +85,18 @@ export const handler: Handler = async (event: HandlerEvent) => {
     // Generate unique filename
     const timestamp = Date.now();
     const fileExt = fileName.split('.').pop();
-    const uniqueFileName = `officer-${timestamp}.${fileExt}`;
+
+    const sanitizedName = officerName
+      ? officerName
+        .toLowerCase()
+        .replace(/[^a-z0-9\s-]/g, '') // Remove special characters
+        .replace(/\s+/g, '_')          // Replace spaces with underscores
+        .replace(/-+/g, '_')           // Replace hyphens with underscores
+        .replace(/_+/g, '_')           // Replace multiple underscores with single
+        .trim()
+      : 'officer';
+
+    const uniqueFileName = `${sanitizedName}_${timestamp}.${fileExt}`;
 
     // Upload to Supabase Storage
     const { data: uploadData, error: uploadError } = await supabaseAdmin

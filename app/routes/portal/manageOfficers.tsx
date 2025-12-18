@@ -175,7 +175,8 @@ export default function ManageOfficers() {
                             body: JSON.stringify({
                                 fileName: selectedFile.name,
                                 fileData: base64Data,
-                                fileType: selectedFile.type
+                                fileType: selectedFile.type,
+                                officerName: formData.name || 'officer'
                             })
                         });
 
@@ -298,7 +299,7 @@ export default function ManageOfficers() {
                             {/* <TableCell><strong>Position</strong></TableCell> */}
                             <TableCell><strong>Title</strong></TableCell>
                             <TableCell><strong>Name</strong></TableCell>
-                            <TableCell><strong>Image</strong></TableCell>
+                            {/* <TableCell><strong>Image</strong></TableCell> */}
                             <TableCell align="right"><strong>Actions</strong></TableCell>
                         </TableRow>
                     </TableHead>
@@ -326,7 +327,7 @@ export default function ManageOfficers() {
                                             {officer.name}
                                         </Box>
                                     </TableCell>
-                                    <TableCell>
+                                    {/* <TableCell>
                                         {officer.image ? (
                                             <Typography variant="caption" color="text.secondary">
                                                 {officer.image.substring(0, 30)}...
@@ -336,7 +337,7 @@ export default function ManageOfficers() {
                                                 No image
                                             </Typography>
                                         )}
-                                    </TableCell>
+                                    </TableCell> */}
                                     <TableCell align="right">
                                         <Tooltip title="Edit Officer">
                                             <IconButton
