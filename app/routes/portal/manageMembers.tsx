@@ -29,7 +29,6 @@ import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import LockResetIcon from '@mui/icons-material/LockReset';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { useAuth } from '../../context/auth-context';
-import { supabase } from '../../utils/supabase';
 import { useTranslation } from 'react-i18next';
 
 interface Member {
@@ -56,6 +55,8 @@ export default function ManageMembers() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState<string | null>(null);
+
+    console.log('Members:', members);
 
     // Add member dialog state
     const [addDialogOpen, setAddDialogOpen] = useState(false);

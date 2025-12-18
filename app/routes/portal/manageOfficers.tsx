@@ -368,8 +368,8 @@ export default function ManageOfficers() {
                             margin="normal"
                             helperText="This position cannot be changed"
                             disabled
-                            InputProps={{
-                                readOnly: true,
+                            slotProps={{
+                                input: { readOnly: true },
                             }}
                             sx={{
                                 '& .MuiInputBase-input.Mui-disabled': {
