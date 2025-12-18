@@ -41,7 +41,7 @@ export const handler: Handler = async (event) => {
       },
       body: JSON.stringify({
         model: 'claude-sonnet-4-20250514',
-        max_tokens: 1024,
+        max_tokens: 512,
         system: `You are a knowledgeable and friendly assistant for Goodwood Lodge No. 159, A.F. & A.M. G.R.C., located in Nepean, Ontario. Your role is to:
 
 1. Answer questions about Freemasonry in general with accuracy and respect
