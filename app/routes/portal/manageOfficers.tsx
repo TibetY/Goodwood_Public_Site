@@ -358,18 +358,24 @@ export default function ManageOfficers() {
 
             {/* Edit Officer Dialog */}
             <Dialog open={dialogOpen} onClose={() => !saving && handleCloseDialog()} maxWidth="sm" fullWidth>
-                <DialogTitle>Edit Officer</DialogTitle>
+                <DialogTitle>Edit Officer - {editingOfficer ? t(editingOfficer.title) : ''}</DialogTitle>
                 <DialogContent>
                     <Box sx={{ pt: 2 }}>
                         <TextField
                             fullWidth
-                            label="Title"
-                            value={formData.title}
-                            onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                            required
+                            label="Officer Position"
+                            value={t(formData.title)}
                             margin="normal"
-                            helperText="e.g., officers.wm (translation key)"
-                            disabled={saving}
+                            helperText="This position cannot be changed"
+                            disabled
+                            slotProps={{
+                                input: { readOnly: true },
+                            }}
+                            sx={{
+                                '& .MuiInputBase-input.Mui-disabled': {
+                                    WebkitTextFillColor: 'rgba(0, 0, 0, 0.87)',
+                                },
+                            }}
                         />
                         <TextField
                             fullWidth
