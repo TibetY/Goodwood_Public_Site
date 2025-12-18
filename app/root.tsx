@@ -17,6 +17,7 @@ import './i18n';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import { AuthProvider } from "./context/auth-context";
+import FreemasonryChatbot from "./routes/portal/chatBot";
 
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
@@ -62,6 +63,7 @@ export default function App() {
       <Box component="main" sx={{ flex: 1 }}>
         <Outlet />
       </Box>
+      <FreemasonryChatbot/>
       <Footer />
     </Box>
   );
