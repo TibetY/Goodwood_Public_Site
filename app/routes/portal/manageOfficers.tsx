@@ -295,7 +295,7 @@ export default function ManageOfficers() {
                 <Table>
                     <TableHead>
                         <TableRow sx={{ backgroundColor: '#f5f5f5' }}>
-                            <TableCell><strong>Position</strong></TableCell>
+                            {/* <TableCell><strong>Position</strong></TableCell> */}
                             <TableCell><strong>Title</strong></TableCell>
                             <TableCell><strong>Name</strong></TableCell>
                             <TableCell><strong>Image</strong></TableCell>
@@ -314,7 +314,7 @@ export default function ManageOfficers() {
                         ) : (
                             officers.map((officer) => (
                                 <TableRow key={officer.id} hover>
-                                    <TableCell>{officer.position}</TableCell>
+                                    {/* <TableCell>{officer.position}</TableCell> */}
                                     <TableCell>{t(officer.title)}</TableCell>
                                     <TableCell>
                                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
