@@ -1,4 +1,4 @@
-import type { Route } from "../+types/home";
+import type { Route } from "./+types/home";
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router';
 import { Container, Typography, Box, Button, Grid } from '@mui/material';

@@ -1,4 +1,3 @@
-import { Link } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import {
   Box,
@@ -8,6 +7,7 @@ import {
   Divider,
   Grid,
   IconButton,
+  Link
 } from '@mui/material';
 import InstagramIcon from '@mui/icons-material/Instagram';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
@@ -82,42 +82,18 @@ export default function Footer() {
                 <Typography variant="h6" sx={{ color: 'white' }}>
                   {t('footer.links.title')}
                 </Typography>
-                <Box
-                  component="a"
-                  href="https://ontariomasons.ca"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  sx={{
-                    color: 'rgba(255, 255, 255, 0.8)',
-                    textDecoration: 'none',
+                <Link href="https://ontariomasons.ca" variant='body2' color="inherit" sx={{
                     '&:hover': {
                       color: 'white',
                       textDecoration: 'underline',
                     },
-                  }}
-                >
-                  <Typography variant="body2">
-                    {t('footer.links.grandLodge')}
-                  </Typography>
-                </Box>
-                <Box
-                  component="a"
-                  href="https://ontariomasons.ca/becoming-a-mason/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  sx={{
-                    color: 'rgba(255, 255, 255, 0.8)',
-                    textDecoration: 'none',
+                  }}> {t('footer.links.grandLodge')}</Link>
+                <Link href="https://ontariomasons.ca/becoming-a-mason/" variant='body2' color="inherit" sx={{
                     '&:hover': {
                       color: 'white',
                       textDecoration: 'underline',
                     },
-                  }}
-                >
-                  <Typography variant="body2">
-                    {t('footer.links.becomeAMason')}
-                  </Typography>
-                </Box>
+                  }}> {t('footer.links.becomeAMason')}</Link>
               </Stack>
             </Grid>
 
