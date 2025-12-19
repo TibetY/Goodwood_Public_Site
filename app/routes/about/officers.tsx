@@ -12,14 +12,30 @@ interface Officer {
     position: number;
 }
 
+// Server-side cache for officers data
+const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+let officersCache: { data: Officer[], timestamp: number } | null = null;
+
 export async function loader({ request }: Route.LoaderArgs) {
     try {
+        const now = Date.now();
+
+        // Return cached data if still fresh
+        if (officersCache && (now - officersCache.timestamp) < CACHE_TTL) {
+            console.log('✅ Officers: Serving from cache');
+            return { officers: officersCache.data };
+        }
+
+        console.log('🔄 Officers: Fetching fresh data from DB');
         const { data, error } = await supabase
             .from('officers')
             .select('*')
             .order('position', { ascending: true });
 
         if (error) throw error;
+
+        // Update cache
+        officersCache = { data: data || [], timestamp: now };
 
         return { officers: data || [] };
     } catch (err) {

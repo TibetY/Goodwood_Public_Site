@@ -29,6 +29,7 @@ import UploadIcon from '@mui/icons-material/Upload';
 import { useAuth } from '../../context/auth-context';
 import { useTranslation } from 'react-i18next';
 import { supabase } from '../../utils/supabase';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
 interface Officer {
     id?: string;
@@ -42,8 +43,7 @@ export default function ManageOfficers() {
     const { t } = useTranslation();
     const { user, loading: authLoading, session } = useAuth();
     const navigate = useNavigate();
-    const [officers, setOfficers] = useState<Officer[]>([]);
-    const [loading, setLoading] = useState(true);
+    const queryClient = useQueryClient();
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState<string | null>(null);
 
@@ -56,12 +56,10 @@ export default function ManageOfficers() {
         image: '',
         position: 0
     });
-    const [saving, setSaving] = useState(false);
 
     // Image upload state
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [imagePreview, setImagePreview] = useState<string | null>(null);
-    const [uploading, setUploading] = useState(false);
 
     useEffect(() => {
         if (!authLoading && !user) {
@@ -69,35 +67,99 @@ export default function ManageOfficers() {
         }
     }, [user, authLoading, navigate]);
 
-    useEffect(() => {
-        if (user && session) {
-            fetchOfficers();
-        }
-    }, [user, session]);
-
-    const fetchOfficers = async () => {
-        setLoading(true);
-        setError(null);
-
-        try {
+    // React Query: Fetch officers
+    const { data: officers = [], isLoading: loading } = useQuery({
+        queryKey: ['officers'],
+        queryFn: async () => {
             const response = await fetch('/.netlify/functions/list-officers', {
                 headers: {
                     'Authorization': `Bearer ${session?.access_token}`
                 }
             });
-
             if (!response.ok) {
                 throw new Error('Failed to fetch officers');
             }
-
             const data = await response.json();
-            setOfficers(data.officers);
-        } catch (err: any) {
-            setError(err.message || 'Failed to load officers');
-        } finally {
-            setLoading(false);
-        }
-    };
+            return data.officers;
+        },
+        enabled: !!user && !!session,
+    });
+
+    // React Query: Upload image mutation
+    const uploadImageMutation = useMutation({
+        mutationFn: async ({ file, officerName }: { file: File, officerName: string }) => {
+            const reader = new FileReader();
+            return new Promise<string>((resolve, reject) => {
+                reader.onload = async () => {
+                    try {
+                        const base64Data = reader.result as string;
+                        const response = await fetch('/.netlify/functions/upload-officer-image', {
+                            method: 'POST',
+                            headers: {
+                                'Authorization': `Bearer ${session?.access_token}`,
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                fileName: file.name,
+                                fileData: base64Data,
+                                fileType: file.type,
+                                officerName
+                            })
+                        });
+                        if (!response.ok) {
+                            const errorData = await response.json();
+                            throw new Error(errorData.error || 'Failed to upload image');
+                        }
+                        const data = await response.json();
+                        resolve(data.url);
+                    } catch (err) {
+                        reject(err);
+                    }
+                };
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
+        },
+        onSuccess: (imageUrl) => {
+            setFormData({ ...formData, image: imageUrl });
+            setSuccess('Image uploaded successfully');
+            setSelectedFile(null);
+            setImagePreview(null);
+        },
+        onError: (err: any) => {
+            setError(err.message || 'Failed to upload image');
+        },
+    });
+
+    // React Query: Save officer mutation
+    const saveOfficerMutation = useMutation({
+        mutationFn: async (officerData: Officer) => {
+            const response = await fetch('/.netlify/functions/upsert-officer', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${session?.access_token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    ...officerData,
+                    name: officerData.name || 'TBA'
+                })
+            });
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || 'Failed to save officer');
+            }
+            return response.json();
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['officers'] });
+            setSuccess('Officer updated successfully');
+            handleCloseDialog();
+        },
+        onError: (err: any) => {
+            setError(err.message || 'Failed to save officer');
+        },
+    });
 
     const handleOpenDialog = (officer: Officer) => {
         setEditingOfficer(officer);
@@ -150,96 +212,20 @@ export default function ManageOfficers() {
         reader.readAsDataURL(file);
     };
 
-    const handleUploadImage = async () => {
+    const handleUploadImage = () => {
         if (!selectedFile) return;
-
-        setUploading(true);
         setError(null);
-
-        try {
-            // Convert file to base64
-            const reader = new FileReader();
-            reader.readAsDataURL(selectedFile);
-
-            await new Promise((resolve, reject) => {
-                reader.onload = async () => {
-                    try {
-                        const base64Data = reader.result as string;
-
-                        const response = await fetch('/.netlify/functions/upload-officer-image', {
-                            method: 'POST',
-                            headers: {
-                                'Authorization': `Bearer ${session?.access_token}`,
-                                'Content-Type': 'application/json'
-                            },
-                            body: JSON.stringify({
-                                fileName: selectedFile.name,
-                                fileData: base64Data,
-                                fileType: selectedFile.type,
-                                officerName: formData.name || 'officer'
-                            })
-                        });
-
-                        if (!response.ok) {
-                            const errorData = await response.json();
-                            throw new Error(errorData.error || 'Failed to upload image');
-                        }
-
-                        const data = await response.json();
-                        setFormData({ ...formData, image: data.url });
-                        setSuccess('Image uploaded successfully');
-                        setSelectedFile(null);
-                        setImagePreview(null);
-                        resolve(data);
-                    } catch (err) {
-                        reject(err);
-                    }
-                };
-                reader.onerror = reject;
-            });
-        } catch (err: any) {
-            setError(err.message || 'Failed to upload image');
-        } finally {
-            setUploading(false);
-        }
+        uploadImageMutation.mutate({ file: selectedFile, officerName: formData.name || 'officer' });
     };
 
-    const handleSaveOfficer = async () => {
+    const handleSaveOfficer = () => {
         if (!formData.title) {
             setError('Title is required');
             return;
         }
-
-        setSaving(true);
         setError(null);
         setSuccess(null);
-
-        try {
-            const response = await fetch('/.netlify/functions/upsert-officer', {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${session?.access_token}`,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    ...formData,
-                    name: formData.name || 'TBA'
-                })
-            });
-
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.error || 'Failed to save officer');
-            }
-
-            setSuccess('Officer updated successfully');
-            handleCloseDialog();
-            fetchOfficers();
-        } catch (err: any) {
-            setError(err.message || 'Failed to save officer');
-        } finally {
-            setSaving(false);
-        }
+        saveOfficerMutation.mutate(formData);
     };
 
     const getInitials = (name: string) => {
@@ -357,7 +343,7 @@ export default function ManageOfficers() {
             </TableContainer>
 
             {/* Edit Officer Dialog */}
-            <Dialog open={dialogOpen} onClose={() => !saving && handleCloseDialog()} maxWidth="sm" fullWidth>
+            <Dialog open={dialogOpen} onClose={() => !saveOfficerMutation.isPending && handleCloseDialog()} maxWidth="sm" fullWidth>
                 <DialogTitle>Edit Officer - {editingOfficer ? t(editingOfficer.title) : ''}</DialogTitle>
                 <DialogContent>
                     <Box sx={{ pt: 2 }}>
@@ -384,7 +370,7 @@ export default function ManageOfficers() {
                             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                             margin="normal"
                             helperText="e.g., W. Bro. John Smith or leave blank for TBA"
-                            disabled={saving}
+                            disabled={saveOfficerMutation.isPending}
                         />
 
                         {/* Image Upload Section */}
@@ -409,7 +395,7 @@ export default function ManageOfficers() {
                                     component="label"
                                     variant="outlined"
                                     startIcon={<UploadIcon />}
-                                    disabled={saving || uploading}
+                                    disabled={saveOfficerMutation.isPending || uploadImageMutation.isPending}
                                 >
                                     Choose Image
                                     <input
@@ -428,10 +414,10 @@ export default function ManageOfficers() {
                                             variant="contained"
                                             size="small"
                                             onClick={handleUploadImage}
-                                            disabled={uploading}
-                                            startIcon={uploading ? <CircularProgress size={16} /> : <UploadIcon />}
+                                            disabled={uploadImageMutation.isPending}
+                                            startIcon={uploadImageMutation.isPending ? <CircularProgress size={16} /> : <UploadIcon />}
                                         >
-                                            {uploading ? 'Uploading...' : 'Upload'}
+                                            {uploadImageMutation.isPending ? 'Uploading...' : 'Upload'}
                                         </Button>
                                     </>
                                 )}
@@ -448,21 +434,21 @@ export default function ManageOfficers() {
                             onChange={(e) => setFormData({ ...formData, image: e.target.value })}
                             margin="normal"
                             helperText="Or enter a direct URL to an image"
-                            disabled={saving}
+                            disabled={saveOfficerMutation.isPending}
                         />
                     </Box>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleCloseDialog} disabled={saving}>
+                    <Button onClick={handleCloseDialog} disabled={saveOfficerMutation.isPending}>
                         Cancel
                     </Button>
                     <Button
                         onClick={handleSaveOfficer}
                         variant="contained"
-                        disabled={saving}
-                        startIcon={saving ? <CircularProgress size={16} /> : null}
+                        disabled={saveOfficerMutation.isPending}
+                        startIcon={saveOfficerMutation.isPending ? <CircularProgress size={16} /> : null}
                     >
-                        {saving ? 'Saving...' : 'Update'}
+                        {saveOfficerMutation.isPending ? 'Saving...' : 'Update'}
                     </Button>
                 </DialogActions>
             </Dialog>

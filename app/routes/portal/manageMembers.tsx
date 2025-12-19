@@ -30,6 +30,7 @@ import LockResetIcon from '@mui/icons-material/LockReset';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { useAuth } from '../../context/auth-context';
 import { useTranslation } from 'react-i18next';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
 interface Member {
     id: string;
@@ -51,8 +52,7 @@ export default function ManageMembers() {
     const { t } = useTranslation();
     const { user, loading: authLoading, session } = useAuth();
     const navigate = useNavigate();
-    const [members, setMembers] = useState<Member[]>([]);
-    const [loading, setLoading] = useState(true);
+    const queryClient = useQueryClient();
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState<string | null>(null);
 
@@ -60,12 +60,10 @@ export default function ManageMembers() {
     const [addDialogOpen, setAddDialogOpen] = useState(false);
     const [newMemberEmail, setNewMemberEmail] = useState('');
     const [newMemberDisplayName, setNewMemberDisplayName] = useState('');
-    const [inviting, setInviting] = useState(false);
 
     // Delete dialog state
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [memberToDelete, setMemberToDelete] = useState<Member | null>(null);
-    const [deleting, setDeleting] = useState(false);
 
     useEffect(() => {
         if (!authLoading && !user) {
@@ -73,109 +71,96 @@ export default function ManageMembers() {
         }
     }, [user, authLoading, navigate]);
 
-    useEffect(() => {
-        if (user && session) {
-            fetchMembers();
-        }
-    }, [user, session]);
-
-    const fetchMembers = async () => {
-        setLoading(true);
-        setError(null);
-
-        try {
+    // React Query: Fetch members
+    const { data: members = [], isLoading: loading } = useQuery({
+        queryKey: ['members'],
+        queryFn: async () => {
             const response = await fetch('/.netlify/functions/list-members', {
                 headers: {
                     'Authorization': `Bearer ${session?.access_token}`
                 }
             });
-
             if (!response.ok) {
                 throw new Error('Failed to fetch members');
             }
-
             const data = await response.json();
-            setMembers(data.members);
-        } catch (err: any) {
-            setError(err.message || 'Failed to load members');
-        } finally {
-            setLoading(false);
-        }
-    };
+            return data.members;
+        },
+        enabled: !!user && !!session,
+    });
 
-    const handleInviteMember = async () => {
-        if (!newMemberEmail) {
-            setError('Email is required');
-            return;
-        }
-
-        setInviting(true);
-        setError(null);
-        setSuccess(null);
-
-        try {
+    // React Query: Invite member mutation
+    const inviteMutation = useMutation({
+        mutationFn: async ({ email, displayName }: { email: string, displayName: string }) => {
             const response = await fetch('/.netlify/functions/invite-member', {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${session?.access_token}`,
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({
-                    email: newMemberEmail,
-                    displayName: newMemberDisplayName
-                })
+                body: JSON.stringify({ email, displayName })
             });
-
             if (!response.ok) {
                 const errorData = await response.json();
                 throw new Error(errorData.error || 'Failed to send invitation');
             }
-
-            setSuccess(`Invitation sent to ${newMemberEmail}`);
+            return response.json();
+        },
+        onSuccess: (data, variables) => {
+            queryClient.invalidateQueries({ queryKey: ['members'] });
+            setSuccess(`Invitation sent to ${variables.email}`);
             setAddDialogOpen(false);
             setNewMemberEmail('');
             setNewMemberDisplayName('');
-            fetchMembers();
-        } catch (err: any) {
+        },
+        onError: (err: any) => {
             setError(err.message || 'Failed to send invitation');
-        } finally {
-            setInviting(false);
-        }
-    };
+        },
+    });
 
-    const handleDeleteMember = async () => {
-        if (!memberToDelete) return;
-
-        setDeleting(true);
-        setError(null);
-        setSuccess(null);
-
-        try {
+    // React Query: Delete member mutation
+    const deleteMutation = useMutation({
+        mutationFn: async (userId: string) => {
             const response = await fetch('/.netlify/functions/delete-member', {
                 method: 'DELETE',
                 headers: {
                     'Authorization': `Bearer ${session?.access_token}`,
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({
-                    userId: memberToDelete.id
-                })
+                body: JSON.stringify({ userId })
             });
-
             if (!response.ok) {
                 const errorData = await response.json();
                 throw new Error(errorData.error || 'Failed to delete member');
             }
-
-            setSuccess(`Member ${memberToDelete.email} deleted successfully`);
+            return response.json();
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['members'] });
+            setSuccess(`Member ${memberToDelete?.email} deleted successfully`);
             setDeleteDialogOpen(false);
             setMemberToDelete(null);
-            fetchMembers();
-        } catch (err: any) {
+        },
+        onError: (err: any) => {
             setError(err.message || 'Failed to delete member');
-        } finally {
-            setDeleting(false);
+        },
+    });
+
+    const handleInviteMember = () => {
+        if (!newMemberEmail) {
+            setError('Email is required');
+            return;
         }
+        setError(null);
+        setSuccess(null);
+        inviteMutation.mutate({ email: newMemberEmail, displayName: newMemberDisplayName });
+    };
+
+    const handleDeleteMember = () => {
+        if (!memberToDelete) return;
+        setError(null);
+        setSuccess(null);
+        deleteMutation.mutate(memberToDelete.id);
     };
 
     const handleResetPassword = async (email: string) => {
@@ -332,7 +317,7 @@ export default function ManageMembers() {
             </TableContainer>
 
             {/* Add Member Dialog */}
-            <Dialog open={addDialogOpen} onClose={() => !inviting && setAddDialogOpen(false)} maxWidth="sm" fullWidth>
+            <Dialog open={addDialogOpen} onClose={() => !inviteMutation.isPending && setAddDialogOpen(false)} maxWidth="sm" fullWidth>
                 <DialogTitle>Invite New Member</DialogTitle>
                 <DialogContent>
                     <Box sx={{ pt: 2 }}>
@@ -344,7 +329,7 @@ export default function ManageMembers() {
                             onChange={(e) => setNewMemberEmail(e.target.value)}
                             required
                             margin="normal"
-                            disabled={inviting}
+                            disabled={inviteMutation.isPending}
                         />
                         <TextField
                             fullWidth
@@ -352,28 +337,28 @@ export default function ManageMembers() {
                             value={newMemberDisplayName}
                             onChange={(e) => setNewMemberDisplayName(e.target.value)}
                             margin="normal"
-                            disabled={inviting}
+                            disabled={inviteMutation.isPending}
                             helperText="e.g., W. Bro. John Smith"
                         />
                     </Box>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={() => setAddDialogOpen(false)} disabled={inviting}>
+                    <Button onClick={() => setAddDialogOpen(false)} disabled={inviteMutation.isPending}>
                         Cancel
                     </Button>
                     <Button
                         onClick={handleInviteMember}
                         variant="contained"
-                        disabled={inviting || !newMemberEmail}
-                        startIcon={inviting ? <CircularProgress size={16} /> : <EmailIcon />}
+                        disabled={inviteMutation.isPending || !newMemberEmail}
+                        startIcon={inviteMutation.isPending ? <CircularProgress size={16} /> : <EmailIcon />}
                     >
-                        {inviting ? 'Sending...' : 'Send Invitation'}
+                        {inviteMutation.isPending ? 'Sending...' : 'Send Invitation'}
                     </Button>
                 </DialogActions>
             </Dialog>
 
             {/* Delete Confirmation Dialog */}
-            <Dialog open={deleteDialogOpen} onClose={() => !deleting && setDeleteDialogOpen(false)}>
+            <Dialog open={deleteDialogOpen} onClose={() => !deleteMutation.isPending && setDeleteDialogOpen(false)}>
                 <DialogTitle>Confirm Delete</DialogTitle>
                 <DialogContent>
                     <Typography>
@@ -382,17 +367,17 @@ export default function ManageMembers() {
                     </Typography>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={() => setDeleteDialogOpen(false)} disabled={deleting}>
+                    <Button onClick={() => setDeleteDialogOpen(false)} disabled={deleteMutation.isPending}>
                         Cancel
                     </Button>
                     <Button
                         onClick={handleDeleteMember}
                         variant="contained"
                         color="error"
-                        disabled={deleting}
-                        startIcon={deleting ? <CircularProgress size={16} /> : <DeleteIcon />}
+                        disabled={deleteMutation.isPending}
+                        startIcon={deleteMutation.isPending ? <CircularProgress size={16} /> : <DeleteIcon />}
                     >
-                        {deleting ? 'Deleting...' : 'Delete'}
+                        {deleteMutation.isPending ? 'Deleting...' : 'Delete'}
                     </Button>
                 </DialogActions>
             </Dialog>
