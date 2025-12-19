@@ -2,6 +2,7 @@ import type { Route } from "./+types/contact";
 import { useTranslation } from 'react-i18next';
 import { Container, Typography, Box, Paper, TextField, Button } from '@mui/material';
 
+
 export function meta({ }: Route.MetaArgs) {
     return [
         { title: "Contact Us - Goodwood Lodge No. 159" },
@@ -68,6 +69,7 @@ export default function Contact() {
                             method="POST"
                             data-netlify="true"
                             netlify-honeypot="bot-field"
+                            data-netlify-honeypot="bot-field"
                         >
                             {/* Hidden fields for Netlify Forms */}
                             <input type="hidden" name="form-name" value="contact" />
@@ -99,14 +101,14 @@ export default function Contact() {
                             {/* User will add form inputs here */}
                             <Box sx={{ textAlign: 'center', mt: 4 }}>
                                 <Box sx={{ display: 'flex', flexDirection: 'row', gap: { xs: 0, md: 2 }, flexWrap: { xs: 'wrap', md: 'nowrap' }, justifyContent: 'center' }}>
-                                    <TextField required label={t('contact.name.first')} fullWidth margin="normal" />
-                                    <TextField required label={t('contact.name.last')} fullWidth margin="normal" />
+                                    <TextField required label={t('contact.name.first')} fullWidth margin="normal" name="firstName" />
+                                    <TextField required label={t('contact.name.last')} fullWidth margin="normal" name="lastName" />
                                 </Box>
 
-                                <TextField required label={t('contact.phone')} type="tel" fullWidth margin="normal" />
-                                <TextField required label={t('contact.email')} type="email" fullWidth margin="normal" />
+                                <TextField required label={t('contact.phone')} type="tel" fullWidth margin="normal" name="phone" />
+                                <TextField required label={t('contact.email')} type="email" fullWidth margin="normal" name="email" />
 
-                                <TextField required label={t('contact.message')} multiline rows={4} fullWidth margin="normal" />
+                                <TextField required label={t('contact.message')} multiline rows={4} fullWidth margin="normal" name="message" />
                             </Box>
                         </form>
                         <Button variant="contained" color="primary" fullWidth type="submit" sx={{ mt: 4, py: 1.5 }}>
