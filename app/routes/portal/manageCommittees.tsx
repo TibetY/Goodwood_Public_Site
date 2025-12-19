@@ -31,6 +31,7 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { useAuth } from '../../context/auth-context';
 import { useTranslation } from 'react-i18next';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
 interface CommitteeMember {
     id?: number;
@@ -49,8 +50,7 @@ export default function ManageCommittees() {
     const { t } = useTranslation();
     const { user, loading: authLoading, session } = useAuth();
     const navigate = useNavigate();
-    const [committees, setCommittees] = useState<Committee[]>([]);
-    const [loading, setLoading] = useState(true);
+    const queryClient = useQueryClient();
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState<string | null>(null);
 
@@ -58,23 +58,19 @@ export default function ManageCommittees() {
     const [committeeDialogOpen, setCommitteeDialogOpen] = useState(false);
     const [editingCommittee, setEditingCommittee] = useState<Committee | null>(null);
     const [committeeFormData, setCommitteeFormData] = useState({ title: '' });
-    const [savingCommittee, setSavingCommittee] = useState(false);
 
     // Member dialog state
     const [memberDialogOpen, setMemberDialogOpen] = useState(false);
     const [editingMember, setEditingMember] = useState<CommitteeMember | null>(null);
     const [selectedCommitteeId, setSelectedCommitteeId] = useState<number | null>(null);
     const [memberFormData, setMemberFormData] = useState({ name: '', position: 1 });
-    const [savingMember, setSavingMember] = useState(false);
 
     // Delete dialogs
     const [deleteCommitteeDialogOpen, setDeleteCommitteeDialogOpen] = useState(false);
     const [committeeToDelete, setCommitteeToDelete] = useState<Committee | null>(null);
-    const [deletingCommittee, setDeletingCommittee] = useState(false);
 
     const [deleteMemberDialogOpen, setDeleteMemberDialogOpen] = useState(false);
     const [memberToDelete, setMemberToDelete] = useState<CommitteeMember | null>(null);
-    const [deletingMember, setDeletingMember] = useState(false);
 
     useEffect(() => {
         if (!authLoading && !user) {
@@ -82,35 +78,133 @@ export default function ManageCommittees() {
         }
     }, [user, authLoading, navigate]);
 
-    useEffect(() => {
-        if (user && session) {
-            fetchCommittees();
-        }
-    }, [user, session]);
-
-    const fetchCommittees = async () => {
-        setLoading(true);
-        setError(null);
-
-        try {
+    // React Query: Fetch committees
+    const { data: committees = [], isLoading: loading } = useQuery({
+        queryKey: ['committees'],
+        queryFn: async () => {
             const response = await fetch('/.netlify/functions/list-committees', {
                 headers: {
                     'Authorization': `Bearer ${session?.access_token}`
                 }
             });
-
             if (!response.ok) {
                 throw new Error('Failed to fetch committees');
             }
-
             const data = await response.json();
-            setCommittees(data.committees);
-        } catch (err: any) {
-            setError(err.message || 'Failed to load committees');
-        } finally {
-            setLoading(false);
-        }
-    };
+            return data.committees;
+        },
+        enabled: !!user && !!session,
+    });
+
+    // React Query: Save committee mutation
+    const saveCommitteeMutation = useMutation({
+        mutationFn: async ({ id, title }: { id?: number, title: string }) => {
+            const response = await fetch('/.netlify/functions/upsert-committee', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${session?.access_token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ id, title })
+            });
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || 'Failed to save committee');
+            }
+            return response.json();
+        },
+        onSuccess: (_, variables) => {
+            queryClient.invalidateQueries({ queryKey: ['committees'] });
+            setSuccess(variables.id ? 'Committee updated successfully' : 'Committee created successfully');
+            handleCloseCommitteeDialog();
+        },
+        onError: (err: any) => {
+            setError(err.message || 'Failed to save committee');
+        },
+    });
+
+    // React Query: Delete committee mutation
+    const deleteCommitteeMutation = useMutation({
+        mutationFn: async (committeeId: number) => {
+            const response = await fetch('/.netlify/functions/delete-committee', {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${session?.access_token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ committeeId })
+            });
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || 'Failed to delete committee');
+            }
+            return response.json();
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['committees'] });
+            setSuccess(`Committee "${committeeToDelete?.title}" deleted successfully`);
+            setDeleteCommitteeDialogOpen(false);
+            setCommitteeToDelete(null);
+        },
+        onError: (err: any) => {
+            setError(err.message || 'Failed to delete committee');
+        },
+    });
+
+    // React Query: Save member mutation
+    const saveMemberMutation = useMutation({
+        mutationFn: async ({ id, committee_id, name, position }: { id?: number, committee_id: number, name: string, position: number }) => {
+            const response = await fetch('/.netlify/functions/upsert-committee-member', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${session?.access_token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ id, committee_id, name, position })
+            });
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || 'Failed to save member');
+            }
+            return response.json();
+        },
+        onSuccess: (_, variables) => {
+            queryClient.invalidateQueries({ queryKey: ['committees'] });
+            setSuccess(variables.id ? 'Member updated successfully' : 'Member added successfully');
+            handleCloseMemberDialog();
+        },
+        onError: (err: any) => {
+            setError(err.message || 'Failed to save member');
+        },
+    });
+
+    // React Query: Delete member mutation
+    const deleteMemberMutation = useMutation({
+        mutationFn: async (memberId: number) => {
+            const response = await fetch('/.netlify/functions/delete-committee-member', {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${session?.access_token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ memberId })
+            });
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || 'Failed to delete member');
+            }
+            return response.json();
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['committees'] });
+            setSuccess(`Member "${memberToDelete?.name}" removed successfully`);
+            setDeleteMemberDialogOpen(false);
+            setMemberToDelete(null);
+        },
+        onError: (err: any) => {
+            setError(err.message || 'Failed to delete member');
+        },
+    });
 
     // Committee operations
     const handleOpenCommitteeDialog = (committee?: Committee) => {
@@ -130,77 +224,21 @@ export default function ManageCommittees() {
         setCommitteeFormData({ title: '' });
     };
 
-    const handleSaveCommittee = async () => {
+    const handleSaveCommittee = () => {
         if (!committeeFormData.title) {
             setError('Committee title is required');
             return;
         }
-
-        setSavingCommittee(true);
         setError(null);
         setSuccess(null);
-
-        try {
-            const response = await fetch('/.netlify/functions/upsert-committee', {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${session?.access_token}`,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    id: editingCommittee?.id,
-                    title: committeeFormData.title
-                })
-            });
-
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.error || 'Failed to save committee');
-            }
-
-            setSuccess(editingCommittee ? 'Committee updated successfully' : 'Committee created successfully');
-            handleCloseCommitteeDialog();
-            fetchCommittees();
-        } catch (err: any) {
-            setError(err.message || 'Failed to save committee');
-        } finally {
-            setSavingCommittee(false);
-        }
+        saveCommitteeMutation.mutate({ id: editingCommittee?.id, title: committeeFormData.title });
     };
 
-    const handleDeleteCommittee = async () => {
+    const handleDeleteCommittee = () => {
         if (!committeeToDelete) return;
-
-        setDeletingCommittee(true);
         setError(null);
         setSuccess(null);
-
-        try {
-            const response = await fetch('/.netlify/functions/delete-committee', {
-                method: 'DELETE',
-                headers: {
-                    'Authorization': `Bearer ${session?.access_token}`,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    committeeId: committeeToDelete.id
-                })
-            });
-
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.error || 'Failed to delete committee');
-            }
-
-            setSuccess(`Committee "${committeeToDelete.title}" deleted successfully`);
-            setDeleteCommitteeDialogOpen(false);
-            setCommitteeToDelete(null);
-            fetchCommittees();
-        } catch (err: any) {
-            setError(err.message || 'Failed to delete committee');
-        } finally {
-            setDeletingCommittee(false);
-        }
+        deleteCommitteeMutation.mutate(committeeToDelete.id!);
     };
 
     // Member operations
@@ -225,79 +263,26 @@ export default function ManageCommittees() {
         setMemberFormData({ name: '', position: 1 });
     };
 
-    const handleSaveMember = async () => {
+    const handleSaveMember = () => {
         if (!memberFormData.name) {
             setError('Member name is required');
             return;
         }
-
-        setSavingMember(true);
         setError(null);
         setSuccess(null);
-
-        try {
-            const response = await fetch('/.netlify/functions/upsert-committee-member', {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${session?.access_token}`,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    id: editingMember?.id,
-                    committee_id: selectedCommitteeId,
-                    name: memberFormData.name,
-                    position: memberFormData.position
-                })
-            });
-
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.error || 'Failed to save member');
-            }
-
-            setSuccess(editingMember ? 'Member updated successfully' : 'Member added successfully');
-            handleCloseMemberDialog();
-            fetchCommittees();
-        } catch (err: any) {
-            setError(err.message || 'Failed to save member');
-        } finally {
-            setSavingMember(false);
-        }
+        saveMemberMutation.mutate({
+            id: editingMember?.id,
+            committee_id: selectedCommitteeId!,
+            name: memberFormData.name,
+            position: memberFormData.position
+        });
     };
 
-    const handleDeleteMember = async () => {
+    const handleDeleteMember = () => {
         if (!memberToDelete) return;
-
-        setDeletingMember(true);
         setError(null);
         setSuccess(null);
-
-        try {
-            const response = await fetch('/.netlify/functions/delete-committee-member', {
-                method: 'DELETE',
-                headers: {
-                    'Authorization': `Bearer ${session?.access_token}`,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    memberId: memberToDelete.id
-                })
-            });
-
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.error || 'Failed to delete member');
-            }
-
-            setSuccess(`Member "${memberToDelete.name}" removed successfully`);
-            setDeleteMemberDialogOpen(false);
-            setMemberToDelete(null);
-            fetchCommittees();
-        } catch (err: any) {
-            setError(err.message || 'Failed to delete member');
-        } finally {
-            setDeletingMember(false);
-        }
+        deleteMemberMutation.mutate(memberToDelete.id!);
     };
 
     if (authLoading || loading) {
@@ -461,7 +446,7 @@ export default function ManageCommittees() {
             )}
 
             {/* Committee Dialog */}
-            <Dialog open={committeeDialogOpen} onClose={() => !savingCommittee && handleCloseCommitteeDialog()} maxWidth="sm" fullWidth>
+            <Dialog open={committeeDialogOpen} onClose={() => !saveCommitteeMutation.isPending && handleCloseCommitteeDialog()} maxWidth="sm" fullWidth>
                 <DialogTitle>{editingCommittee ? 'Edit Committee' : 'Add New Committee'}</DialogTitle>
                 <DialogContent>
                     <Box sx={{ pt: 2 }}>
@@ -472,27 +457,27 @@ export default function ManageCommittees() {
                             onChange={(e) => setCommitteeFormData({ title: e.target.value })}
                             required
                             margin="normal"
-                            disabled={savingCommittee}
+                            disabled={saveCommitteeMutation.isPending}
                         />
                     </Box>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleCloseCommitteeDialog} disabled={savingCommittee}>
+                    <Button onClick={handleCloseCommitteeDialog} disabled={saveCommitteeMutation.isPending}>
                         Cancel
                     </Button>
                     <Button
                         onClick={handleSaveCommittee}
                         variant="contained"
-                        disabled={savingCommittee}
-                        startIcon={savingCommittee ? <CircularProgress size={16} /> : null}
+                        disabled={saveCommitteeMutation.isPending}
+                        startIcon={saveCommitteeMutation.isPending ? <CircularProgress size={16} /> : null}
                     >
-                        {savingCommittee ? 'Saving...' : editingCommittee ? 'Update' : 'Create'}
+                        {saveCommitteeMutation.isPending ? 'Saving...' : editingCommittee ? 'Update' : 'Create'}
                     </Button>
                 </DialogActions>
             </Dialog>
 
             {/* Member Dialog */}
-            <Dialog open={memberDialogOpen} onClose={() => !savingMember && handleCloseMemberDialog()} maxWidth="sm" fullWidth>
+            <Dialog open={memberDialogOpen} onClose={() => !saveMemberMutation.isPending && handleCloseMemberDialog()} maxWidth="sm" fullWidth>
                 <DialogTitle>{editingMember ? 'Edit Member' : 'Add New Member'}</DialogTitle>
                 <DialogContent>
                     <Box sx={{ pt: 2 }}>
@@ -503,7 +488,7 @@ export default function ManageCommittees() {
                             onChange={(e) => setMemberFormData({ ...memberFormData, name: e.target.value })}
                             required
                             margin="normal"
-                            disabled={savingMember}
+                            disabled={saveMemberMutation.isPending}
                         />
                         {/* <TextField
                             fullWidth
@@ -514,27 +499,27 @@ export default function ManageCommittees() {
                             required
                             margin="normal"
                             helperText="Lower numbers appear first"
-                            disabled={savingMember}
+                            disabled={saveMemberMutation.isPending}
                         /> */}
                     </Box>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleCloseMemberDialog} disabled={savingMember}>
+                    <Button onClick={handleCloseMemberDialog} disabled={saveMemberMutation.isPending}>
                         Cancel
                     </Button>
                     <Button
                         onClick={handleSaveMember}
                         variant="contained"
-                        disabled={savingMember}
-                        startIcon={savingMember ? <CircularProgress size={16} /> : null}
+                        disabled={saveMemberMutation.isPending}
+                        startIcon={saveMemberMutation.isPending ? <CircularProgress size={16} /> : null}
                     >
-                        {savingMember ? 'Saving...' : editingMember ? 'Update' : 'Add'}
+                        {saveMemberMutation.isPending ? 'Saving...' : editingMember ? 'Update' : 'Add'}
                     </Button>
                 </DialogActions>
             </Dialog>
 
             {/* Delete Committee Dialog */}
-            <Dialog open={deleteCommitteeDialogOpen} onClose={() => !deletingCommittee && setDeleteCommitteeDialogOpen(false)}>
+            <Dialog open={deleteCommitteeDialogOpen} onClose={() => !deleteCommitteeMutation.isPending && setDeleteCommitteeDialogOpen(false)}>
                 <DialogTitle>Confirm Delete</DialogTitle>
                 <DialogContent>
                     <Typography>
@@ -543,23 +528,23 @@ export default function ManageCommittees() {
                     </Typography>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={() => setDeleteCommitteeDialogOpen(false)} disabled={deletingCommittee}>
+                    <Button onClick={() => setDeleteCommitteeDialogOpen(false)} disabled={deleteCommitteeMutation.isPending}>
                         Cancel
                     </Button>
                     <Button
                         onClick={handleDeleteCommittee}
                         variant="contained"
                         color="error"
-                        disabled={deletingCommittee}
-                        startIcon={deletingCommittee ? <CircularProgress size={16} /> : <DeleteIcon />}
+                        disabled={deleteCommitteeMutation.isPending}
+                        startIcon={deleteCommitteeMutation.isPending ? <CircularProgress size={16} /> : <DeleteIcon />}
                     >
-                        {deletingCommittee ? 'Deleting...' : 'Delete'}
+                        {deleteCommitteeMutation.isPending ? 'Deleting...' : 'Delete'}
                     </Button>
                 </DialogActions>
             </Dialog>
 
             {/* Delete Member Dialog */}
-            <Dialog open={deleteMemberDialogOpen} onClose={() => !deletingMember && setDeleteMemberDialogOpen(false)}>
+            <Dialog open={deleteMemberDialogOpen} onClose={() => !deleteMemberMutation.isPending && setDeleteMemberDialogOpen(false)}>
                 <DialogTitle>Confirm Remove</DialogTitle>
                 <DialogContent>
                     <Typography>
@@ -568,17 +553,17 @@ export default function ManageCommittees() {
                     </Typography>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={() => setDeleteMemberDialogOpen(false)} disabled={deletingMember}>
+                    <Button onClick={() => setDeleteMemberDialogOpen(false)} disabled={deleteMemberMutation.isPending}>
                         Cancel
                     </Button>
                     <Button
                         onClick={handleDeleteMember}
                         variant="contained"
                         color="error"
-                        disabled={deletingMember}
-                        startIcon={deletingMember ? <CircularProgress size={16} /> : <DeleteIcon />}
+                        disabled={deleteMemberMutation.isPending}
+                        startIcon={deleteMemberMutation.isPending ? <CircularProgress size={16} /> : <DeleteIcon />}
                     >
-                        {deletingMember ? 'Removing...' : 'Remove'}
+                        {deleteMemberMutation.isPending ? 'Removing...' : 'Remove'}
                     </Button>
                 </DialogActions>
             </Dialog>

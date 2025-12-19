@@ -8,14 +8,30 @@ interface PastMaster {
     years: string;
 }
 
+// Server-side cache for past masters data
+const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+let pastMastersCache: { data: any[], timestamp: number } | null = null;
+
 export async function loader({ request }: Route.LoaderArgs) {
     try {
+        const now = Date.now();
+
+        // Return cached data if still fresh
+        if (pastMastersCache && (now - pastMastersCache.timestamp) < CACHE_TTL) {
+            console.log('✅ Past Masters: Serving from cache');
+            return { pastMasters: pastMastersCache.data };
+        }
+
+        console.log('🔄 Past Masters: Fetching fresh data from DB');
         const { data, error } = await supabase
             .from('past_masters')
             .select('*')
             .order('start_year', { ascending: true });
 
         if (error) throw error;
+
+        // Update cache
+        pastMastersCache = { data: data || [], timestamp: now };
 
         return { pastMasters: data };
     } catch (err) {

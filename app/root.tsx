@@ -9,6 +9,7 @@ import {
 import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import { Container, Typography, Box } from '@mui/material';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 import type { Route } from "./+types/root";
 import "./app.css";
@@ -18,6 +19,18 @@ import Header from './components/Header';
 import Footer from './components/Footer';
 import { AuthProvider } from "./context/auth-context";
 import FreemasonryChatbot from "./routes/chatBot";
+
+// Create a client
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 5 * 60 * 1000, // 5 minutes
+      gcTime: 10 * 60 * 1000,   // 10 minutes (formerly cacheTime)
+      refetchOnWindowFocus: false,
+      retry: 1,
+    },
+  },
+});
 
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
@@ -37,12 +50,14 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Links />
       </head>
       <body>
-        <AuthProvider>
-          <ThemeProvider theme={theme}>
-            <CssBaseline />
-            {children}
-          </ThemeProvider>
-        </AuthProvider>
+        <QueryClientProvider client={queryClient}>
+          <AuthProvider>
+            <ThemeProvider theme={theme}>
+              <CssBaseline />
+              {children}
+            </ThemeProvider>
+          </AuthProvider>
+        </QueryClientProvider>
         <ScrollRestoration />
         <Scripts />
       </body>

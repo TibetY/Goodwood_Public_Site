@@ -17,8 +17,21 @@ interface Committee {
     members: CommitteeMember[];
 }
 
+// Server-side cache for committees data
+const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+let committeesCache: { data: Committee[], timestamp: number } | null = null;
+
 export async function loader({ request }: Route.LoaderArgs) {
     try {
+        const now = Date.now();
+
+        // Return cached data if still fresh
+        if (committeesCache && (now - committeesCache.timestamp) < CACHE_TTL) {
+            console.log('✅ Committees: Serving from cache');
+            return { committees: committeesCache.data };
+        }
+
+        console.log('🔄 Committees: Fetching fresh data from DB');
         const { data, error } = await supabase
             .from('committees')
             .select(`
@@ -34,6 +47,9 @@ export async function loader({ request }: Route.LoaderArgs) {
             ...committee,
             members: committee.members.sort((a: CommitteeMember, b: CommitteeMember) => a.position - b.position)
         }));
+
+        // Update cache
+        committeesCache = { data: committeesWithMembers, timestamp: now };
 
         return { committees: committeesWithMembers };
     } catch (err) {
