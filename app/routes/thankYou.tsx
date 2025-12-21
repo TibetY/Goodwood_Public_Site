@@ -1,4 +1,4 @@
-import type { Route } from "./+types/thank-you";
+import type { Route } from "./+types/thankYou";
 import { useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { Container, Typography, Box, Button, Paper } from '@mui/material';
