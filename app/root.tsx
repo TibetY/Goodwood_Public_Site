@@ -32,6 +32,15 @@ const queryClient = new QueryClient({
   },
 });
 
+// Action to handle Netlify Forms POST requests
+// In production, Netlify intercepts the POST before it reaches here
+// In development, this prevents React Router from throwing an error
+export async function action({ request }: Route.ActionArgs) {
+  // Netlify Forms handles the actual form submission in production
+  // Return null to continue rendering the page
+  return null;
+}
+
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">

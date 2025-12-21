@@ -10,6 +10,7 @@ export default [
     
     route("events", "routes/events.tsx"),
     route("contact", "routes/contact.tsx"),
+    route("thank-you", "routes/thankYou.tsx"),
     route("login", "routes/login.tsx"),
     route("set-password", "routes/setPassword.tsx"),
 
