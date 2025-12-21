@@ -1,6 +1,8 @@
 import type { Route } from "./+types/contact";
+import { useState } from 'react';
+import { useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
-import { Container, Typography, Box, Paper, TextField, Button } from '@mui/material';
+import { Container, Typography, Box, Paper, TextField, Button, CircularProgress } from '@mui/material';
 
 export function meta({ }: Route.MetaArgs) {
     return [
@@ -9,8 +11,51 @@ export function meta({ }: Route.MetaArgs) {
     ];
 }
 
+const encode = (data: Record<string, string>) => {
+    return Object.keys(data)
+        .map(key => encodeURIComponent(key) + "=" + encodeURIComponent(data[key]))
+        .join("&");
+};
+
 export default function Contact() {
     const { t } = useTranslation();
+    const navigate = useNavigate();
+    const [submitting, setSubmitting] = useState(false);
+    const [formData, setFormData] = useState({
+        firstName: '',
+        lastName: '',
+        phone: '',
+        email: '',
+        message: ''
+    });
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        setFormData({
+            ...formData,
+            [e.target.name]: e.target.value
+        });
+    };
+
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        setSubmitting(true);
+
+        try {
+            await fetch("/", {
+                method: "POST",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: encode({
+                    "form-name": "contact",
+                    ...formData
+                })
+            });
+            navigate('/thank-you');
+        } catch (error) {
+            console.error('Error submitting form:', error);
+            alert('There was an error submitting the form. Please try again.');
+            setSubmitting(false);
+        }
+    };
 
     return (
         <>
@@ -66,13 +111,13 @@ export default function Contact() {
                         <form
                             name="contact"
                             method="POST"
-                            action="/thank-you"
                             data-netlify="true"
                             data-netlify-honeypot="bot-field"
+                            onSubmit={handleSubmit}
                         >
                             {/* Hidden fields for Netlify Forms */}
                             <input type="hidden" name="form-name" value="contact" />
-                            
+
                             {/* Honeypot (hidden) */}
                             <Box sx={{ display: 'none' }}>
                                 <input name="bot-field" />
@@ -103,67 +148,84 @@ export default function Contact() {
 
                             {/* Form Fields */}
                             <Box sx={{ textAlign: 'center', mt: 4 }}>
-                                <Box sx={{ 
-                                    display: 'flex', 
-                                    flexDirection: 'row', 
-                                    gap: { xs: 0, md: 2 }, 
-                                    flexWrap: { xs: 'wrap', md: 'nowrap' }, 
-                                    justifyContent: 'center' 
+                                <Box sx={{
+                                    display: 'flex',
+                                    flexDirection: 'row',
+                                    gap: { xs: 0, md: 2 },
+                                    flexWrap: { xs: 'wrap', md: 'nowrap' },
+                                    justifyContent: 'center'
                                 }}>
-                                    <TextField 
-                                        required 
+                                    <TextField
+                                        required
                                         name="firstName"
-                                        label={t('contact.name.first')} 
-                                        fullWidth 
-                                        margin="normal" 
+                                        value={formData.firstName}
+                                        onChange={handleChange}
+                                        label={t('contact.name.first')}
+                                        fullWidth
+                                        margin="normal"
+                                        disabled={submitting}
                                     />
-                                    <TextField 
-                                        required 
+                                    <TextField
+                                        required
                                         name="lastName"
-                                        label={t('contact.name.last')} 
-                                        fullWidth 
-                                        margin="normal" 
+                                        value={formData.lastName}
+                                        onChange={handleChange}
+                                        label={t('contact.name.last')}
+                                        fullWidth
+                                        margin="normal"
+                                        disabled={submitting}
                                     />
                                 </Box>
 
-                                <TextField 
-                                    required 
+                                <TextField
+                                    required
                                     name="phone"
-                                    label={t('contact.phone')} 
-                                    type="tel" 
-                                    fullWidth 
-                                    margin="normal" 
-                                />
-                                
-                                <TextField 
-                                    required 
-                                    name="email"
-                                    label={t('contact.email')} 
-                                    type="email" 
-                                    fullWidth 
-                                    margin="normal" 
+                                    value={formData.phone}
+                                    onChange={handleChange}
+                                    label={t('contact.phone')}
+                                    type="tel"
+                                    fullWidth
+                                    margin="normal"
+                                    disabled={submitting}
                                 />
 
-                                <TextField 
-                                    required 
+                                <TextField
+                                    required
+                                    name="email"
+                                    value={formData.email}
+                                    onChange={handleChange}
+                                    label={t('contact.email')}
+                                    type="email"
+                                    fullWidth
+                                    margin="normal"
+                                    disabled={submitting}
+                                />
+
+                                <TextField
+                                    required
                                     name="message"
-                                    label={t('contact.message')} 
-                                    multiline 
-                                    rows={4} 
-                                    fullWidth 
-                                    margin="normal" 
+                                    value={formData.message}
+                                    onChange={handleChange}
+                                    label={t('contact.message')}
+                                    multiline
+                                    rows={4}
+                                    fullWidth
+                                    margin="normal"
+                                    disabled={submitting}
                                 />
                             </Box>
 
                             {/* Submit Button - INSIDE FORM */}
-                            <Button 
-                                variant="contained" 
-                                color="primary" 
-                                fullWidth 
-                                type="submit" 
+                            <Button
+                                variant="contained"
+                                color="primary"
+                                fullWidth
+                                type="submit"
+                                disabled={submitting}
+                                startIcon={submitting ? <CircularProgress size={20} color="inherit" /> : null}
                                 sx={{ mt: 4, py: 1.5 }}
                             >
-                                {t('contact.send')}
+                                {submitting ? 'Sending...' : t('contact.send')}
                             </Button>
                         </form>
                     </Paper>
