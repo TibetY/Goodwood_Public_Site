@@ -11,6 +11,14 @@ export function meta({}: Route.MetaArgs) {
     ];
 }
 
+// Action to handle form POST - Netlify intercepts this before it reaches here
+export async function action({ request }: Route.ActionArgs) {
+    // Netlify Forms handles the actual form submission
+    // This action just needs to exist to accept the POST request
+    // Return null to render the thank you page
+    return null;
+}
+
 export default function ThankYou() {
     const { t } = useTranslation();
     const navigate = useNavigate();
