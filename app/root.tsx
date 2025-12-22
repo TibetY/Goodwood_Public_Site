@@ -6,18 +6,17 @@ import {
   Scripts,
   ScrollRestoration,
 } from "react-router";
-import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import { Container, Typography, Box } from '@mui/material';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 import type { Route } from "./+types/root";
 import "./app.css";
-import theme from './theme';
 import './i18n';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import { AuthProvider } from "./context/auth-context";
+import { ThemeProvider } from "./context/theme-context";
 import FreemasonryChatbot from "./routes/chatBot";
 
 // Create a client
@@ -61,7 +60,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
       <body>
         <QueryClientProvider client={queryClient}>
           <AuthProvider>
-            <ThemeProvider theme={theme}>
+            <ThemeProvider>
               <CssBaseline />
               {children}
             </ThemeProvider>

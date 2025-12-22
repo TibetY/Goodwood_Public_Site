@@ -2,10 +2,11 @@ import { createTheme } from '@mui/material/styles';
 
 // Masonic-inspired color palette
 // Using traditional colors associated with Freemasonry
-const theme = createTheme({
+export const getTheme = (mode: 'light' | 'dark') => createTheme({
   palette: {
+    mode,
     primary: {
-      main: '#1a237e', // Deep blue - representing wisdom and truth
+      main: mode === 'light' ? '#1a237e' : '#534bae', // Deep blue - representing wisdom and truth
       light: '#534bae',
       dark: '#000051',
       contrastText: '#ffffff',
@@ -14,15 +15,15 @@ const theme = createTheme({
       main: '#c5a572', // Gold - representing light and knowledge
       light: '#f9d7a3',
       dark: '#957545',
-      contrastText: '#000000',
+      contrastText: mode === 'light' ? '#000000' : '#ffffff',
     },
     background: {
-      default: '#ffffff',
-      paper: '#ffffff',
+      default: mode === 'light' ? '#ffffff' : '#121212',
+      paper: mode === 'light' ? '#ffffff' : '#1e1e1e',
     },
     text: {
-      primary: '#1a1a1a',
-      secondary: '#666666',
+      primary: mode === 'light' ? '#1a1a1a' : '#e0e0e0',
+      secondary: mode === 'light' ? '#666666' : '#b0b0b0',
     },
   },
   typography: {
@@ -64,12 +65,10 @@ const theme = createTheme({
     body1: {
       fontSize: '1.125rem',
       lineHeight: 1.7,
-      color: '#333333',
     },
     body2: {
       fontSize: '1rem',
       lineHeight: 1.6,
-      color: '#666666',
     },
   },
   components: {
@@ -86,7 +85,9 @@ const theme = createTheme({
         contained: {
           boxShadow: 'none',
           '&:hover': {
-            boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+            boxShadow: mode === 'light'
+              ? '0 4px 12px rgba(0,0,0,0.15)'
+              : '0 4px 12px rgba(0,0,0,0.5)',
             transform: 'translateY(-1px)',
           },
         },
@@ -95,7 +96,9 @@ const theme = createTheme({
     MuiAppBar: {
       styleOverrides: {
         root: {
-          boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+          boxShadow: mode === 'light'
+            ? '0 2px 8px rgba(0,0,0,0.08)'
+            : '0 2px 8px rgba(0,0,0,0.3)',
         },
       },
     },
@@ -108,7 +111,16 @@ const theme = createTheme({
         },
       },
     },
+    MuiPaper: {
+      styleOverrides: {
+        root: {
+          backgroundImage: 'none',
+        },
+      },
+    },
   },
 });
 
+// Default light theme export for backwards compatibility
+const theme = getTheme('light');
 export default theme;
