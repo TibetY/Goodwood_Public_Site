@@ -62,7 +62,7 @@ export default function Contact() {
             {/* Hero Section */}
             <Box
                 sx={{
-                    backgroundColor: '#13294b',
+                    backgroundColor: 'section.accent',
                     color: 'white',
                     py: { xs: 6, md: 8 },
                     borderBottom: '1px solid rgba(255,255,255,0.1)',
@@ -95,7 +95,7 @@ export default function Contact() {
             {/* Form Section */}
             <Box
                 sx={{
-                    backgroundColor: '#f5f5f5',
+                    backgroundColor: 'section.neutral',
                     py: { xs: 6, md: 10 },
                 }}
             >

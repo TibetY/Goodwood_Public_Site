@@ -226,9 +226,9 @@ export default function ManageMembers() {
                     startIcon={<PersonAddIcon />}
                     onClick={() => setAddDialogOpen(true)}
                     sx={{
-                        backgroundColor: '#13294b',
+                        backgroundColor: 'accent.navy',
                         '&:hover': {
-                            backgroundColor: '#1c3f72ff'
+                            backgroundColor: 'primary.main'
                         }
                     }}
                 >
@@ -252,7 +252,7 @@ export default function ManageMembers() {
             <TableContainer component={Paper} elevation={2}>
                 <Table>
                     <TableHead>
-                        <TableRow sx={{ backgroundColor: '#f5f5f5' }}>
+                        <TableRow sx={{ backgroundColor: 'section.neutral' }}>
                             <TableCell><strong>Display Name</strong></TableCell>
                             <TableCell><strong>Email</strong></TableCell>
                             <TableCell><strong>Phone</strong></TableCell>

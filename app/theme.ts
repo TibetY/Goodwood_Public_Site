@@ -1,5 +1,33 @@
 import { createTheme } from '@mui/material/styles';
 
+// Extend the palette type to include custom colors
+declare module '@mui/material/styles' {
+  interface Palette {
+    section: {
+      hero: string;
+      accent: string;
+      neutral: string;
+      border: string;
+    };
+    accent: {
+      gold: string;
+      navy: string;
+    };
+  }
+  interface PaletteOptions {
+    section?: {
+      hero?: string;
+      accent?: string;
+      neutral?: string;
+      border?: string;
+    };
+    accent?: {
+      gold?: string;
+      navy?: string;
+    };
+  }
+}
+
 // Masonic-inspired color palette
 // Using traditional colors associated with Freemasonry
 export const getTheme = (mode: 'light' | 'dark') => createTheme({
@@ -24,6 +52,18 @@ export const getTheme = (mode: 'light' | 'dark') => createTheme({
     text: {
       primary: mode === 'light' ? '#1a1a1a' : '#e0e0e0',
       secondary: mode === 'light' ? '#666666' : '#b0b0b0',
+    },
+    // Custom section colors
+    section: {
+      hero: mode === 'light' ? '#e8e8e8' : '#1a1a1a',
+      accent: mode === 'light' ? '#13294b' : '#1e2a3a',
+      neutral: mode === 'light' ? '#f5f5f5' : '#181818',
+      border: mode === 'light' ? '#d0d0d0' : '#333333',
+    },
+    // Accent colors that work in both modes
+    accent: {
+      gold: '#c5a572',
+      navy: mode === 'light' ? '#13294b' : '#2a3f5f',
     },
   },
   typography: {

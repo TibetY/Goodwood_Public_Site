@@ -281,7 +281,7 @@ export default function ManageOfficers() {
             <TableContainer component={Paper} elevation={2}>
                 <Table>
                     <TableHead>
-                        <TableRow sx={{ backgroundColor: '#f5f5f5' }}>
+                        <TableRow sx={{ backgroundColor: 'section.neutral' }}>
                             {/* <TableCell><strong>Position</strong></TableCell> */}
                             <TableCell><strong>Title</strong></TableCell>
                             <TableCell><strong>Name</strong></TableCell>

@@ -25,9 +25,9 @@ export default function Home() {
       {/* Hero Section */}
       <Box
         sx={{
-          backgroundColor: '#e8e8e8',
+          backgroundColor: 'section.hero',
           py: { xs: 6, md: 10 },
-          borderBottom: '1px solid #d0d0d0',
+          borderBottom: (theme) => `1px solid ${theme.palette.section.border}`,
         }}
       >
         <Container maxWidth="lg">
@@ -72,7 +72,7 @@ export default function Home() {
       {/* Welcome Section */}
       < Box
         sx={{
-          backgroundColor: '#13294b',
+          backgroundColor: 'section.accent',
           color: 'white',
           py: { xs: 6, md: 10 },
         }
@@ -93,7 +93,7 @@ export default function Home() {
                 sx={{
                   mb: 2,
                   fontWeight: 400,
-                  color: '#c5a572',
+                  color: 'accent.gold',
                 }}
               >
                 {t('home.welcome.greeting')}
@@ -136,7 +136,7 @@ export default function Home() {
       {/* Step into Freemasonry Section */}
       < Box
         sx={{
-          backgroundColor: '#f5f5f5',
+          backgroundColor: 'section.neutral',
           py: { xs: 6, md: 10 },
           textAlign: 'center',
         }}
@@ -177,13 +177,13 @@ export default function Home() {
             to="/contact"
             size="large"
             sx={{
-              backgroundColor: '#13294b',
+              backgroundColor: 'accent.navy',
               color: 'white',
               px: 5,
               py: 1.5,
               fontSize: '1.125rem',
               '&:hover': {
-                backgroundColor: '#1a237e',
+                backgroundColor: 'primary.main',
               },
             }}
           >
@@ -195,7 +195,7 @@ export default function Home() {
       {/* Values Section */}
       < Box
         sx={{
-          backgroundColor: '#13294b',
+          backgroundColor: 'section.accent',
           color: 'white',
           py: { xs: 6, md: 10 },
         }}
