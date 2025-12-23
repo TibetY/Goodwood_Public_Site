@@ -39,7 +39,7 @@ export default function Home() {
                 sx={{
                   fontSize: { xs: '2.5rem', md: '3rem' },
                   mb: 2,
-                  color: 'primary.dark',
+                  color: 'text.primary',
                 }}
               >
                 {t('home.hero.title')}

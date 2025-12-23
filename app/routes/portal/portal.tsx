@@ -50,49 +50,42 @@ export default function Portal() {
             description: t('portal.manageMembers.description'),
             icon: <PeopleIcon sx={{ fontSize: 60 }} />,
             path: '/portal/members',
-            color: '#1a237e'
         },
         {
             title: t('portal.manageCommittees.title'),
             description: t('portal.manageCommittees.description'),
             icon: <GroupsIcon sx={{ fontSize: 60 }} />,
             path: '/portal/committees',
-            color: '#0d47a1'
         },
         {
             title: t('portal.manageOfficers.title'),
             description: t('portal.manageOfficers.description'),
             icon: <AdminPanelSettingsIcon sx={{ fontSize: 60 }} />,
             path: '/portal/officers',
-            color: '#01579b'
         },
         {
             title: t('portal.manageEvents.title'),
             description: t('portal.manageEvents.description'),
             icon: <EventIcon sx={{ fontSize: 60 }} />,
             path: '/portal/events',
-            color: '#01579b'
         },
         {
             title: t('portal.degreeWork.title'),
             description: t('portal.degreeWork.description'),
             icon: <SquareFootIcon sx={{ fontSize: 60 }} />,
             path: '/portal/degree-work',
-            color: '#01579b'
         },
         {
             title: t('portal.sendSummons.title'),
             description: t('portal.sendSummons.description'),
             icon: <DescriptionIcon sx={{ fontSize: 60 }} />,
             path: '/portal/summons',
-            color: '#01579b'
         },
         {
             title: t('portal.payDues.title'),
             description: t('portal.payDues.description'),
             icon: <AttachMoneyIcon sx={{ fontSize: 60 }} />,
             path: '/portal/dues',
-            color: '#01579b'
         }
 
     ];
@@ -138,7 +131,7 @@ export default function Portal() {
                             >
                                 <Box
                                     sx={{
-                                        color: option.color,
+                                        color: 'primary.main',
                                         mb: 3
                                     }}
                                 >

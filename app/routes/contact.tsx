@@ -128,7 +128,7 @@ export default function Contact() {
                                 <Typography
                                     variant="h4"
                                     sx={{
-                                        color: 'primary.dark',
+                                        color: 'text.primary',
                                         textAlign: 'center',
                                     }}
                                 >
@@ -245,7 +245,7 @@ export default function Contact() {
                             variant="h4"
                             sx={{
                                 mb: 3,
-                                color: 'primary.dark',
+                                color: 'text.primary',
                             }}
                         >
                             Other Ways to Connect
