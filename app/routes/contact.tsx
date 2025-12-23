@@ -235,7 +235,7 @@ export default function Contact() {
             {/* Additional Info Section */}
             <Box
                 sx={{
-                    backgroundColor: 'white',
+                    backgroundColor: 'background.default',
                     py: { xs: 6, md: 8 },
                 }}
             >
