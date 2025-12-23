@@ -262,7 +262,7 @@ export default function RateLimitedChatbot() {
                         flex: 1,
                         overflow: 'auto',
                         p: 2,
-                        bgcolor: '#f5f5f5',
+                        bgcolor: 'section.neutral',
                         display: 'flex',
                         flexDirection: 'column',
                         gap: 2
@@ -278,7 +278,7 @@ export default function RateLimitedChatbot() {
                             }}
                         >
                             {message.role === 'assistant' && (
-                                <Avatar sx={{ bgcolor: '#1a237e', width: 32, height: 32 }}>
+                                <Avatar sx={{ bgcolor: 'primary.main', width: 32, height: 32 }}>
                                     <SmartToyIcon fontSize="small" />
                                 </Avatar>
                             )}
@@ -302,7 +302,7 @@ export default function RateLimitedChatbot() {
 
                     {loading && (
                         <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
-                            <Avatar sx={{ bgcolor: '#1a237e', width: 32, height: 32 }}>
+                            <Avatar sx={{ bgcolor: 'primary.main', width: 32, height: 32 }}>
                                 <SmartToyIcon fontSize="small" />
                             </Avatar>
                             <Paper elevation={1} sx={{ p: 1.5, borderRadius: 2 }}>

@@ -79,7 +79,7 @@ export default function ThankYou() {
                             variant="h4"
                             sx={{
                                 mb: 2,
-                                color: 'primary.dark',
+                                color: 'text.primary',
                             }}
                         >
                             Message Sent Successfully
