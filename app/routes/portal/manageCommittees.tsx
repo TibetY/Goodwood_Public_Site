@@ -318,9 +318,9 @@ export default function ManageCommittees() {
                     startIcon={<AddIcon />}
                     onClick={() => handleOpenCommitteeDialog()}
                     sx={{
-                        backgroundColor: '#13294b',
+                        backgroundColor: 'accent.navy',
                         '&:hover': {
-                            backgroundColor: '#1c3f72ff'
+                            backgroundColor: 'primary.main'
                         }
                     }}
                 >
