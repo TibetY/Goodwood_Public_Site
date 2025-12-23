@@ -21,7 +21,10 @@ import {
 import MenuIcon from '@mui/icons-material/Menu';
 import LanguageIcon from '@mui/icons-material/Language';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import Brightness4Icon from '@mui/icons-material/Brightness4';
+import Brightness7Icon from '@mui/icons-material/Brightness7';
 import { useAuth } from '../context/auth-context';
+import { useThemeMode } from '../context/theme-context';
 
 
 const pages = [
@@ -39,6 +42,7 @@ const aboutSubmenu = [
 export default function Header() {
   const { t, i18n } = useTranslation();
   const { user, signOut } = useAuth();
+  const { mode, toggleTheme } = useThemeMode();
   const navigate = useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [langMenuAnchor, setLangMenuAnchor] = useState<null | HTMLElement>(null);
@@ -84,8 +88,8 @@ export default function Header() {
       color="default"
       elevation={0}
       sx={{
-        backgroundColor: 'white',
-        borderBottom: '1px solid rgba(0,0,0,0.08)',
+        backgroundColor: 'background.paper',
+        borderBottom: (theme) => `1px solid ${theme.palette.divider}`,
       }}
     >
       <Container maxWidth="xl">
@@ -346,6 +350,24 @@ export default function Header() {
               </Button>
             )}
 
+            {/* Theme Toggle */}
+            <IconButton
+              onClick={toggleTheme}
+              color="inherit"
+              size="small"
+              sx={{
+                ml: 1,
+                transition: 'all 0.3s ease',
+                '&:hover': {
+                  color: 'primary.main',
+                  transform: 'scale(1.05)',
+                },
+              }}
+              aria-label="toggle theme"
+            >
+              {mode === 'dark' ? <Brightness7Icon /> : <Brightness4Icon />}
+            </IconButton>
+
             {/* Language Switcher */}
             <IconButton
               onClick={handleOpenLangMenu}
@@ -384,8 +406,11 @@ export default function Header() {
 
           </Stack>
 
-          {/* Mobile Language Icon */}
-          <Box sx={{ display: { xs: 'flex', md: 'none' } }}>
+          {/* Mobile Theme & Language Icons */}
+          <Box sx={{ display: { xs: 'flex', md: 'none' }, gap: 0.5 }}>
+            <IconButton onClick={toggleTheme} color="inherit" size="small" aria-label="toggle theme">
+              {mode === 'dark' ? <Brightness7Icon /> : <Brightness4Icon />}
+            </IconButton>
             <IconButton onClick={handleOpenLangMenu} color="inherit" size="small">
               <LanguageIcon />
             </IconButton>
