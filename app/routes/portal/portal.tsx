@@ -63,30 +63,12 @@ export default function Portal() {
             icon: <AdminPanelSettingsIcon sx={{ fontSize: 60 }} />,
             path: '/portal/officers',
         },
-        {
-            title: t('portal.manageEvents.title'),
-            description: t('portal.manageEvents.description'),
-            icon: <EventIcon sx={{ fontSize: 60 }} />,
-            path: '/portal/events',
-        },
-        {
-            title: t('portal.degreeWork.title'),
-            description: t('portal.degreeWork.description'),
-            icon: <SquareFootIcon sx={{ fontSize: 60 }} />,
-            path: '/portal/degree-work',
-        },
-        {
-            title: t('portal.sendSummons.title'),
-            description: t('portal.sendSummons.description'),
-            icon: <DescriptionIcon sx={{ fontSize: 60 }} />,
-            path: '/portal/summons',
-        },
-        {
-            title: t('portal.payDues.title'),
-            description: t('portal.payDues.description'),
-            icon: <AttachMoneyIcon sx={{ fontSize: 60 }} />,
-            path: '/portal/dues',
-        }
+        // {
+        //     title: t('portal.manageEvents.title'),
+        //     description: t('portal.manageEvents.description'),
+        //     icon: <EventIcon sx={{ fontSize: 60 }} />,
+        //     path: '/portal/events',
+        // }
 
     ];
 
