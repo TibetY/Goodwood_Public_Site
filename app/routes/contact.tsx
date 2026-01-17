@@ -62,7 +62,7 @@ export default function Contact() {
             {/* Hero Section */}
             <Box
                 sx={{
-                    backgroundColor: '#13294b',
+                    backgroundColor: 'section.accent',
                     color: 'white',
                     py: { xs: 6, md: 8 },
                     borderBottom: '1px solid rgba(255,255,255,0.1)',
@@ -95,7 +95,7 @@ export default function Contact() {
             {/* Form Section */}
             <Box
                 sx={{
-                    backgroundColor: '#f5f5f5',
+                    backgroundColor: 'section.neutral',
                     py: { xs: 6, md: 10 },
                 }}
             >
@@ -128,7 +128,7 @@ export default function Contact() {
                                 <Typography
                                     variant="h4"
                                     sx={{
-                                        color: 'primary.dark',
+                                        color: 'text.primary',
                                         textAlign: 'center',
                                     }}
                                 >
@@ -235,7 +235,7 @@ export default function Contact() {
             {/* Additional Info Section */}
             <Box
                 sx={{
-                    backgroundColor: 'white',
+                    backgroundColor: 'background.default',
                     py: { xs: 6, md: 8 },
                 }}
             >
@@ -245,7 +245,7 @@ export default function Contact() {
                             variant="h4"
                             sx={{
                                 mb: 3,
-                                color: 'primary.dark',
+                                color: 'text.primary',
                             }}
                         >
                             Other Ways to Connect

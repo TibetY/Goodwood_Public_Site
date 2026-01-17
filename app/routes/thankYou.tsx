@@ -20,7 +20,7 @@ export default function ThankYou() {
             {/* Hero Section */}
             <Box
                 sx={{
-                    backgroundColor: '#13294b',
+                    backgroundColor: 'section.accent',
                     color: 'white',
                     py: { xs: 6, md: 8 },
                     borderBottom: '1px solid rgba(255,255,255,0.1)',
@@ -53,7 +53,7 @@ export default function ThankYou() {
             {/* Success Message Section */}
             <Box
                 sx={{
-                    backgroundColor: '#f5f5f5',
+                    backgroundColor: 'section.neutral',
                     py: { xs: 6, md: 10 },
                 }}
             >
@@ -79,7 +79,7 @@ export default function ThankYou() {
                             variant="h4"
                             sx={{
                                 mb: 2,
-                                color: 'primary.dark',
+                                color: 'text.primary',
                             }}
                         >
                             Message Sent Successfully
