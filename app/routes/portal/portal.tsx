@@ -13,10 +13,6 @@ import {
 import PeopleIcon from '@mui/icons-material/People';
 import GroupsIcon from '@mui/icons-material/Groups';
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
-import SquareFootIcon from '@mui/icons-material/SquareFoot';
-import EventIcon from '@mui/icons-material/Event';
-import DescriptionIcon from '@mui/icons-material/Description';
-import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import { useAuth } from '../../context/auth-context';
 import { useTranslation } from 'react-i18next';
 
