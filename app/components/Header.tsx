@@ -119,7 +119,11 @@ export default function Header() {
                 sx={{
                   width: '100%',
                   height: 'auto',
-                  filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.1))',
+                  filter: (theme) =>
+                    theme.palette.mode === 'dark'
+                      ? 'brightness(0) invert(1) drop-shadow(0 2px 4px rgba(255,255,255,0.1))'
+                      : 'drop-shadow(0 2px 4px rgba(0,0,0,0.1))',
+                  transition: 'filter 0.3s ease',
                 }}
                 src="./images/goodwood/goodwood-logo.svg"
               />

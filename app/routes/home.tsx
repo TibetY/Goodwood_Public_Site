@@ -62,6 +62,11 @@ export default function Home() {
                 sx={{
                   width: '50%',
                   height: "auto",
+                  filter: (theme) =>
+                    theme.palette.mode === 'dark'
+                      ? 'brightness(0) invert(1)'
+                      : 'none',
+                  transition: 'filter 0.3s ease',
                 }}
               />
             </Grid>
