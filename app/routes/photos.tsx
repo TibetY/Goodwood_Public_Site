@@ -21,7 +21,7 @@ interface Photo {
 }
 
 export async function loader() {
-    const token = process.env.VITE_DROPBOX_ACCESS_TOKEN;
+    const token = process.env.DROPBOX_ACCESS_TOKEN;
     if (!token) {
         console.error('DROPBOX_ACCESS_TOKEN is not set');
         return { photos: [] };
