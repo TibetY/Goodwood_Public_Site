@@ -50,10 +50,13 @@ export async function loader() {
             return { photos: [] };
         }
 
-        const { entries } = await listRes.json();
+        const listJson = await listRes.json();
+        console.log('Dropbox entries count:', listJson.entries?.length);
+        const { entries } = listJson;
         const imageFiles = entries.filter(
             (e: any) => e['.tag'] === 'file' && IMAGE_EXTENSIONS.test(e.name)
         );
+        console.log('Image files found:', imageFiles.length);
 
         const photos = (
             await Promise.all(
