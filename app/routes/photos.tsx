@@ -42,6 +42,7 @@ export async function loader() {
             body: JSON.stringify({
                 shared_link: { url: DROPBOX_SHARED_LINK },
                 path: '',
+                recursive: true,
             }),
         });
 
@@ -51,13 +52,30 @@ export async function loader() {
         }
 
         const listJson = await listRes.json();
-        console.log('Dropbox entries count:', listJson.entries?.length);
-        const { entries } = listJson;
+        let entries = listJson.entries;
+
+        // Handle pagination
+        let cursor = listJson.cursor;
+        let hasMore = listJson.has_more;
+        while (hasMore) {
+            const contRes = await fetch('https://api.dropboxapi.com/2/files/list_folder/continue', {
+                method: 'POST',
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ cursor }),
+            });
+            const contJson = await contRes.json();
+            entries = entries.concat(contJson.entries);
+            cursor = contJson.cursor;
+            hasMore = contJson.has_more;
+        }
+
         const imageFiles = entries.filter(
             (e: any) => e['.tag'] === 'file' && IMAGE_EXTENSIONS.test(e.name)
         );
-        console.log('All entry names:', entries.map((e: any) => `${e['.tag']}:${e.name}`));
-        console.log('Image files found:', imageFiles.length);
+        console.log('Total entries:', entries.length, '| Images found:', imageFiles.length);
 
         const photos = (
             await Promise.all(
