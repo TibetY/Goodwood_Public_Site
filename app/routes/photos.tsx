@@ -56,6 +56,7 @@ export async function loader() {
         const imageFiles = entries.filter(
             (e: any) => e['.tag'] === 'file' && IMAGE_EXTENSIONS.test(e.name)
         );
+        console.log('All entry names:', entries.map((e: any) => `${e['.tag']}:${e.name}`));
         console.log('Image files found:', imageFiles.length);
 
         const photos = (
