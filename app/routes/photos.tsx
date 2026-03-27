@@ -112,21 +112,32 @@ export default function Photos() {
     const cols = isXs ? 1 : isSm ? 2 : 3;
 
     const groups = useMemo(() => {
-        const map = new Map<string, Photo[]>();
+        // Build: yearFolder → eventFolder → Photo[]
+        const map = new Map<string, Map<string, Photo[]>>();
         for (const photo of photos) {
-            const folder = photo.path.split('/').filter(Boolean)[0] ?? 'Other';
-            if (!map.has(folder)) map.set(folder, []);
-            map.get(folder)!.push(photo);
+            const parts = photo.path.split('/').filter(Boolean);
+            const year = parts[0] ?? 'Other';
+            const event = parts.length >= 3 ? parts[1] : '';
+            if (!map.has(year)) map.set(year, new Map());
+            const eventMap = map.get(year)!;
+            if (!eventMap.has(event)) eventMap.set(event, []);
+            eventMap.get(event)!.push(photo);
         }
 
-        // Sort by the leading 4-digit year; folders without one (e.g. "Earlier") go last
+        // Sort year sections by leading 4-digit year; no-year folders go last
         const folderYear = (name: string) => parseInt(name.match(/^\d{4}/)?.[0] ?? '0');
-        const entries = Array.from(map.entries()).sort((a, b) => {
+        const years = Array.from(map.entries()).sort((a, b) => {
             const diff = folderYear(b[0]) - folderYear(a[0]);
             return sortOrder === 'newest' ? diff : -diff;
         });
 
-        return entries;
+        // Within each year, sort event subfolders alphabetically (desc = newest events first by name)
+        return years.map(([year, eventMap]) => {
+            const events = Array.from(eventMap.entries()).sort((a, b) =>
+                sortOrder === 'newest' ? b[0].localeCompare(a[0]) : a[0].localeCompare(b[0])
+            );
+            return { year, events };
+        });
     }, [photos, sortOrder]);
 
     return (
@@ -151,34 +162,43 @@ export default function Photos() {
                     {t('photos.noPhotos')}
                 </Typography>
             ) : (
-                groups.map(([folder, folderPhotos]) => (
-                    <Box key={folder} sx={{ mt: 6 }}>
-                        <Typography variant="h5" fontWeight="bold" gutterBottom>
-                            {formatFolderName(folder)}
+                groups.map(({ year, events }) => (
+                    <Box key={year} sx={{ mt: 6 }}>
+                        <Typography variant="h4" fontWeight="bold" gutterBottom>
+                            {formatFolderName(year)}
                         </Typography>
-                        <Divider sx={{ mb: 2 }} />
-                        <ImageList variant="masonry" cols={cols} gap={8}>
-                            {folderPhotos.map((photo) => (
-                                <ImageListItem
-                                    key={photo.path}
-                                    onClick={() => setSelected(photo)}
-                                    sx={{
-                                        cursor: 'pointer',
-                                        borderRadius: 1,
-                                        overflow: 'hidden',
-                                        '& img': { transition: 'opacity 0.2s' },
-                                        '&:hover img': { opacity: 0.85 },
-                                    }}
-                                >
-                                    <img
-                                        src={photoUrl(photo.path)}
-                                        alt={photo.name}
-                                        loading="lazy"
-                                        style={{ display: 'block', width: '100%', borderRadius: 4 }}
-                                    />
-                                </ImageListItem>
-                            ))}
-                        </ImageList>
+                        <Divider sx={{ mb: 3 }} />
+                        {events.map(([event, eventPhotos]) => (
+                            <Box key={event} sx={{ mb: 5 }}>
+                                {event && (
+                                    <Typography variant="h6" color="text.secondary" gutterBottom sx={{ ml: 0.5 }}>
+                                        {formatFolderName(event)}
+                                    </Typography>
+                                )}
+                                <ImageList variant="masonry" cols={cols} gap={8}>
+                                    {eventPhotos.map((photo) => (
+                                        <ImageListItem
+                                            key={photo.path}
+                                            onClick={() => setSelected(photo)}
+                                            sx={{
+                                                cursor: 'pointer',
+                                                borderRadius: 1,
+                                                overflow: 'hidden',
+                                                '& img': { transition: 'opacity 0.2s' },
+                                                '&:hover img': { opacity: 0.85 },
+                                            }}
+                                        >
+                                            <img
+                                                src={photoUrl(photo.path)}
+                                                alt={photo.name}
+                                                loading="lazy"
+                                                style={{ display: 'block', width: '100%', borderRadius: 4 }}
+                                            />
+                                        </ImageListItem>
+                                    ))}
+                                </ImageList>
+                            </Box>
+                        ))}
                     </Box>
                 ))
             )}
