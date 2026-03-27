@@ -52,7 +52,9 @@ async function listImagesRecursively(token: string, path: string): Promise<any[]
     const entries = await listFolderEntries(token, path);
     const images = entries.filter((e: any) => e['.tag'] === 'file' && IMAGE_EXTENSIONS.test(e.name));
     const folders = entries.filter((e: any) => e['.tag'] === 'folder');
-    const nested = await Promise.all(folders.map((f: any) => listImagesRecursively(token, f.path_lower)));
+    const nested = await Promise.all(
+        folders.map((f: any) => listImagesRecursively(token, `${path}/${f.name}`))
+    );
     return images.concat(nested.flat());
 }
 
