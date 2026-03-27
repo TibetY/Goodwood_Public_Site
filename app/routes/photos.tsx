@@ -73,6 +73,7 @@ export async function loader() {
 
         const imageFiles = await listImagesRecursively(token, '');
         console.log('Images found:', imageFiles.length);
+        console.log('First image entry:', JSON.stringify(imageFiles[0]));
 
         const photos = (
             await Promise.all(
@@ -88,7 +89,10 @@ export async function loader() {
                             body: JSON.stringify({ path: file.id }),
                         }
                     );
-                    if (!linkRes.ok) return null;
+                    if (!linkRes.ok) {
+                        console.error('get_temporary_link error:', await linkRes.text());
+                        return null;
+                    }
                     const { link } = await linkRes.json();
                     return { url: link, name: file.name.replace(/\.[^.]+$/, '') } as Photo;
                 })
