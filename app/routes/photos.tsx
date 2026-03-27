@@ -1,9 +1,9 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useLoaderData } from 'react-router';
 import {
     Container, Typography, ImageList, ImageListItem,
-    Dialog, DialogContent, IconButton, Box,
-    useMediaQuery, useTheme,
+    Dialog, DialogContent, IconButton, Box, Divider,
+    useMediaQuery, useTheme, ToggleButtonGroup, ToggleButton,
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { useTranslation } from 'react-i18next';
@@ -16,7 +16,7 @@ const CACHE_TTL = 24 * 60 * 60 * 1000;
 let photosCache: { data: Photo[]; timestamp: number } | null = null;
 
 interface Photo {
-    path: string; // path within shared folder, e.g. /2025-2026/image.jpg
+    path: string; // path within shared folder, e.g. /2025-2026/event/image.jpg
     name: string;
 }
 
@@ -24,6 +24,14 @@ function photoUrl(path: string, full = false) {
     const params = new URLSearchParams({ path });
     if (full) params.set('full', '1');
     return `/.netlify/functions/dropbox-photo?${params}`;
+}
+
+function formatFolderName(name: string): string {
+    // Year range like 2024_2025 or 2025-2026 → 2024 – 2025
+    if (/^\d{4}[-_]\d{4}$/.test(name)) {
+        return name.replace(/[-_]/, ' – ');
+    }
+    return name.replace(/_/g, ' ');
 }
 
 async function listFolderEntries(token: string, path: string): Promise<any[]> {
@@ -97,44 +105,82 @@ export default function Photos() {
     const { photos } = useLoaderData<typeof loader>();
     const { t } = useTranslation();
     const [selected, setSelected] = useState<Photo | null>(null);
+    const [sortOrder, setSortOrder] = useState<'newest' | 'oldest'>('newest');
     const theme = useTheme();
     const isXs = useMediaQuery(theme.breakpoints.down('sm'));
     const isSm = useMediaQuery(theme.breakpoints.between('sm', 'md'));
     const cols = isXs ? 1 : isSm ? 2 : 3;
 
+    const groups = useMemo(() => {
+        const map = new Map<string, Photo[]>();
+        for (const photo of photos) {
+            const folder = photo.path.split('/').filter(Boolean)[0] ?? 'Other';
+            if (!map.has(folder)) map.set(folder, []);
+            map.get(folder)!.push(photo);
+        }
+
+        // Sort by the leading 4-digit year; folders without one (e.g. "Earlier") go last
+        const folderYear = (name: string) => parseInt(name.match(/^\d{4}/)?.[0] ?? '0');
+        const entries = Array.from(map.entries()).sort((a, b) => {
+            const diff = folderYear(b[0]) - folderYear(a[0]);
+            return sortOrder === 'newest' ? diff : -diff;
+        });
+
+        return entries;
+    }, [photos, sortOrder]);
+
     return (
         <Container maxWidth="lg" sx={{ py: 8 }}>
-            <Typography variant="h3" component="h1" gutterBottom fontWeight="bold" textAlign="center">
-                {t('photos.title')}
-            </Typography>
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 2, mb: 2 }}>
+                <Typography variant="h3" component="h1" fontWeight="bold">
+                    {t('photos.title')}
+                </Typography>
+                <ToggleButtonGroup
+                    value={sortOrder}
+                    exclusive
+                    onChange={(_, val) => val && setSortOrder(val)}
+                    size="small"
+                >
+                    <ToggleButton value="newest">{t('photos.newestFirst')}</ToggleButton>
+                    <ToggleButton value="oldest">{t('photos.oldestFirst')}</ToggleButton>
+                </ToggleButtonGroup>
+            </Box>
 
             {photos.length === 0 ? (
                 <Typography textAlign="center" color="text.secondary" sx={{ mt: 4 }}>
                     {t('photos.noPhotos')}
                 </Typography>
             ) : (
-                <ImageList variant="masonry" cols={cols} gap={8} sx={{ mt: 4 }}>
-                    {photos.map((photo) => (
-                        <ImageListItem
-                            key={photo.path}
-                            onClick={() => setSelected(photo)}
-                            sx={{
-                                cursor: 'pointer',
-                                borderRadius: 1,
-                                overflow: 'hidden',
-                                '& img': { transition: 'opacity 0.2s' },
-                                '&:hover img': { opacity: 0.85 },
-                            }}
-                        >
-                            <img
-                                src={photoUrl(photo.path)}
-                                alt={photo.name}
-                                loading="lazy"
-                                style={{ display: 'block', width: '100%', borderRadius: 4 }}
-                            />
-                        </ImageListItem>
-                    ))}
-                </ImageList>
+                groups.map(([folder, folderPhotos]) => (
+                    <Box key={folder} sx={{ mt: 6 }}>
+                        <Typography variant="h5" fontWeight="bold" gutterBottom>
+                            {formatFolderName(folder)}
+                        </Typography>
+                        <Divider sx={{ mb: 2 }} />
+                        <ImageList variant="masonry" cols={cols} gap={8}>
+                            {folderPhotos.map((photo) => (
+                                <ImageListItem
+                                    key={photo.path}
+                                    onClick={() => setSelected(photo)}
+                                    sx={{
+                                        cursor: 'pointer',
+                                        borderRadius: 1,
+                                        overflow: 'hidden',
+                                        '& img': { transition: 'opacity 0.2s' },
+                                        '&:hover img': { opacity: 0.85 },
+                                    }}
+                                >
+                                    <img
+                                        src={photoUrl(photo.path)}
+                                        alt={photo.name}
+                                        loading="lazy"
+                                        style={{ display: 'block', width: '100%', borderRadius: 4 }}
+                                    />
+                                </ImageListItem>
+                            ))}
+                        </ImageList>
+                    </Box>
+                ))
             )}
 
             <Dialog

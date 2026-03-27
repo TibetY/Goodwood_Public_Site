@@ -153,7 +153,9 @@
   },
   "photos": {
     "title": "Photos",
-    "noPhotos": "Aucune photo disponible."
+    "noPhotos": "Aucune photo disponible.",
+    "newestFirst": "Plus Récent",
+    "oldestFirst": "Plus Ancien"
   },
   "common": {
     "loading": "Chargement...",
