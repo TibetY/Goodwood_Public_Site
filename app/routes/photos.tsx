@@ -20,6 +20,42 @@ interface Photo {
     name: string;
 }
 
+async function listFolderEntries(token: string, path: string): Promise<any[]> {
+    const res = await fetch('https://api.dropboxapi.com/2/files/list_folder', {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ shared_link: { url: DROPBOX_SHARED_LINK }, path }),
+    });
+    if (!res.ok) {
+        console.error(`list_folder error for "${path}":`, await res.text());
+        return [];
+    }
+    const json = await res.json();
+    let entries = json.entries;
+    let cursor = json.cursor;
+    let hasMore = json.has_more;
+    while (hasMore) {
+        const cont = await fetch('https://api.dropboxapi.com/2/files/list_folder/continue', {
+            method: 'POST',
+            headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ cursor }),
+        });
+        const contJson = await cont.json();
+        entries = entries.concat(contJson.entries);
+        cursor = contJson.cursor;
+        hasMore = contJson.has_more;
+    }
+    return entries;
+}
+
+async function listImagesRecursively(token: string, path: string): Promise<any[]> {
+    const entries = await listFolderEntries(token, path);
+    const images = entries.filter((e: any) => e['.tag'] === 'file' && IMAGE_EXTENSIONS.test(e.name));
+    const folders = entries.filter((e: any) => e['.tag'] === 'folder');
+    const nested = await Promise.all(folders.map((f: any) => listImagesRecursively(token, f.path_lower)));
+    return images.concat(nested.flat());
+}
+
 export async function loader() {
     const token = process.env.DROPBOX_ACCESS_TOKEN;
     if (!token) {
@@ -33,49 +69,8 @@ export async function loader() {
             return { photos: photosCache.data };
         }
 
-        const listRes = await fetch('https://api.dropboxapi.com/2/files/list_folder', {
-            method: 'POST',
-            headers: {
-                Authorization: `Bearer ${token}`,
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                shared_link: { url: DROPBOX_SHARED_LINK },
-                path: '',
-                recursive: true,
-            }),
-        });
-
-        if (!listRes.ok) {
-            console.error('Dropbox list_folder error:', await listRes.text());
-            return { photos: [] };
-        }
-
-        const listJson = await listRes.json();
-        let entries = listJson.entries;
-
-        // Handle pagination
-        let cursor = listJson.cursor;
-        let hasMore = listJson.has_more;
-        while (hasMore) {
-            const contRes = await fetch('https://api.dropboxapi.com/2/files/list_folder/continue', {
-                method: 'POST',
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ cursor }),
-            });
-            const contJson = await contRes.json();
-            entries = entries.concat(contJson.entries);
-            cursor = contJson.cursor;
-            hasMore = contJson.has_more;
-        }
-
-        const imageFiles = entries.filter(
-            (e: any) => e['.tag'] === 'file' && IMAGE_EXTENSIONS.test(e.name)
-        );
-        console.log('Total entries:', entries.length, '| Images found:', imageFiles.length);
+        const imageFiles = await listImagesRecursively(token, '');
+        console.log('Images found:', imageFiles.length);
 
         const photos = (
             await Promise.all(
