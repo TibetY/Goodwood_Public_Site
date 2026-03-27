@@ -17,39 +17,17 @@ export const handler: Handler = async (event: HandlerEvent) => {
         return { statusCode: 500, body: 'Server configuration error' };
     }
 
-    const full = event.queryStringParameters?.full === '1';
-
     try {
         let response: Response;
 
-        if (full) {
-            // Full resolution for lightbox
-            response = await fetch('https://content.dropboxapi.com/2/sharing/get_shared_link_file', {
-                method: 'POST',
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    'Dropbox-API-Arg': JSON.stringify({ url: DROPBOX_SHARED_LINK, path }),
-                },
-            });
-        } else {
-            // Thumbnail for gallery grid
-            response = await fetch('https://content.dropboxapi.com/2/files/get_thumbnail_v2', {
-                method: 'POST',
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    'Dropbox-API-Arg': JSON.stringify({
-                        resource: {
-                            '.tag': 'shared_link',
-                            url: DROPBOX_SHARED_LINK,
-                            path,
-                        },
-                        size: { '.tag': 'w1024h768' },
-                        format: { '.tag': 'jpeg' },
-                        mode: { '.tag': 'fitone_bestfit' },
-                    }),
-                },
-            });
-        }
+        // Use sharing/get_shared_link_file for both thumbnail and full resolution
+        response = await fetch('https://content.dropboxapi.com/2/sharing/get_shared_link_file', {
+            method: 'POST',
+            headers: {
+                Authorization: `Bearer ${token}`,
+                'Dropbox-API-Arg': JSON.stringify({ url: DROPBOX_SHARED_LINK, path }),
+            },
+        });
 
         if (!response.ok) {
             console.error(`dropbox-photo error for "${path}":`, await response.text());
