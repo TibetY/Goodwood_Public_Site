@@ -11,13 +11,19 @@ import { useTranslation } from 'react-i18next';
 const DROPBOX_SHARED_LINK = 'https://www.dropbox.com/scl/fo/7gd10a4uuajp1nl41b1kt/AC9kDN6IoQI1W406N-K6rbU?rlkey=fphtf4p8pfashffjhqtd606gd&st=uwxnfm4g&dl=0';
 const IMAGE_EXTENSIONS = /\.(jpg|jpeg|png|gif|webp|heic)$/i;
 
-// Cache for 1 hour — matches Dropbox temporary link validity
-const CACHE_TTL = 60 * 60 * 1000;
+// Cache for 24 hours — paths don't expire
+const CACHE_TTL = 24 * 60 * 60 * 1000;
 let photosCache: { data: Photo[]; timestamp: number } | null = null;
 
 interface Photo {
-    url: string;
+    path: string; // path within shared folder, e.g. /2025-2026/image.jpg
     name: string;
+}
+
+function photoUrl(path: string, full = false) {
+    const params = new URLSearchParams({ path });
+    if (full) params.set('full', '1');
+    return `/.netlify/functions/dropbox-photo?${params}`;
 }
 
 async function listFolderEntries(token: string, path: string): Promise<any[]> {
@@ -48,12 +54,17 @@ async function listFolderEntries(token: string, path: string): Promise<any[]> {
     return entries;
 }
 
-async function listImagesRecursively(token: string, path: string): Promise<any[]> {
-    const entries = await listFolderEntries(token, path);
-    const images = entries.filter((e: any) => e['.tag'] === 'file' && IMAGE_EXTENSIONS.test(e.name));
+async function listImagesRecursively(token: string, folderPath: string): Promise<Photo[]> {
+    const entries = await listFolderEntries(token, folderPath);
+    const images: Photo[] = entries
+        .filter((e: any) => e['.tag'] === 'file' && IMAGE_EXTENSIONS.test(e.name))
+        .map((e: any) => ({
+            path: `${folderPath}/${e.name}`,
+            name: e.name.replace(/\.[^.]+$/, ''),
+        }));
     const folders = entries.filter((e: any) => e['.tag'] === 'folder');
     const nested = await Promise.all(
-        folders.map((f: any) => listImagesRecursively(token, `${path}/${f.name}`))
+        folders.map((f: any) => listImagesRecursively(token, `${folderPath}/${f.name}`))
     );
     return images.concat(nested.flat());
 }
@@ -71,33 +82,8 @@ export async function loader() {
             return { photos: photosCache.data };
         }
 
-        const imageFiles = await listImagesRecursively(token, '');
-        console.log('Images found:', imageFiles.length);
-        console.log('First image entry:', JSON.stringify(imageFiles[0]));
-
-        const photos = (
-            await Promise.all(
-                imageFiles.map(async (file: any) => {
-                    const linkRes = await fetch(
-                        'https://api.dropboxapi.com/2/files/get_temporary_link',
-                        {
-                            method: 'POST',
-                            headers: {
-                                Authorization: `Bearer ${token}`,
-                                'Content-Type': 'application/json',
-                            },
-                            body: JSON.stringify({ path: file.id }),
-                        }
-                    );
-                    if (!linkRes.ok) {
-                        console.error('get_temporary_link error:', await linkRes.text());
-                        return null;
-                    }
-                    const { link } = await linkRes.json();
-                    return { url: link, name: file.name.replace(/\.[^.]+$/, '') } as Photo;
-                })
-            )
-        ).filter(Boolean) as Photo[];
+        const photos = await listImagesRecursively(token, '');
+        console.log('Photos found:', photos.length);
 
         photosCache = { data: photos, timestamp: now };
         return { photos };
@@ -130,7 +116,7 @@ export default function Photos() {
                 <ImageList variant="masonry" cols={cols} gap={8} sx={{ mt: 4 }}>
                     {photos.map((photo) => (
                         <ImageListItem
-                            key={photo.url}
+                            key={photo.path}
                             onClick={() => setSelected(photo)}
                             sx={{
                                 cursor: 'pointer',
@@ -141,7 +127,7 @@ export default function Photos() {
                             }}
                         >
                             <img
-                                src={photo.url}
+                                src={photoUrl(photo.path)}
                                 alt={photo.name}
                                 loading="lazy"
                                 style={{ display: 'block', width: '100%', borderRadius: 4 }}
@@ -168,7 +154,7 @@ export default function Photos() {
                     {selected && (
                         <Box
                             component="img"
-                            src={selected.url}
+                            src={photoUrl(selected.path, true)}
                             alt={selected.name}
                             sx={{
                                 width: '100%',
