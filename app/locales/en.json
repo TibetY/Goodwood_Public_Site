@@ -13,6 +13,7 @@
     "officers": "Officers",
     "committees": "Committees",
     "pastMasters": "Past Masters",
+    "photos": "Photos",
     "events": "Events",
     "contact": "Contact",
     "login": "Login"
@@ -154,6 +155,12 @@
       "becomeAMason": "Becoming a Mason"
     },
     "copyright": "© {{year}} Goodwood Lodge No. 159. All rights reserved."
+  },
+  "photos": {
+    "title": "Photos",
+    "noPhotos": "No photos available.",
+    "newestFirst": "Newest First",
+    "oldestFirst": "Oldest First"
   },
   "common": {
     "loading": "Loading...",

@@ -8,6 +8,7 @@ export default [
     route("committees", "routes/about/committees.tsx"),
     route("past-masters", "routes/about/pastMasters.tsx"),
     
+    route("photos", "routes/photos.tsx"),
     route("events", "routes/events.tsx"),
     route("contact", "routes/contact.tsx"),
     route("thank-you", "routes/thankYou.tsx"),

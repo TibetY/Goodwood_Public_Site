@@ -28,6 +28,7 @@ import { useThemeMode } from '../context/theme-context';
 
 
 const pages = [
+  { key: 'photos', path: '/photos' },
   { key: 'events', path: '/events' },
   { key: 'contact', path: '/contact' },
 ];
