@@ -224,6 +224,10 @@
       "title": "Gérer les Officiers",
       "description": "Mettre à jour les officiers et les positions de la loge"
     },
+    "managePhotos": {
+      "title": "Gérer les Photos",
+      "description": "Téléverser et organiser les photos de la loge"
+    },
     "degreeWork": {
       "title": "Travail des Degrés",
       "description": "Pratiquer les cérémonies des degrés"

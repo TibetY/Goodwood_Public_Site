@@ -229,6 +229,10 @@
       "title": "Manage Officers",
       "description": "Update lodge officers and positions"
     },
+    "managePhotos": {
+      "title": "Manage Photos",
+      "description": "Upload and organize lodge photos"
+    },
     "degreeWork": {
       "title": "Degree Work",
       "description": "Practice degree ceremonies"
