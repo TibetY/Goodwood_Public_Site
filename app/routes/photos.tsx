@@ -7,80 +7,71 @@ import {
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { useTranslation } from 'react-i18next';
+import { createClient } from '@supabase/supabase-js';
 
-const DROPBOX_SHARED_LINK = 'https://www.dropbox.com/scl/fo/7gd10a4uuajp1nl41b1kt/AC9kDN6IoQI1W406N-K6rbU?rlkey=fphtf4p8pfashffjhqtd606gd&st=uwxnfm4g&dl=0';
+const BUCKET = 'photos';
 const IMAGE_EXTENSIONS = /\.(jpg|jpeg|png|gif|webp|heic)$/i;
 
-// Cache for 24 hours — paths don't expire
+// Cache for 24 hours — paths don't change often
 const CACHE_TTL = 24 * 60 * 60 * 1000;
 let photosCache: { data: Photo[]; timestamp: number } | null = null;
 
 interface Photo {
-    path: string; // path within shared folder, e.g. /2025-2026/event/image.jpg
+    path: string;   // e.g. "2024_2025/Installation/image.jpg"
     name: string;
-}
-
-function photoUrl(path: string, full = false) {
-    const params = new URLSearchParams({ path });
-    if (full) params.set('full', '1');
-    return `/.netlify/functions/dropbox-photo?${params}`;
+    url: string;     // direct Supabase public URL
 }
 
 function formatFolderName(name: string): string {
-    // Year range like 2024_2025 or 2025-2026 → 2024 – 2025
     if (/^\d{4}[-_]\d{4}$/.test(name)) {
         return name.replace(/[-_]/, ' – ');
     }
     return name.replace(/_/g, ' ');
 }
 
-async function listFolderEntries(token: string, path: string): Promise<any[]> {
-    const res = await fetch('https://api.dropboxapi.com/2/files/list_folder', {
-        method: 'POST',
-        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ shared_link: { url: DROPBOX_SHARED_LINK }, path }),
-    });
-    if (!res.ok) {
-        console.error(`list_folder error for "${path}":`, await res.text());
+async function listImagesRecursively(
+    supabase: ReturnType<typeof createClient>,
+    folderPath: string,
+    publicBaseUrl: string
+): Promise<Photo[]> {
+    const { data, error } = await supabase.storage
+        .from(BUCKET)
+        .list(folderPath, { limit: 1000, sortBy: { column: 'name', order: 'asc' } });
+
+    if (error || !data) {
+        console.error(`Error listing "${folderPath}":`, error?.message);
         return [];
     }
-    const json = await res.json();
-    let entries = json.entries;
-    let cursor = json.cursor;
-    let hasMore = json.has_more;
-    while (hasMore) {
-        const cont = await fetch('https://api.dropboxapi.com/2/files/list_folder/continue', {
-            method: 'POST',
-            headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
-            body: JSON.stringify({ cursor }),
-        });
-        const contJson = await cont.json();
-        entries = entries.concat(contJson.entries);
-        cursor = contJson.cursor;
-        hasMore = contJson.has_more;
-    }
-    return entries;
-}
 
-async function listImagesRecursively(token: string, folderPath: string): Promise<Photo[]> {
-    const entries = await listFolderEntries(token, folderPath);
-    const images: Photo[] = entries
-        .filter((e: any) => e['.tag'] === 'file' && IMAGE_EXTENSIONS.test(e.name))
-        .map((e: any) => ({
-            path: `${folderPath}/${e.name}`,
-            name: e.name.replace(/\.[^.]+$/, ''),
-        }));
-    const folders = entries.filter((e: any) => e['.tag'] === 'folder');
+    const photos: Photo[] = [];
+    const folders: string[] = [];
+
+    for (const item of data) {
+        const fullPath = folderPath ? `${folderPath}/${item.name}` : item.name;
+        if (item.id === null) {
+            // It's a folder prefix
+            folders.push(fullPath);
+        } else if (IMAGE_EXTENSIONS.test(item.name)) {
+            photos.push({
+                path: fullPath,
+                name: item.name.replace(/\.[^.]+$/, ''),
+                url: `${publicBaseUrl}/storage/v1/object/public/${BUCKET}/${encodeURI(fullPath)}`,
+            });
+        }
+    }
+
     const nested = await Promise.all(
-        folders.map((f: any) => listImagesRecursively(token, `${folderPath}/${f.name}`))
+        folders.map((f) => listImagesRecursively(supabase, f, publicBaseUrl))
     );
-    return images.concat(nested.flat());
+    return photos.concat(nested.flat());
 }
 
 export async function loader() {
-    const token = process.env.DROPBOX_ACCESS_TOKEN;
-    if (!token) {
-        console.error('DROPBOX_ACCESS_TOKEN is not set');
+    const supabaseUrl = process.env.VITE_SUPABASE_URL;
+    const supabaseKey = process.env.VITE_SUPABASE_SERVICE_ROLE_KEY || process.env.VITE_SUPABASE_ANON_KEY;
+
+    if (!supabaseUrl || !supabaseKey) {
+        console.error('Supabase configuration is missing');
         return { photos: [] };
     }
 
@@ -90,13 +81,17 @@ export async function loader() {
             return { photos: photosCache.data };
         }
 
-        const photos = await listImagesRecursively(token, '');
+        const supabase = createClient(supabaseUrl, supabaseKey, {
+            auth: { autoRefreshToken: false, persistSession: false },
+        });
+
+        const photos = await listImagesRecursively(supabase, '', supabaseUrl);
         console.log('Photos found:', photos.length);
 
         photosCache = { data: photos, timestamp: now };
         return { photos };
     } catch (err) {
-        console.error('Error fetching photos from Dropbox:', err);
+        console.error('Error fetching photos from Supabase:', err);
         return { photos: [] };
     }
 }
@@ -112,7 +107,6 @@ export default function Photos() {
     const cols = isXs ? 1 : isSm ? 2 : 3;
 
     const groups = useMemo(() => {
-        // Build: yearFolder → eventFolder → Photo[]
         const map = new Map<string, Map<string, Photo[]>>();
         for (const photo of photos) {
             const parts = photo.path.split('/').filter(Boolean);
@@ -124,14 +118,12 @@ export default function Photos() {
             eventMap.get(event)!.push(photo);
         }
 
-        // Sort year sections by leading 4-digit year; no-year folders go last
         const folderYear = (name: string) => parseInt(name.match(/^\d{4}/)?.[0] ?? '0');
         const years = Array.from(map.entries()).sort((a, b) => {
             const diff = folderYear(b[0]) - folderYear(a[0]);
             return sortOrder === 'newest' ? diff : -diff;
         });
 
-        // Within each year, sort event subfolders alphabetically (desc = newest events first by name)
         return years.map(([year, eventMap]) => {
             const events = Array.from(eventMap.entries()).sort((a, b) =>
                 sortOrder === 'newest' ? b[0].localeCompare(a[0]) : a[0].localeCompare(b[0])
@@ -189,7 +181,7 @@ export default function Photos() {
                                             }}
                                         >
                                             <img
-                                                src={photoUrl(photo.path)}
+                                                src={photo.url}
                                                 alt={photo.name}
                                                 loading="lazy"
                                                 style={{ display: 'block', width: '100%', borderRadius: 4 }}
@@ -220,7 +212,7 @@ export default function Photos() {
                     {selected && (
                         <Box
                             component="img"
-                            src={photoUrl(selected.path, true)}
+                            src={selected.url}
                             alt={selected.name}
                             sx={{
                                 width: '100%',

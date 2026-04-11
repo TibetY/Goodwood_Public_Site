@@ -13,6 +13,7 @@ import {
 import PeopleIcon from '@mui/icons-material/People';
 import GroupsIcon from '@mui/icons-material/Groups';
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
+import PhotoLibraryIcon from '@mui/icons-material/PhotoLibrary';
 import { useAuth } from '../../context/auth-context';
 import { useTranslation } from 'react-i18next';
 
@@ -58,6 +59,12 @@ export default function Portal() {
             description: t('portal.manageOfficers.description'),
             icon: <AdminPanelSettingsIcon sx={{ fontSize: 60 }} />,
             path: '/portal/officers',
+        },
+        {
+            title: t('portal.managePhotos.title'),
+            description: t('portal.managePhotos.description'),
+            icon: <PhotoLibraryIcon sx={{ fontSize: 60 }} />,
+            path: '/portal/photos',
         },
         // {
         //     title: t('portal.manageEvents.title'),
