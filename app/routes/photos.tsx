@@ -11,8 +11,8 @@ import { useTranslation } from 'react-i18next';
 const DROPBOX_SHARED_LINK = 'https://www.dropbox.com/scl/fo/7gd10a4uuajp1nl41b1kt/AC9kDN6IoQI1W406N-K6rbU?rlkey=fphtf4p8pfashffjhqtd606gd&st=uwxnfm4g&dl=0';
 const IMAGE_EXTENSIONS = /\.(jpg|jpeg|png|gif|webp|heic)$/i;
 
-// Cache for 24 hours — paths don't expire
-const CACHE_TTL = 24 * 60 * 60 * 1000;
+// Cache for 5 minutes — paths don't expire
+const CACHE_TTL = 5 * 60 * 1000;
 let photosCache: { data: Photo[]; timestamp: number } | null = null;
 
 interface Photo {
