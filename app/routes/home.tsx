@@ -2,6 +2,7 @@ import type { Route } from "./+types/home";
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router';
 import { Container, Typography, Box, Button, Grid } from '@mui/material';
+import { useThemeMode } from '../context/theme-context';
 import RoundedImage from "~/components/RoundedImage";
 import HandshakeIcon from '@mui/icons-material/Handshake';
 import Diversity3Icon from '@mui/icons-material/Diversity3';
@@ -19,6 +20,8 @@ export function meta({ }: Route.MetaArgs) {
 
 export default function Home() {
   const { t } = useTranslation();
+  const { mode } = useThemeMode();
+  const logo = mode === 'dark' ? 'images/goodwood/goodwood-logo-dark.png' : 'images/goodwood/goodwood-logo.svg';
 
   return (
     <>
@@ -58,7 +61,7 @@ export default function Home() {
             <Grid size={{ xs: 12, md: 6 }} sx={{ display: 'flex', justifyContent: 'center' }}>
               <Box
                 component="img"
-                src="images/goodwood/goodwood-logo.svg"
+                src={logo}
                 sx={{
                   width: '50%',
                   height: "auto",

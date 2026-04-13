@@ -122,7 +122,7 @@ export default function Header() {
                   height: 'auto',
                   filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.1))',
                 }}
-                src="./images/goodwood/goodwood-logo.svg"
+                src={mode === 'dark' ? './images/goodwood/goodwood-logo-dark.png' : './images/goodwood/goodwood-logo.svg'}
               />
             </Box>
 

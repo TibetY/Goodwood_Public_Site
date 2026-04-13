@@ -12,9 +12,11 @@ import {
 import { supabase } from '../utils/supabase';
 import { useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
+import { useThemeMode } from '../context/theme-context';
 
 export default function LoginPage() {
     const { t } = useTranslation();
+    const { mode } = useThemeMode();
     const [isLogin, setIsLogin] = useState(true);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -76,7 +78,7 @@ export default function LoginPage() {
                 }}
             >
                 {/* Logo/Header */}
-                <Box component="img" src='images/goodwood/goodwood-logo.svg' sx={{ maxWidth: 150, mb: 2 }} />
+                <Box component="img" src={mode === 'dark' ? 'images/goodwood/goodwood-logo-dark.png' : 'images/goodwood/goodwood-logo.svg'} sx={{ maxWidth: 150, mb: 2 }} />
 
                 {/* Error/Success Messages */}
                 {error && (
