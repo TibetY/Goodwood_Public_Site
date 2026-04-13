@@ -12,7 +12,7 @@ import { createClient } from '@supabase/supabase-js';
 const BUCKET = 'photos';
 const IMAGE_EXTENSIONS = /\.(jpg|jpeg|png|gif|webp|heic)$/i;
 
-// Cache for 5 minutes — paths don't expire
+// Cache for 5 minutes — Supabase listing is fast, keep photos fresh
 const CACHE_TTL = 5 * 60 * 1000;
 let photosCache: { data: Photo[]; timestamp: number } | null = null;
 
