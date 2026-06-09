@@ -87,6 +87,12 @@ export default function ManagePhotos() {
     const [renameValue, setRenameValue] = useState('');
     const [renaming, setRenaming] = useState(false);
 
+    const [editMetaDialogOpen, setEditMetaDialogOpen] = useState(false);
+    const [editMetaTarget, setEditMetaTarget] = useState<StorageItem | null>(null);
+    const [editMetaName, setEditMetaName] = useState('');
+    const [editMetaDate, setEditMetaDate] = useState('');
+    const [savingMeta, setSavingMeta] = useState(false);
+
     const [folderContextMenu, setFolderContextMenu] = useState<{ anchor: HTMLElement; folder: StorageItem } | null>(null);
 
     const [uploadMenuAnchor, setUploadMenuAnchor] = useState<HTMLElement | null>(null);
@@ -409,7 +415,7 @@ export default function ManagePhotos() {
             const newPrefix = parentPath ? `${parentPath}/${safeName}` : safeName;
 
             const listResponse = await fetch(
-                `/.netlify/functions/list-folder?path=${encodeURIComponent(oldPrefix)}`,
+                `/.netlify/functions/list-folder?path=${encodeURIComponent(oldPrefix)}&includeAll=true`,
                 { headers: { 'Authorization': `Bearer ${session?.access_token}` } }
             );
 
@@ -417,14 +423,8 @@ export default function ManagePhotos() {
             const { items: folderItems } = await listResponse.json();
 
             const allFiles = (folderItems || []).map((f: any) => f.name);
-            allFiles.push('.emptyFolderPlaceholder');
-            if (renameTarget.metadata) {
-                allFiles.push('.folder-meta.json');
-            }
 
-            const uniqueFiles = [...new Set<string>(allFiles)];
-
-            if (uniqueFiles.length === 0) {
+            if (allFiles.length === 0) {
                 const createResponse = await fetch('/.netlify/functions/create-folder', {
                     method: 'POST',
                     headers: {
@@ -435,7 +435,7 @@ export default function ManagePhotos() {
                 });
                 if (!createResponse.ok) throw new Error('Failed to create new folder');
             } else {
-                const moves = uniqueFiles.map((name: string) => ({
+                const moves = allFiles.map((name: string) => ({
                     from: `${oldPrefix}/${name}`,
                     to: `${newPrefix}/${name}`,
                 }));
@@ -472,7 +472,7 @@ export default function ManagePhotos() {
 
         try {
             const listResponse = await fetch(
-                `/.netlify/functions/list-folder?path=${encodeURIComponent(folder.path)}`,
+                `/.netlify/functions/list-folder?path=${encodeURIComponent(folder.path)}&includeAll=true`,
                 { headers: { 'Authorization': `Bearer ${session?.access_token}` } }
             );
 
@@ -480,8 +480,6 @@ export default function ManagePhotos() {
             const { items: folderItems } = await listResponse.json();
 
             const filePaths = (folderItems || []).map((f: any) => `${folder.path}/${f.name}`);
-            filePaths.push(`${folder.path}/.emptyFolderPlaceholder`);
-            filePaths.push(`${folder.path}/.folder-meta.json`);
 
             const response = await fetch('/.netlify/functions/delete-photo', {
                 method: 'POST',
@@ -544,6 +542,48 @@ export default function ManagePhotos() {
             setError(err.message || 'Failed to move photos');
         } finally {
             setMoving(false);
+        }
+    };
+
+    const handleSaveMetadata = async () => {
+        if (!editMetaTarget || savingMeta) return;
+
+        setSavingMeta(true);
+        setError(null);
+
+        try {
+            const metadata: Record<string, string> = {};
+            if (editMetaName.trim()) {
+                metadata.name = editMetaName.trim();
+            }
+            if (editMetaDate) {
+                metadata.date = editMetaDate;
+            }
+
+            const response = await fetch('/.netlify/functions/update-folder-meta', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${session?.access_token}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ folderPath: editMetaTarget.path, metadata }),
+            });
+
+            if (!response.ok) {
+                const errData = await response.json();
+                throw new Error(errData.error || 'Failed to update folder details');
+            }
+
+            setSuccess(`Folder details updated`);
+            setEditMetaDialogOpen(false);
+            setEditMetaTarget(null);
+            setEditMetaName('');
+            setEditMetaDate('');
+            fetchItems();
+        } catch (err: any) {
+            setError(err.message || 'Failed to update folder details');
+        } finally {
+            setSavingMeta(false);
         }
     };
 
@@ -1073,6 +1113,18 @@ export default function ManagePhotos() {
                     <ListItemIcon><EditIcon fontSize="small" /></ListItemIcon>
                     <ListItemText>Rename</ListItemText>
                 </MenuItem>
+                <MenuItem onClick={() => {
+                    if (folderContextMenu) {
+                        setEditMetaTarget(folderContextMenu.folder);
+                        setEditMetaName(folderContextMenu.folder.metadata?.name || folderContextMenu.folder.name.replace(/_/g, ' '));
+                        setEditMetaDate(folderContextMenu.folder.metadata?.date || '');
+                        setEditMetaDialogOpen(true);
+                    }
+                    setFolderContextMenu(null);
+                }}>
+                    <ListItemIcon><CalendarTodayIcon fontSize="small" /></ListItemIcon>
+                    <ListItemText>Edit Details</ListItemText>
+                </MenuItem>
                 <Divider />
                 <MenuItem onClick={() => {
                     if (folderContextMenu) {
@@ -1213,6 +1265,50 @@ export default function ManagePhotos() {
                         startIcon={renaming ? <CircularProgress size={16} /> : null}
                     >
                         {renaming ? 'Renaming...' : 'Rename'}
+                    </Button>
+                </DialogActions>
+            </Dialog>
+
+            {/* Edit Folder Details Dialog */}
+            <Dialog open={editMetaDialogOpen} onClose={() => !savingMeta && setEditMetaDialogOpen(false)} maxWidth="xs" fullWidth>
+                <DialogTitle sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <CalendarTodayIcon color="primary" />
+                    Edit Folder Details
+                </DialogTitle>
+                <DialogContent>
+                    <TextField
+                        autoFocus
+                        fullWidth
+                        label="Display Name"
+                        value={editMetaName}
+                        onChange={(e) => setEditMetaName(e.target.value)}
+                        margin="normal"
+                        disabled={savingMeta}
+                        helperText="How this folder appears on the public site"
+                    />
+                    <TextField
+                        fullWidth
+                        label="Date"
+                        type="date"
+                        value={editMetaDate}
+                        onChange={(e) => setEditMetaDate(e.target.value)}
+                        margin="normal"
+                        disabled={savingMeta}
+                        slotProps={{ inputLabel: { shrink: true } }}
+                        helperText="Used to order events on the public photos page"
+                    />
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => { setEditMetaDialogOpen(false); setEditMetaTarget(null); }} disabled={savingMeta}>
+                        Cancel
+                    </Button>
+                    <Button
+                        onClick={handleSaveMetadata}
+                        variant="contained"
+                        disabled={savingMeta}
+                        startIcon={savingMeta ? <CircularProgress size={16} /> : null}
+                    >
+                        {savingMeta ? 'Saving...' : 'Save'}
                     </Button>
                 </DialogActions>
             </Dialog>

@@ -26,37 +26,36 @@ export const handler: Handler = async (event: HandlerEvent) => {
     }
 
     const body = JSON.parse(event.body || '{}');
-    const { moves } = body;
+    const { folderPath, metadata } = body;
 
-    if (!moves || !Array.isArray(moves) || moves.length === 0) {
-      return { statusCode: 400, body: JSON.stringify({ error: 'Missing required field: moves (array of { from, to })' }) };
+    if (!folderPath || typeof folderPath !== 'string') {
+      return { statusCode: 400, body: JSON.stringify({ error: 'Missing required field: folderPath' }) };
     }
 
-    const results = [];
-    for (const { from, to } of moves) {
-      if (!from || !to) continue;
-      const { error: moveError } = await supabaseAdmin.storage
-        .from('photos')
-        .move(from, to);
+    if (!metadata || typeof metadata !== 'object') {
+      return { statusCode: 400, body: JSON.stringify({ error: 'Missing required field: metadata' }) };
+    }
 
-      if (moveError) {
-        if (moveError.message?.includes('Object not found') || moveError.message?.includes('Not found')) {
-          continue;
-        }
-        return {
-          statusCode: 500,
-          body: JSON.stringify({ error: `Failed to move ${from}: ${moveError.message}` }),
-        };
-      }
-      results.push({ from, to });
+    const metaContent = JSON.stringify(metadata, null, 2);
+    const { error: uploadError } = await supabaseAdmin.storage
+      .from('photos')
+      .upload(`${folderPath}/.folder-meta.json`,
+        new TextEncoder().encode(metaContent), {
+          contentType: 'application/json',
+          upsert: true,
+        });
+
+    if (uploadError) {
+      console.error('Update metadata error:', uploadError);
+      return { statusCode: 500, body: JSON.stringify({ error: uploadError.message }) };
     }
 
     return {
       statusCode: 200,
-      body: JSON.stringify({ moved: results }),
+      body: JSON.stringify({ path: folderPath, metadata }),
     };
   } catch (error: any) {
-    console.error('Error in move-files function:', error);
+    console.error('Error in update-folder-meta function:', error);
     return { statusCode: 500, body: JSON.stringify({ error: error.message || 'Internal server error' }) };
   }
 };

@@ -26,6 +26,7 @@ export const handler: Handler = async (event: HandlerEvent) => {
     }
 
     const path = event.queryStringParameters?.path || '';
+    const includeAll = event.queryStringParameters?.includeAll === 'true';
 
     const { data, error: listError } = await supabaseAdmin.storage
       .from('photos')
@@ -37,6 +38,7 @@ export const handler: Handler = async (event: HandlerEvent) => {
 
     const IMAGE_EXTENSIONS = /\.(jpg|jpeg|png|gif|webp|heic)$/i;
     const rawItems = (data || []).filter((item) => {
+      if (includeAll) return true;
       if (item.name === '.emptyFolderPlaceholder') return false;
       if (item.name === '.folder-meta.json') return false;
       return item.id === null || IMAGE_EXTENSIONS.test(item.name);
