@@ -29,11 +29,9 @@ import EditIcon from '@mui/icons-material/Edit';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import { useAuth } from '../../context/auth-context';
 import { useTranslation } from 'react-i18next';
-import { supabase } from '../../utils/supabase';
 import FolderPickerDialog from '../../components/FolderPickerDialog';
 
 const BUCKET = 'photos';
-const IMAGE_EXTENSIONS = /\.(jpg|jpeg|png|gif|webp|heic)$/i;
 
 interface StorageItem {
     name: string;
@@ -41,6 +39,7 @@ interface StorageItem {
     isFolder: boolean;
     path: string;
     updatedAt?: string;
+    metadata?: { name?: string; date?: string };
 }
 
 type SortMode = 'name-asc' | 'name-desc' | 'date-asc' | 'date-desc';
@@ -104,37 +103,30 @@ export default function ManagePhotos() {
     }, [user, authLoading, navigate]);
 
     const fetchItems = useCallback(async () => {
+        if (!session?.access_token) return;
         setLoading(true);
         setError(null);
         setSelectedPaths(new Set());
 
         try {
-            const { data, error: listError } = await supabase.storage
-                .from(BUCKET)
-                .list(currentPath, { limit: 1000, sortBy: { column: 'name', order: 'asc' } });
+            const response = await fetch(
+                `/.netlify/functions/list-folder?path=${encodeURIComponent(currentPath)}`,
+                { headers: { 'Authorization': `Bearer ${session.access_token}` } }
+            );
 
-            if (listError) throw listError;
+            if (!response.ok) {
+                const errData = await response.json();
+                throw new Error(errData.error || 'Failed to load photos');
+            }
 
-            const storageItems: StorageItem[] = (data || [])
-                .filter((item) => {
-                    if (item.name === '.emptyFolderPlaceholder') return false;
-                    return item.id === null || IMAGE_EXTENSIONS.test(item.name);
-                })
-                .map((item) => ({
-                    name: item.name,
-                    id: item.id,
-                    isFolder: item.id === null,
-                    path: currentPath ? `${currentPath}/${item.name}` : item.name,
-                    updatedAt: item.updated_at,
-                }));
-
-            setItems(storageItems);
+            const { items: fetchedItems } = await response.json();
+            setItems(fetchedItems || []);
         } catch (err: any) {
             setError(err.message || 'Failed to load photos');
         } finally {
             setLoading(false);
         }
-    }, [currentPath]);
+    }, [currentPath, session?.access_token]);
 
     useEffect(() => {
         if (user) fetchItems();
@@ -332,16 +324,16 @@ export default function ManagePhotos() {
         setError(null);
 
         try {
-            let folderLabel = newFolderName.trim();
-            if (newFolderDate) {
-                folderLabel = `${folderLabel} (${newFolderDate})`;
-            }
-            const safeFolderName = folderLabel.replace(/\s+/g, '_');
-
+            const safeFolderName = newFolderName.trim().replace(/\s+/g, '_');
             const parentPath = newFolderParent;
             const folderPath = parentPath
                 ? `${parentPath}/${safeFolderName}`
                 : safeFolderName;
+
+            const metadata: Record<string, string> = { name: newFolderName.trim() };
+            if (newFolderDate) {
+                metadata.date = newFolderDate;
+            }
 
             const response = await fetch('/.netlify/functions/create-folder', {
                 method: 'POST',
@@ -349,7 +341,7 @@ export default function ManagePhotos() {
                     'Authorization': `Bearer ${session?.access_token}`,
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ folderPath }),
+                body: JSON.stringify({ folderPath, metadata }),
             });
 
             if (!response.ok) {
@@ -357,7 +349,7 @@ export default function ManagePhotos() {
                 throw new Error(errData.error || 'Failed to create folder');
             }
 
-            setSuccess(`Folder "${folderLabel}" created`);
+            setSuccess(`Folder "${newFolderName.trim()}" created`);
             setFolderDialogOpen(false);
             setNewFolderName('');
             setNewFolderDate('');
@@ -416,30 +408,50 @@ export default function ManagePhotos() {
             const parentPath = currentPath;
             const newPrefix = parentPath ? `${parentPath}/${safeName}` : safeName;
 
-            const { data: folderContents, error: listError } = await supabase.storage
-                .from(BUCKET)
-                .list(oldPrefix, { limit: 1000 });
+            const listResponse = await fetch(
+                `/.netlify/functions/list-folder?path=${encodeURIComponent(oldPrefix)}`,
+                { headers: { 'Authorization': `Bearer ${session?.access_token}` } }
+            );
 
-            if (listError) throw listError;
+            if (!listResponse.ok) throw new Error('Failed to list folder contents');
+            const { items: folderItems } = await listResponse.json();
 
-            if (!folderContents || folderContents.length === 0) {
-                const { error: uploadError } = await supabase.storage
-                    .from(BUCKET)
-                    .upload(`${newPrefix}/.emptyFolderPlaceholder`, new Uint8Array(0), {
-                        contentType: 'application/octet-stream',
-                        upsert: true,
-                    });
-                if (uploadError) throw uploadError;
+            const allFiles = (folderItems || []).map((f: any) => f.name);
+            allFiles.push('.emptyFolderPlaceholder');
+            if (renameTarget.metadata) {
+                allFiles.push('.folder-meta.json');
+            }
+
+            const uniqueFiles = [...new Set<string>(allFiles)];
+
+            if (uniqueFiles.length === 0) {
+                const createResponse = await fetch('/.netlify/functions/create-folder', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${session?.access_token}`,
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ folderPath: newPrefix }),
+                });
+                if (!createResponse.ok) throw new Error('Failed to create new folder');
             } else {
-                for (const file of folderContents) {
-                    const oldPath = `${oldPrefix}/${file.name}`;
-                    const newPath = `${newPrefix}/${file.name}`;
+                const moves = uniqueFiles.map((name: string) => ({
+                    from: `${oldPrefix}/${name}`,
+                    to: `${newPrefix}/${name}`,
+                }));
 
-                    const { error: moveError } = await supabase.storage
-                        .from(BUCKET)
-                        .move(oldPath, newPath);
+                const moveResponse = await fetch('/.netlify/functions/move-files', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${session?.access_token}`,
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ moves }),
+                });
 
-                    if (moveError) throw moveError;
+                if (!moveResponse.ok) {
+                    const errData = await moveResponse.json();
+                    throw new Error(errData.error || 'Failed to move files');
                 }
             }
 
@@ -459,30 +471,34 @@ export default function ManagePhotos() {
         setError(null);
 
         try {
-            const { data: folderContents, error: listError } = await supabase.storage
-                .from(BUCKET)
-                .list(folder.path, { limit: 1000 });
+            const listResponse = await fetch(
+                `/.netlify/functions/list-folder?path=${encodeURIComponent(folder.path)}`,
+                { headers: { 'Authorization': `Bearer ${session?.access_token}` } }
+            );
 
-            if (listError) throw listError;
+            if (!listResponse.ok) throw new Error('Failed to list folder contents');
+            const { items: folderItems } = await listResponse.json();
 
-            if (folderContents && folderContents.length > 0) {
-                const filePaths = folderContents.map((f) => `${folder.path}/${f.name}`);
-                const response = await fetch('/.netlify/functions/delete-photo', {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${session?.access_token}`,
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ paths: filePaths }),
-                });
+            const filePaths = (folderItems || []).map((f: any) => `${folder.path}/${f.name}`);
+            filePaths.push(`${folder.path}/.emptyFolderPlaceholder`);
+            filePaths.push(`${folder.path}/.folder-meta.json`);
 
-                if (!response.ok) {
-                    const errData = await response.json();
-                    throw new Error(errData.error || 'Failed to delete folder contents');
-                }
+            const response = await fetch('/.netlify/functions/delete-photo', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${session?.access_token}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ paths: filePaths }),
+            });
+
+            if (!response.ok) {
+                const errData = await response.json();
+                throw new Error(errData.error || 'Failed to delete folder contents');
             }
 
-            setSuccess(`Folder "${folder.name.replace(/_/g, ' ')}" deleted`);
+            const displayName = folder.metadata?.name || folder.name.replace(/_/g, ' ');
+            setSuccess(`Folder "${displayName}" deleted`);
             fetchItems();
         } catch (err: any) {
             setError(err.message || 'Failed to delete folder');
@@ -501,13 +517,23 @@ export default function ManagePhotos() {
         setError(null);
 
         try {
-            for (const file of selectedFiles) {
-                const newPath = destinationPath ? `${destinationPath}/${file.name}` : file.name;
-                const { error: moveError } = await supabase.storage
-                    .from(BUCKET)
-                    .move(file.path, newPath);
+            const moves = selectedFiles.map((file) => ({
+                from: file.path,
+                to: destinationPath ? `${destinationPath}/${file.name}` : file.name,
+            }));
 
-                if (moveError) throw moveError;
+            const response = await fetch('/.netlify/functions/move-files', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${session?.access_token}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ moves }),
+            });
+
+            if (!response.ok) {
+                const errData = await response.json();
+                throw new Error(errData.error || 'Failed to move photos');
             }
 
             setSuccess(`Moved ${selectedFiles.length} photo${selectedFiles.length > 1 ? 's' : ''}`);
@@ -866,10 +892,15 @@ export default function ManagePhotos() {
                                                 variant="body2"
                                                 fontWeight={500}
                                                 noWrap
-                                                title={folder.name.replace(/_/g, ' ')}
+                                                title={folder.metadata?.name || folder.name.replace(/_/g, ' ')}
                                             >
-                                                {folder.name.replace(/_/g, ' ')}
+                                                {folder.metadata?.name || folder.name.replace(/_/g, ' ')}
                                             </Typography>
+                                            {folder.metadata?.date && (
+                                                <Typography variant="caption" color="text.secondary" noWrap>
+                                                    {new Date(folder.metadata.date + 'T00:00:00').toLocaleDateString()}
+                                                </Typography>
+                                            )}
                                         </Paper>
                                     </Grid>
                                 ))}
@@ -1034,7 +1065,7 @@ export default function ManagePhotos() {
                 <MenuItem onClick={() => {
                     if (folderContextMenu) {
                         setRenameTarget(folderContextMenu.folder);
-                        setRenameValue(folderContextMenu.folder.name.replace(/_/g, ' '));
+                        setRenameValue(folderContextMenu.folder.metadata?.name || folderContextMenu.folder.name.replace(/_/g, ' '));
                         setRenameDialogOpen(true);
                     }
                     setFolderContextMenu(null);
@@ -1104,7 +1135,7 @@ export default function ManagePhotos() {
                         slotProps={{
                             inputLabel: { shrink: true },
                         }}
-                        helperText="Associate a date with this folder for organization"
+                        helperText="Stored as metadata for ordering — not part of the folder name"
                     />
                     {newFolderName.trim() && (
                         <Box sx={{ mt: 1, p: 1.5, backgroundColor: 'action.hover', borderRadius: 1 }}>
@@ -1114,8 +1145,14 @@ export default function ManagePhotos() {
                             <Typography variant="body2" fontWeight={500} sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                                 <FolderIcon fontSize="small" color="primary" />
                                 {newFolderParent ? `${newFolderParent.replace(/_/g, ' ')} / ` : ''}
-                                {newFolderName.trim()}{newFolderDate ? ` (${newFolderDate})` : ''}
+                                {newFolderName.trim()}
                             </Typography>
+                            {newFolderDate && (
+                                <Typography variant="caption" color="text.secondary" sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mt: 0.5 }}>
+                                    <CalendarTodayIcon sx={{ fontSize: 14 }} />
+                                    Date: {newFolderDate}
+                                </Typography>
+                            )}
                         </Box>
                     )}
                 </DialogContent>
