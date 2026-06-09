@@ -2,12 +2,15 @@ import { useEffect, useState } from 'react';
 import {
     Dialog, DialogTitle, DialogContent, DialogActions, Button,
     Breadcrumbs, Link, List, ListItemButton, ListItemIcon, ListItemText,
-    CircularProgress, Box, Typography, Alert,
+    CircularProgress, Box, Typography, Alert, TextField, Collapse,
+    IconButton, Tooltip,
 } from '@mui/material';
 import HomeIcon from '@mui/icons-material/Home';
 import FolderIcon from '@mui/icons-material/Folder';
+import FolderOpenIcon from '@mui/icons-material/FolderOpen';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import CreateNewFolderIcon from '@mui/icons-material/CreateNewFolder';
+import AddIcon from '@mui/icons-material/Add';
 import { supabase } from '../utils/supabase';
 
 interface FolderPickerDialogProps {
@@ -32,24 +35,29 @@ export default function FolderPickerDialog({
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
+    const [showNewFolder, setShowNewFolder] = useState(false);
+    const [newFolderName, setNewFolderName] = useState('');
+    const [newFolderDate, setNewFolderDate] = useState('');
+    const [creating, setCreating] = useState(false);
+
     useEffect(() => {
         if (open) {
             setPickerPath('');
+            setShowNewFolder(false);
+            setNewFolderName('');
+            setNewFolderDate('');
+            setError(null);
         }
     }, [open]);
 
-    useEffect(() => {
-        if (!open) return;
-
-        let cancelled = false;
+    const fetchFolders = (path: string) => {
         setLoading(true);
         setError(null);
 
         supabase.storage
             .from(bucket)
-            .list(pickerPath, { limit: 1000, sortBy: { column: 'name', order: 'asc' } })
+            .list(path, { limit: 1000, sortBy: { column: 'name', order: 'asc' } })
             .then(({ data, error: listError }) => {
-                if (cancelled) return;
                 if (listError) throw listError;
 
                 const folderNames = (data || [])
@@ -59,24 +67,63 @@ export default function FolderPickerDialog({
                 setFolders(folderNames);
             })
             .catch((err: any) => {
-                if (!cancelled) setError(err.message || 'Failed to load folders');
+                setError(err.message || 'Failed to load folders');
             })
             .finally(() => {
-                if (!cancelled) setLoading(false);
+                setLoading(false);
             });
+    };
 
-        return () => { cancelled = true; };
+    useEffect(() => {
+        if (!open) return;
+        fetchFolders(pickerPath);
     }, [open, pickerPath, bucket]);
+
+    const handleCreateFolder = async () => {
+        if (!newFolderName.trim() || creating) return;
+
+        setCreating(true);
+        setError(null);
+
+        try {
+            let folderLabel = newFolderName.trim();
+            if (newFolderDate) {
+                folderLabel = `${folderLabel} (${newFolderDate})`;
+            }
+            const safeName = folderLabel.replace(/\s+/g, '_');
+
+            const folderPath = pickerPath ? `${pickerPath}/${safeName}` : safeName;
+
+            const { error: uploadError } = await supabase.storage
+                .from(bucket)
+                .upload(`${folderPath}/.emptyFolderPlaceholder`, new Uint8Array(0), {
+                    contentType: 'application/octet-stream',
+                    upsert: true,
+                });
+
+            if (uploadError) throw uploadError;
+
+            setNewFolderName('');
+            setNewFolderDate('');
+            setShowNewFolder(false);
+            fetchFolders(pickerPath);
+        } catch (err: any) {
+            setError(err.message || 'Failed to create folder');
+        } finally {
+            setCreating(false);
+        }
+    };
 
     const breadcrumbParts = pickerPath ? pickerPath.split('/') : [];
 
     return (
         <Dialog open={open} onClose={onClose} maxWidth="xs" fullWidth>
             <DialogTitle sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <CreateNewFolderIcon color="primary" />
+                <FolderOpenIcon color="primary" />
                 {title}
             </DialogTitle>
             <DialogContent>
+                {/* Breadcrumbs */}
                 <Breadcrumbs separator={<ChevronRightIcon fontSize="small" />} sx={{ mb: 1 }}>
                     <Link
                         component="button"
@@ -105,13 +152,14 @@ export default function FolderPickerDialog({
                     })}
                 </Breadcrumbs>
 
-                {error && <Alert severity="error" sx={{ mb: 1 }}>{error}</Alert>}
+                {error && <Alert severity="error" sx={{ mb: 1 }} onClose={() => setError(null)}>{error}</Alert>}
 
+                {/* Folder list */}
                 {loading ? (
                     <Box sx={{ textAlign: 'center', py: 4 }}>
                         <CircularProgress size={28} />
                     </Box>
-                ) : folders.length === 0 ? (
+                ) : folders.length === 0 && !showNewFolder ? (
                     <Typography variant="body2" color="text.secondary" sx={{ py: 2, textAlign: 'center' }}>
                         No sub-folders here
                     </Typography>
@@ -125,13 +173,72 @@ export default function FolderPickerDialog({
                                         <FolderIcon color="primary" fontSize="small" />
                                     </ListItemIcon>
                                     <ListItemText primary={name.replace(/_/g, ' ')} />
+                                    <ChevronRightIcon fontSize="small" color="action" />
                                 </ListItemButton>
                             );
                         })}
                     </List>
                 )}
 
-                <Box sx={{ mt: 1, p: 1.5, backgroundColor: 'action.hover', borderRadius: 1 }}>
+                {/* Inline create folder */}
+                <Box sx={{ mt: 1 }}>
+                    {!showNewFolder ? (
+                        <Button
+                            size="small"
+                            startIcon={<CreateNewFolderIcon />}
+                            onClick={() => setShowNewFolder(true)}
+                            sx={{ textTransform: 'none' }}
+                        >
+                            Create new folder here
+                        </Button>
+                    ) : (
+                        <Box sx={{ p: 1.5, border: '1px solid', borderColor: 'divider', borderRadius: 1 }}>
+                            <TextField
+                                autoFocus
+                                fullWidth
+                                size="small"
+                                label="Folder Name"
+                                value={newFolderName}
+                                onChange={(e) => setNewFolderName(e.target.value)}
+                                placeholder="e.g., Installation, Ladies Night"
+                                disabled={creating}
+                                onKeyDown={(e) => e.key === 'Enter' && handleCreateFolder()}
+                            />
+                            <TextField
+                                fullWidth
+                                size="small"
+                                label="Date (optional)"
+                                type="date"
+                                value={newFolderDate}
+                                onChange={(e) => setNewFolderDate(e.target.value)}
+                                disabled={creating}
+                                slotProps={{ inputLabel: { shrink: true } }}
+                                sx={{ mt: 1 }}
+                            />
+                            <Box sx={{ display: 'flex', gap: 1, mt: 1, justifyContent: 'flex-end' }}>
+                                <Button
+                                    size="small"
+                                    onClick={() => { setShowNewFolder(false); setNewFolderName(''); setNewFolderDate(''); }}
+                                    disabled={creating}
+                                >
+                                    Cancel
+                                </Button>
+                                <Button
+                                    size="small"
+                                    variant="contained"
+                                    onClick={handleCreateFolder}
+                                    disabled={creating || !newFolderName.trim()}
+                                    startIcon={creating ? <CircularProgress size={14} /> : <AddIcon />}
+                                >
+                                    {creating ? 'Creating...' : 'Create'}
+                                </Button>
+                            </Box>
+                        </Box>
+                    )}
+                </Box>
+
+                {/* Selected path preview */}
+                <Box sx={{ mt: 1.5, p: 1.5, backgroundColor: 'action.hover', borderRadius: 1 }}>
                     <Typography variant="caption" color="text.secondary">
                         Selected location:
                     </Typography>

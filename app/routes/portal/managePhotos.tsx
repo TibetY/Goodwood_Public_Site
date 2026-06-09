@@ -69,6 +69,8 @@ export default function ManagePhotos() {
     const [folderDialogOpen, setFolderDialogOpen] = useState(false);
     const [newFolderName, setNewFolderName] = useState('');
     const [newFolderDate, setNewFolderDate] = useState('');
+    const [newFolderParent, setNewFolderParent] = useState('');
+    const [parentPickerOpen, setParentPickerOpen] = useState(false);
     const [creatingFolder, setCreatingFolder] = useState(false);
 
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -336,8 +338,9 @@ export default function ManagePhotos() {
             }
             const safeFolderName = folderLabel.replace(/\s+/g, '_');
 
-            const folderPath = currentPath
-                ? `${currentPath}/${safeFolderName}`
+            const parentPath = newFolderParent;
+            const folderPath = parentPath
+                ? `${parentPath}/${safeFolderName}`
                 : safeFolderName;
 
             const { error: uploadError } = await supabase.storage
@@ -353,7 +356,10 @@ export default function ManagePhotos() {
             setFolderDialogOpen(false);
             setNewFolderName('');
             setNewFolderDate('');
-            fetchItems();
+            setNewFolderParent('');
+            if (parentPath === currentPath) {
+                fetchItems();
+            }
         } catch (err: any) {
             setError(err.message || 'Failed to create folder');
         } finally {
@@ -663,7 +669,7 @@ export default function ManagePhotos() {
                 <Button
                     variant="outlined"
                     startIcon={<CreateNewFolderIcon />}
-                    onClick={() => setFolderDialogOpen(true)}
+                    onClick={() => { setNewFolderParent(currentPath); setFolderDialogOpen(true); }}
                     size={isXs ? 'small' : 'medium'}
                 >
                     New Folder
@@ -1050,6 +1056,27 @@ export default function ManagePhotos() {
                     Create New Folder
                 </DialogTitle>
                 <DialogContent>
+                    {/* Parent folder selector */}
+                    <Box sx={{ mt: 1, p: 1.5, border: '1px solid', borderColor: 'divider', borderRadius: 1, display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <FolderOpenIcon fontSize="small" color="primary" />
+                        <Box sx={{ flex: 1 }}>
+                            <Typography variant="caption" color="text.secondary">
+                                Create inside:
+                            </Typography>
+                            <Typography variant="body2" fontWeight={500}>
+                                {newFolderParent ? newFolderParent.replace(/_/g, ' ').replace(/\//g, ' / ') : 'Photos (root)'}
+                            </Typography>
+                        </Box>
+                        <Button
+                            size="small"
+                            variant="outlined"
+                            onClick={() => setParentPickerOpen(true)}
+                            disabled={creatingFolder}
+                        >
+                            Browse
+                        </Button>
+                    </Box>
+
                     <TextField
                         autoFocus
                         fullWidth
@@ -1077,18 +1104,18 @@ export default function ManagePhotos() {
                     {newFolderName.trim() && (
                         <Box sx={{ mt: 1, p: 1.5, backgroundColor: 'action.hover', borderRadius: 1 }}>
                             <Typography variant="caption" color="text.secondary">
-                                Folder will be created as:
+                                Full path:
                             </Typography>
                             <Typography variant="body2" fontWeight={500} sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                                 <FolderIcon fontSize="small" color="primary" />
-                                {currentPath ? `${currentPath.replace(/_/g, ' ')} / ` : ''}
+                                {newFolderParent ? `${newFolderParent.replace(/_/g, ' ')} / ` : ''}
                                 {newFolderName.trim()}{newFolderDate ? ` (${newFolderDate})` : ''}
                             </Typography>
                         </Box>
                     )}
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={() => { setFolderDialogOpen(false); setNewFolderName(''); setNewFolderDate(''); }} disabled={creatingFolder}>
+                    <Button onClick={() => { setFolderDialogOpen(false); setNewFolderName(''); setNewFolderDate(''); setNewFolderParent(''); }} disabled={creatingFolder}>
                         Cancel
                     </Button>
                     <Button
@@ -1101,6 +1128,18 @@ export default function ManagePhotos() {
                     </Button>
                 </DialogActions>
             </Dialog>
+
+            {/* Folder Picker: choose parent for new folder */}
+            <FolderPickerDialog
+                open={parentPickerOpen}
+                onClose={() => setParentPickerOpen(false)}
+                onSelect={(path) => {
+                    setNewFolderParent(path);
+                    setParentPickerOpen(false);
+                }}
+                title="Choose Parent Folder"
+                confirmLabel="Select This Folder"
+            />
 
             {/* Rename Folder Dialog */}
             <Dialog open={renameDialogOpen} onClose={() => !renaming && setRenameDialogOpen(false)} maxWidth="xs" fullWidth>
