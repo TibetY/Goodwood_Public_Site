@@ -5,7 +5,7 @@ import {
     CircularProgress, Dialog, DialogTitle, DialogContent, DialogActions,
     TextField, Breadcrumbs, Link, Checkbox, Paper, useMediaQuery, useTheme,
     Chip, Tooltip, LinearProgress, Divider, Menu, MenuItem, ListItemIcon,
-    ListItemText, Grid,
+    ListItemText, Grid, ButtonGroup,
 } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import FolderIcon from '@mui/icons-material/Folder';
@@ -26,9 +26,11 @@ import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import DriveFileMoveIcon from '@mui/icons-material/DriveFileMove';
 import EditIcon from '@mui/icons-material/Edit';
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import { useAuth } from '../../context/auth-context';
 import { useTranslation } from 'react-i18next';
 import { supabase } from '../../utils/supabase';
+import FolderPickerDialog from '../../components/FolderPickerDialog';
 
 const BUCKET = 'photos';
 const IMAGE_EXTENSIONS = /\.(jpg|jpeg|png|gif|webp|heic)$/i;
@@ -85,6 +87,13 @@ export default function ManagePhotos() {
     const [renaming, setRenaming] = useState(false);
 
     const [folderContextMenu, setFolderContextMenu] = useState<{ anchor: HTMLElement; folder: StorageItem } | null>(null);
+
+    const [uploadMenuAnchor, setUploadMenuAnchor] = useState<HTMLElement | null>(null);
+    const [uploadPickerOpen, setUploadPickerOpen] = useState(false);
+    const [uploadTargetPath, setUploadTargetPath] = useState<string | null>(null);
+
+    const [movePickerOpen, setMovePickerOpen] = useState(false);
+    const [moving, setMoving] = useState(false);
 
     useEffect(() => {
         if (!authLoading && !user) {
@@ -179,7 +188,7 @@ export default function ManagePhotos() {
         }
     };
 
-    const uploadFiles = async (files: File[]) => {
+    const uploadFiles = async (files: File[], destinationPath: string = currentPath) => {
         if (files.length === 0) return;
 
         const imageFiles = files.filter((f) => f.type.startsWith('image/'));
@@ -226,7 +235,7 @@ export default function ManagePhotos() {
                         fileName: file.name,
                         fileData: base64,
                         fileType: file.type,
-                        folderPath: currentPath,
+                        folderPath: destinationPath,
                     }),
                 });
 
@@ -263,9 +272,20 @@ export default function ManagePhotos() {
 
     const handleUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
         const files = event.target.files;
-        if (!files || files.length === 0) return;
-        await uploadFiles(Array.from(files));
+        if (!files || files.length === 0) {
+            setUploadTargetPath(null);
+            return;
+        }
+        const destination = uploadTargetPath ?? currentPath;
+        setUploadTargetPath(null);
+        await uploadFiles(Array.from(files), destination);
         event.target.value = '';
+    };
+
+    const handlePickUploadFolder = (path: string) => {
+        setUploadTargetPath(path);
+        setUploadPickerOpen(false);
+        fileInputRef.current?.click();
     };
 
     const handleDragEnter = (e: DragEvent) => {
@@ -458,6 +478,38 @@ export default function ManagePhotos() {
         }
     };
 
+    const handleMoveSelected = async (destinationPath: string) => {
+        if (selectedFiles.length === 0 || moving) return;
+
+        if (destinationPath === currentPath) {
+            setMovePickerOpen(false);
+            return;
+        }
+
+        setMoving(true);
+        setError(null);
+
+        try {
+            for (const file of selectedFiles) {
+                const newPath = destinationPath ? `${destinationPath}/${file.name}` : file.name;
+                const { error: moveError } = await supabase.storage
+                    .from(BUCKET)
+                    .move(file.path, newPath);
+
+                if (moveError) throw moveError;
+            }
+
+            setSuccess(`Moved ${selectedFiles.length} photo${selectedFiles.length > 1 ? 's' : ''}`);
+            setMovePickerOpen(false);
+            setSelectedPaths(new Set());
+            fetchItems();
+        } catch (err: any) {
+            setError(err.message || 'Failed to move photos');
+        } finally {
+            setMoving(false);
+        }
+    };
+
     if (authLoading) {
         return (
             <Container maxWidth="lg" sx={{ py: 8, textAlign: 'center' }}>
@@ -569,15 +621,36 @@ export default function ManagePhotos() {
 
             {/* Toolbar */}
             <Paper sx={{ px: 2, py: 1.5, mb: 2, display: 'flex', gap: 1, flexWrap: 'wrap', alignItems: 'center' }} elevation={1}>
-                <Button
-                    variant="contained"
-                    startIcon={<UploadIcon />}
-                    onClick={() => fileInputRef.current?.click()}
-                    disabled={uploading}
-                    size={isXs ? 'small' : 'medium'}
+                <ButtonGroup variant="contained" disabled={uploading} size={isXs ? 'small' : 'medium'}>
+                    <Button
+                        startIcon={<UploadIcon />}
+                        onClick={() => fileInputRef.current?.click()}
+                    >
+                        Upload Photos
+                    </Button>
+                    <Button
+                        size="small"
+                        sx={{ px: 0.5 }}
+                        onClick={(e) => setUploadMenuAnchor(e.currentTarget)}
+                    >
+                        <ArrowDropDownIcon />
+                    </Button>
+                </ButtonGroup>
+                <Menu
+                    anchorEl={uploadMenuAnchor}
+                    open={Boolean(uploadMenuAnchor)}
+                    onClose={() => setUploadMenuAnchor(null)}
                 >
-                    Upload Photos
-                </Button>
+                    <MenuItem
+                        onClick={() => {
+                            setUploadMenuAnchor(null);
+                            setUploadPickerOpen(true);
+                        }}
+                    >
+                        <ListItemIcon><FolderIcon fontSize="small" /></ListItemIcon>
+                        <ListItemText>Choose folder & upload…</ListItemText>
+                    </MenuItem>
+                </Menu>
                 <input
                     ref={fileInputRef}
                     type="file"
@@ -613,6 +686,17 @@ export default function ManagePhotos() {
                 </Tooltip>
 
                 <Box sx={{ flex: 1 }} />
+
+                {selectedFiles.length > 0 && (
+                    <Button
+                        variant="outlined"
+                        startIcon={<DriveFileMoveIcon />}
+                        onClick={() => setMovePickerOpen(true)}
+                        size={isXs ? 'small' : 'medium'}
+                    >
+                        Move ({selectedFiles.length})
+                    </Button>
+                )}
 
                 {selectedFiles.length > 0 && (
                     <Button
@@ -1078,6 +1162,24 @@ export default function ManagePhotos() {
                     </Button>
                 </DialogActions>
             </Dialog>
+
+            {/* Folder Picker: choose upload destination */}
+            <FolderPickerDialog
+                open={uploadPickerOpen}
+                onClose={() => setUploadPickerOpen(false)}
+                onSelect={handlePickUploadFolder}
+                title="Choose Upload Destination"
+                confirmLabel="Upload Here"
+            />
+
+            {/* Folder Picker: choose move destination */}
+            <FolderPickerDialog
+                open={movePickerOpen}
+                onClose={() => !moving && setMovePickerOpen(false)}
+                onSelect={handleMoveSelected}
+                title={`Move ${selectedFiles.length} Photo${selectedFiles.length > 1 ? 's' : ''} To…`}
+                confirmLabel={moving ? 'Moving…' : 'Move Here'}
+            />
         </Container>
     );
 }
