@@ -198,12 +198,21 @@ export default function Photos() {
                             {formatFolderName(year)}
                         </Typography>
                         <Divider sx={{ mb: 3 }} />
-                        {events.map(([event, eventPhotos]) => (
+                        {events.map(([event, eventPhotos]) => {
+                            const eventMeta = event ? folderMeta?.[`${year}/${event}`] : undefined;
+                            return (
                             <Box key={event} sx={{ mb: 5 }}>
                                 {event && (
-                                    <Typography variant="h6" color="text.secondary" gutterBottom sx={{ ml: 0.5 }}>
-                                        {getEventDisplayName(year, event)}
-                                    </Typography>
+                                    <Box sx={{ ml: 0.5, mb: 1 }}>
+                                        <Typography variant="h6" color="text.secondary">
+                                            {getEventDisplayName(year, event)}
+                                        </Typography>
+                                        {eventMeta?.date && (
+                                            <Typography variant="body2" color="text.disabled">
+                                                {new Date(eventMeta.date + 'T00:00:00').toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}
+                                            </Typography>
+                                        )}
+                                    </Box>
                                 )}
                                 <ImageList variant="masonry" cols={cols} gap={8}>
                                     {eventPhotos.map((photo) => (
@@ -228,7 +237,8 @@ export default function Photos() {
                                     ))}
                                 </ImageList>
                             </Box>
-                        ))}
+                        );
+                        })}
                     </Box>
                 ))
             )}
