@@ -2,8 +2,7 @@ import { useEffect, useState } from 'react';
 import {
     Dialog, DialogTitle, DialogContent, DialogActions, Button,
     Breadcrumbs, Link, List, ListItemButton, ListItemIcon, ListItemText,
-    CircularProgress, Box, Typography, Alert, TextField, Collapse,
-    IconButton, Tooltip,
+    CircularProgress, Box, Typography, Alert, TextField,
 } from '@mui/material';
 import HomeIcon from '@mui/icons-material/Home';
 import FolderIcon from '@mui/icons-material/Folder';
@@ -20,6 +19,7 @@ interface FolderPickerDialogProps {
     bucket?: string;
     title: string;
     confirmLabel?: string;
+    accessToken?: string;
 }
 
 export default function FolderPickerDialog({
@@ -29,6 +29,7 @@ export default function FolderPickerDialog({
     bucket = 'photos',
     title,
     confirmLabel = 'Select This Folder',
+    accessToken,
 }: FolderPickerDialogProps) {
     const [pickerPath, setPickerPath] = useState('');
     const [folders, setFolders] = useState<string[]>([]);
@@ -91,17 +92,21 @@ export default function FolderPickerDialog({
                 folderLabel = `${folderLabel} (${newFolderDate})`;
             }
             const safeName = folderLabel.replace(/\s+/g, '_');
-
             const folderPath = pickerPath ? `${pickerPath}/${safeName}` : safeName;
 
-            const { error: uploadError } = await supabase.storage
-                .from(bucket)
-                .upload(`${folderPath}/.emptyFolderPlaceholder`, new Uint8Array(0), {
-                    contentType: 'application/octet-stream',
-                    upsert: true,
-                });
+            const response = await fetch('/.netlify/functions/create-folder', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${accessToken}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ folderPath }),
+            });
 
-            if (uploadError) throw uploadError;
+            if (!response.ok) {
+                const errData = await response.json();
+                throw new Error(errData.error || 'Failed to create folder');
+            }
 
             setNewFolderName('');
             setNewFolderDate('');
@@ -181,61 +186,63 @@ export default function FolderPickerDialog({
                 )}
 
                 {/* Inline create folder */}
-                <Box sx={{ mt: 1 }}>
-                    {!showNewFolder ? (
-                        <Button
-                            size="small"
-                            startIcon={<CreateNewFolderIcon />}
-                            onClick={() => setShowNewFolder(true)}
-                            sx={{ textTransform: 'none' }}
-                        >
-                            Create new folder here
-                        </Button>
-                    ) : (
-                        <Box sx={{ p: 1.5, border: '1px solid', borderColor: 'divider', borderRadius: 1 }}>
-                            <TextField
-                                autoFocus
-                                fullWidth
+                {accessToken && (
+                    <Box sx={{ mt: 1 }}>
+                        {!showNewFolder ? (
+                            <Button
                                 size="small"
-                                label="Folder Name"
-                                value={newFolderName}
-                                onChange={(e) => setNewFolderName(e.target.value)}
-                                placeholder="e.g., Installation, Ladies Night"
-                                disabled={creating}
-                                onKeyDown={(e) => e.key === 'Enter' && handleCreateFolder()}
-                            />
-                            <TextField
-                                fullWidth
-                                size="small"
-                                label="Date (optional)"
-                                type="date"
-                                value={newFolderDate}
-                                onChange={(e) => setNewFolderDate(e.target.value)}
-                                disabled={creating}
-                                slotProps={{ inputLabel: { shrink: true } }}
-                                sx={{ mt: 1 }}
-                            />
-                            <Box sx={{ display: 'flex', gap: 1, mt: 1, justifyContent: 'flex-end' }}>
-                                <Button
+                                startIcon={<CreateNewFolderIcon />}
+                                onClick={() => setShowNewFolder(true)}
+                                sx={{ textTransform: 'none' }}
+                            >
+                                Create new folder here
+                            </Button>
+                        ) : (
+                            <Box sx={{ p: 1.5, border: '1px solid', borderColor: 'divider', borderRadius: 1 }}>
+                                <TextField
+                                    autoFocus
+                                    fullWidth
                                     size="small"
-                                    onClick={() => { setShowNewFolder(false); setNewFolderName(''); setNewFolderDate(''); }}
+                                    label="Folder Name"
+                                    value={newFolderName}
+                                    onChange={(e) => setNewFolderName(e.target.value)}
+                                    placeholder="e.g., Installation, Ladies Night"
                                     disabled={creating}
-                                >
-                                    Cancel
-                                </Button>
-                                <Button
+                                    onKeyDown={(e) => e.key === 'Enter' && handleCreateFolder()}
+                                />
+                                <TextField
+                                    fullWidth
                                     size="small"
-                                    variant="contained"
-                                    onClick={handleCreateFolder}
-                                    disabled={creating || !newFolderName.trim()}
-                                    startIcon={creating ? <CircularProgress size={14} /> : <AddIcon />}
-                                >
-                                    {creating ? 'Creating...' : 'Create'}
-                                </Button>
+                                    label="Date (optional)"
+                                    type="date"
+                                    value={newFolderDate}
+                                    onChange={(e) => setNewFolderDate(e.target.value)}
+                                    disabled={creating}
+                                    slotProps={{ inputLabel: { shrink: true } }}
+                                    sx={{ mt: 1 }}
+                                />
+                                <Box sx={{ display: 'flex', gap: 1, mt: 1, justifyContent: 'flex-end' }}>
+                                    <Button
+                                        size="small"
+                                        onClick={() => { setShowNewFolder(false); setNewFolderName(''); setNewFolderDate(''); }}
+                                        disabled={creating}
+                                    >
+                                        Cancel
+                                    </Button>
+                                    <Button
+                                        size="small"
+                                        variant="contained"
+                                        onClick={handleCreateFolder}
+                                        disabled={creating || !newFolderName.trim()}
+                                        startIcon={creating ? <CircularProgress size={14} /> : <AddIcon />}
+                                    >
+                                        {creating ? 'Creating...' : 'Create'}
+                                    </Button>
+                                </Box>
                             </Box>
-                        </Box>
-                    )}
-                </Box>
+                        )}
+                    </Box>
+                )}
 
                 {/* Selected path preview */}
                 <Box sx={{ mt: 1.5, p: 1.5, backgroundColor: 'action.hover', borderRadius: 1 }}>

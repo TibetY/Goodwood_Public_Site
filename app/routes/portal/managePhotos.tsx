@@ -343,14 +343,19 @@ export default function ManagePhotos() {
                 ? `${parentPath}/${safeFolderName}`
                 : safeFolderName;
 
-            const { error: uploadError } = await supabase.storage
-                .from(BUCKET)
-                .upload(`${folderPath}/.emptyFolderPlaceholder`, new Uint8Array(0), {
-                    contentType: 'application/octet-stream',
-                    upsert: true,
-                });
+            const response = await fetch('/.netlify/functions/create-folder', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${session?.access_token}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ folderPath }),
+            });
 
-            if (uploadError) throw uploadError;
+            if (!response.ok) {
+                const errData = await response.json();
+                throw new Error(errData.error || 'Failed to create folder');
+            }
 
             setSuccess(`Folder "${folderLabel}" created`);
             setFolderDialogOpen(false);
@@ -1139,6 +1144,7 @@ export default function ManagePhotos() {
                 }}
                 title="Choose Parent Folder"
                 confirmLabel="Select This Folder"
+                accessToken={session?.access_token}
             />
 
             {/* Rename Folder Dialog */}
@@ -1209,6 +1215,7 @@ export default function ManagePhotos() {
                 onSelect={handlePickUploadFolder}
                 title="Choose Upload Destination"
                 confirmLabel="Upload Here"
+                accessToken={session?.access_token}
             />
 
             {/* Folder Picker: choose move destination */}
@@ -1218,6 +1225,7 @@ export default function ManagePhotos() {
                 onSelect={handleMoveSelected}
                 title={`Move ${selectedFiles.length} Photo${selectedFiles.length > 1 ? 's' : ''} To…`}
                 confirmLabel={moving ? 'Moving…' : 'Move Here'}
+                accessToken={session?.access_token}
             />
         </Container>
     );
