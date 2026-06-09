@@ -409,7 +409,7 @@ export default function ManagePhotos() {
             const newPrefix = parentPath ? `${parentPath}/${safeName}` : safeName;
 
             const listResponse = await fetch(
-                `/.netlify/functions/list-folder?path=${encodeURIComponent(oldPrefix)}`,
+                `/.netlify/functions/list-folder?path=${encodeURIComponent(oldPrefix)}&includeAll=true`,
                 { headers: { 'Authorization': `Bearer ${session?.access_token}` } }
             );
 
@@ -417,14 +417,8 @@ export default function ManagePhotos() {
             const { items: folderItems } = await listResponse.json();
 
             const allFiles = (folderItems || []).map((f: any) => f.name);
-            allFiles.push('.emptyFolderPlaceholder');
-            if (renameTarget.metadata) {
-                allFiles.push('.folder-meta.json');
-            }
 
-            const uniqueFiles = [...new Set<string>(allFiles)];
-
-            if (uniqueFiles.length === 0) {
+            if (allFiles.length === 0) {
                 const createResponse = await fetch('/.netlify/functions/create-folder', {
                     method: 'POST',
                     headers: {
@@ -435,7 +429,7 @@ export default function ManagePhotos() {
                 });
                 if (!createResponse.ok) throw new Error('Failed to create new folder');
             } else {
-                const moves = uniqueFiles.map((name: string) => ({
+                const moves = allFiles.map((name: string) => ({
                     from: `${oldPrefix}/${name}`,
                     to: `${newPrefix}/${name}`,
                 }));
@@ -472,7 +466,7 @@ export default function ManagePhotos() {
 
         try {
             const listResponse = await fetch(
-                `/.netlify/functions/list-folder?path=${encodeURIComponent(folder.path)}`,
+                `/.netlify/functions/list-folder?path=${encodeURIComponent(folder.path)}&includeAll=true`,
                 { headers: { 'Authorization': `Bearer ${session?.access_token}` } }
             );
 
@@ -480,8 +474,6 @@ export default function ManagePhotos() {
             const { items: folderItems } = await listResponse.json();
 
             const filePaths = (folderItems || []).map((f: any) => `${folder.path}/${f.name}`);
-            filePaths.push(`${folder.path}/.emptyFolderPlaceholder`);
-            filePaths.push(`${folder.path}/.folder-meta.json`);
 
             const response = await fetch('/.netlify/functions/delete-photo', {
                 method: 'POST',

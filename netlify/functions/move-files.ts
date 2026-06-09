@@ -40,6 +40,9 @@ export const handler: Handler = async (event: HandlerEvent) => {
         .move(from, to);
 
       if (moveError) {
+        if (moveError.message?.includes('Object not found') || moveError.message?.includes('Not found')) {
+          continue;
+        }
         return {
           statusCode: 500,
           body: JSON.stringify({ error: `Failed to move ${from}: ${moveError.message}` }),
