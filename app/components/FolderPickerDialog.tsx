@@ -10,29 +10,33 @@ import FolderOpenIcon from '@mui/icons-material/FolderOpen';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import CreateNewFolderIcon from '@mui/icons-material/CreateNewFolder';
 import AddIcon from '@mui/icons-material/Add';
-import { supabase } from '../utils/supabase';
 
 interface FolderPickerDialogProps {
     open: boolean;
     onClose: () => void;
     onSelect: (path: string) => void;
-    bucket?: string;
     title: string;
     confirmLabel?: string;
     accessToken?: string;
+}
+
+interface FolderItem {
+    name: string;
+    path: string;
+    isFolder: boolean;
+    metadata?: { name?: string; date?: string };
 }
 
 export default function FolderPickerDialog({
     open,
     onClose,
     onSelect,
-    bucket = 'photos',
     title,
     confirmLabel = 'Select This Folder',
     accessToken,
 }: FolderPickerDialogProps) {
     const [pickerPath, setPickerPath] = useState('');
-    const [folders, setFolders] = useState<string[]>([]);
+    const [folders, setFolders] = useState<FolderItem[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
@@ -51,48 +55,50 @@ export default function FolderPickerDialog({
         }
     }, [open]);
 
-    const fetchFolders = (path: string) => {
+    const fetchFolders = async (path: string) => {
+        if (!accessToken) return;
         setLoading(true);
         setError(null);
 
-        supabase.storage
-            .from(bucket)
-            .list(path, { limit: 1000, sortBy: { column: 'name', order: 'asc' } })
-            .then(({ data, error: listError }) => {
-                if (listError) throw listError;
+        try {
+            const response = await fetch(
+                `/.netlify/functions/list-folder?path=${encodeURIComponent(path)}`,
+                { headers: { 'Authorization': `Bearer ${accessToken}` } }
+            );
 
-                const folderNames = (data || [])
-                    .filter((item) => item.id === null && item.name !== '.emptyFolderPlaceholder')
-                    .map((item) => item.name);
+            if (!response.ok) {
+                const errData = await response.json();
+                throw new Error(errData.error || 'Failed to load folders');
+            }
 
-                setFolders(folderNames);
-            })
-            .catch((err: any) => {
-                setError(err.message || 'Failed to load folders');
-            })
-            .finally(() => {
-                setLoading(false);
-            });
+            const { items } = await response.json();
+            setFolders((items || []).filter((item: FolderItem) => item.isFolder));
+        } catch (err: any) {
+            setError(err.message || 'Failed to load folders');
+        } finally {
+            setLoading(false);
+        }
     };
 
     useEffect(() => {
-        if (!open) return;
+        if (!open || !accessToken) return;
         fetchFolders(pickerPath);
-    }, [open, pickerPath, bucket]);
+    }, [open, pickerPath, accessToken]);
 
     const handleCreateFolder = async () => {
-        if (!newFolderName.trim() || creating) return;
+        if (!newFolderName.trim() || creating || !accessToken) return;
 
         setCreating(true);
         setError(null);
 
         try {
-            let folderLabel = newFolderName.trim();
-            if (newFolderDate) {
-                folderLabel = `${folderLabel} (${newFolderDate})`;
-            }
-            const safeName = folderLabel.replace(/\s+/g, '_');
+            const safeName = newFolderName.trim().replace(/\s+/g, '_');
             const folderPath = pickerPath ? `${pickerPath}/${safeName}` : safeName;
+
+            const metadata: Record<string, string> = { name: newFolderName.trim() };
+            if (newFolderDate) {
+                metadata.date = newFolderDate;
+            }
 
             const response = await fetch('/.netlify/functions/create-folder', {
                 method: 'POST',
@@ -100,7 +106,7 @@ export default function FolderPickerDialog({
                     'Authorization': `Bearer ${accessToken}`,
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ folderPath }),
+                body: JSON.stringify({ folderPath, metadata }),
             });
 
             if (!response.ok) {
@@ -121,6 +127,9 @@ export default function FolderPickerDialog({
 
     const breadcrumbParts = pickerPath ? pickerPath.split('/') : [];
 
+    const getDisplayName = (folder: FolderItem) =>
+        folder.metadata?.name || folder.name.replace(/_/g, ' ');
+
     return (
         <Dialog open={open} onClose={onClose} maxWidth="xs" fullWidth>
             <DialogTitle sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
@@ -128,7 +137,6 @@ export default function FolderPickerDialog({
                 {title}
             </DialogTitle>
             <DialogContent>
-                {/* Breadcrumbs */}
                 <Breadcrumbs separator={<ChevronRightIcon fontSize="small" />} sx={{ mb: 1 }}>
                     <Link
                         component="button"
@@ -159,7 +167,6 @@ export default function FolderPickerDialog({
 
                 {error && <Alert severity="error" sx={{ mb: 1 }} onClose={() => setError(null)}>{error}</Alert>}
 
-                {/* Folder list */}
                 {loading ? (
                     <Box sx={{ textAlign: 'center', py: 4 }}>
                         <CircularProgress size={28} />
@@ -170,22 +177,21 @@ export default function FolderPickerDialog({
                     </Typography>
                 ) : (
                     <List dense sx={{ maxHeight: 280, overflowY: 'auto' }}>
-                        {folders.map((name) => {
-                            const path = pickerPath ? `${pickerPath}/${name}` : name;
-                            return (
-                                <ListItemButton key={path} onClick={() => setPickerPath(path)}>
-                                    <ListItemIcon sx={{ minWidth: 36 }}>
-                                        <FolderIcon color="primary" fontSize="small" />
-                                    </ListItemIcon>
-                                    <ListItemText primary={name.replace(/_/g, ' ')} />
-                                    <ChevronRightIcon fontSize="small" color="action" />
-                                </ListItemButton>
-                            );
-                        })}
+                        {folders.map((folder) => (
+                            <ListItemButton key={folder.path} onClick={() => setPickerPath(folder.path)}>
+                                <ListItemIcon sx={{ minWidth: 36 }}>
+                                    <FolderIcon color="primary" fontSize="small" />
+                                </ListItemIcon>
+                                <ListItemText
+                                    primary={getDisplayName(folder)}
+                                    secondary={folder.metadata?.date || undefined}
+                                />
+                                <ChevronRightIcon fontSize="small" color="action" />
+                            </ListItemButton>
+                        ))}
                     </List>
                 )}
 
-                {/* Inline create folder */}
                 {accessToken && (
                     <Box sx={{ mt: 1 }}>
                         {!showNewFolder ? (
@@ -244,7 +250,6 @@ export default function FolderPickerDialog({
                     </Box>
                 )}
 
-                {/* Selected path preview */}
                 <Box sx={{ mt: 1.5, p: 1.5, backgroundColor: 'action.hover', borderRadius: 1 }}>
                     <Typography variant="caption" color="text.secondary">
                         Selected location:

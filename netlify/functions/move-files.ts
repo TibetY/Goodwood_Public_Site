@@ -26,45 +26,34 @@ export const handler: Handler = async (event: HandlerEvent) => {
     }
 
     const body = JSON.parse(event.body || '{}');
-    const { folderPath, metadata } = body;
+    const { moves } = body;
 
-    if (!folderPath || typeof folderPath !== 'string') {
-      return { statusCode: 400, body: JSON.stringify({ error: 'Missing required field: folderPath' }) };
+    if (!moves || !Array.isArray(moves) || moves.length === 0) {
+      return { statusCode: 400, body: JSON.stringify({ error: 'Missing required field: moves (array of { from, to })' }) };
     }
 
-    const { error: uploadError } = await supabaseAdmin.storage
-      .from('photos')
-      .upload(`${folderPath}/.emptyFolderPlaceholder`, new Uint8Array(0), {
-        contentType: 'application/octet-stream',
-        upsert: true,
-      });
-
-    if (uploadError) {
-      console.error('Create folder error:', uploadError);
-      return { statusCode: 500, body: JSON.stringify({ error: uploadError.message }) };
-    }
-
-    if (metadata && typeof metadata === 'object') {
-      const metaContent = JSON.stringify(metadata, null, 2);
-      const { error: metaError } = await supabaseAdmin.storage
+    const results = [];
+    for (const { from, to } of moves) {
+      if (!from || !to) continue;
+      const { error: moveError } = await supabaseAdmin.storage
         .from('photos')
-        .upload(`${folderPath}/.folder-meta.json`,
-          new TextEncoder().encode(metaContent), {
-            contentType: 'application/json',
-            upsert: true,
-          });
+        .move(from, to);
 
-      if (metaError) {
-        console.error('Metadata write error:', metaError);
+      if (moveError) {
+        return {
+          statusCode: 500,
+          body: JSON.stringify({ error: `Failed to move ${from}: ${moveError.message}` }),
+        };
       }
+      results.push({ from, to });
     }
 
     return {
       statusCode: 200,
-      body: JSON.stringify({ path: folderPath }),
+      body: JSON.stringify({ moved: results }),
     };
   } catch (error: any) {
-    console.error('Error in create-folder function:', error);
+    console.error('Error in move-files function:', error);
     return { statusCode: 500, body: JSON.stringify({ error: error.message || 'Internal server error' }) };
   }
 };

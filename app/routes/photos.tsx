@@ -14,12 +14,16 @@ const IMAGE_EXTENSIONS = /\.(jpg|jpeg|png|gif|webp|heic)$/i;
 
 // Cache for 5 minutes — Supabase listing is fast, keep photos fresh
 const CACHE_TTL = 5 * 60 * 1000;
-let photosCache: { data: Photo[]; timestamp: number } | null = null;
+let photosCache: { data: Photo[]; folderMeta: FolderMeta; timestamp: number } | null = null;
 
 interface Photo {
     path: string;   // e.g. "2024_2025/Installation/image.jpg"
     name: string;
     url: string;     // direct Supabase public URL
+}
+
+interface FolderMeta {
+    [folderPath: string]: { name?: string; date?: string };
 }
 
 function formatFolderName(name: string): string {
@@ -32,15 +36,16 @@ function formatFolderName(name: string): string {
 async function listImagesRecursively(
     supabase: ReturnType<typeof createClient>,
     folderPath: string,
-    publicBaseUrl: string
-): Promise<Photo[]> {
+    publicBaseUrl: string,
+    folderMeta: FolderMeta = {}
+): Promise<{ photos: Photo[]; folderMeta: FolderMeta }> {
     const { data, error } = await supabase.storage
         .from(BUCKET)
         .list(folderPath, { limit: 1000, sortBy: { column: 'name', order: 'asc' } });
 
     if (error || !data) {
         console.error(`Error listing "${folderPath}":`, error?.message);
-        return [];
+        return { photos: [], folderMeta };
     }
 
     const photos: Photo[] = [];
@@ -48,8 +53,10 @@ async function listImagesRecursively(
 
     for (const item of data) {
         const fullPath = folderPath ? `${folderPath}/${item.name}` : item.name;
+        if (item.name === '.folder-meta.json' || item.name === '.emptyFolderPlaceholder') {
+            continue;
+        }
         if (item.id === null) {
-            // It's a folder prefix
             folders.push(fullPath);
         } else if (IMAGE_EXTENSIONS.test(item.name)) {
             photos.push({
@@ -60,10 +67,28 @@ async function listImagesRecursively(
         }
     }
 
-    const nested = await Promise.all(
-        folders.map((f) => listImagesRecursively(supabase, f, publicBaseUrl))
+    // Read metadata for each subfolder in parallel
+    const metaResults = await Promise.allSettled(
+        folders.map(async (f) => {
+            try {
+                const { data: metaFile } = await supabase.storage
+                    .from(BUCKET)
+                    .download(`${f}/.folder-meta.json`);
+                if (metaFile) {
+                    folderMeta[f] = JSON.parse(await metaFile.text());
+                }
+            } catch {
+                // no metadata file
+            }
+        })
     );
-    return photos.concat(nested.flat());
+
+    const nested = await Promise.all(
+        folders.map((f) => listImagesRecursively(supabase, f, publicBaseUrl, folderMeta))
+    );
+
+    const allPhotos = photos.concat(nested.flatMap((n) => n.photos));
+    return { photos: allPhotos, folderMeta };
 }
 
 export async function loader() {
@@ -72,32 +97,32 @@ export async function loader() {
 
     if (!supabaseUrl || !supabaseKey) {
         console.error('Supabase configuration is missing');
-        return { photos: [] };
+        return { photos: [], folderMeta: {} };
     }
 
     try {
         const now = Date.now();
         if (photosCache && now - photosCache.timestamp < CACHE_TTL) {
-            return { photos: photosCache.data };
+            return { photos: photosCache.data, folderMeta: photosCache.folderMeta };
         }
 
         const supabase = createClient(supabaseUrl, supabaseKey, {
             auth: { autoRefreshToken: false, persistSession: false },
         });
 
-        const photos = await listImagesRecursively(supabase, '', supabaseUrl);
-        console.log('Photos found:', photos.length);
+        const result = await listImagesRecursively(supabase, '', supabaseUrl);
+        console.log('Photos found:', result.photos.length);
 
-        photosCache = { data: photos, timestamp: now };
-        return { photos };
+        photosCache = { data: result.photos, folderMeta: result.folderMeta, timestamp: now };
+        return { photos: result.photos, folderMeta: result.folderMeta };
     } catch (err) {
         console.error('Error fetching photos from Supabase:', err);
-        return { photos: [] };
+        return { photos: [], folderMeta: {} };
     }
 }
 
 export default function Photos() {
-    const { photos } = useLoaderData<typeof loader>();
+    const { photos, folderMeta } = useLoaderData<typeof loader>();
     const { t } = useTranslation();
     const [selected, setSelected] = useState<Photo | null>(null);
     const [sortOrder, setSortOrder] = useState<'newest' | 'oldest'>('newest');
@@ -105,6 +130,12 @@ export default function Photos() {
     const isXs = useMediaQuery(theme.breakpoints.down('sm'));
     const isSm = useMediaQuery(theme.breakpoints.between('sm', 'md'));
     const cols = isXs ? 1 : isSm ? 2 : 3;
+
+    const getEventDisplayName = (yearFolder: string, eventFolder: string) => {
+        if (!eventFolder) return '';
+        const path = `${yearFolder}/${eventFolder}`;
+        return folderMeta?.[path]?.name || formatFolderName(eventFolder);
+    };
 
     const groups = useMemo(() => {
         const map = new Map<string, Map<string, Photo[]>>();
@@ -125,12 +156,19 @@ export default function Photos() {
         });
 
         return years.map(([year, eventMap]) => {
-            const events = Array.from(eventMap.entries()).sort((a, b) =>
-                sortOrder === 'newest' ? b[0].localeCompare(a[0]) : a[0].localeCompare(b[0])
-            );
+            const events = Array.from(eventMap.entries()).sort((a, b) => {
+                const metaA = folderMeta?.[`${year}/${a[0]}`];
+                const metaB = folderMeta?.[`${year}/${b[0]}`];
+                if (metaA?.date && metaB?.date) {
+                    return sortOrder === 'newest'
+                        ? metaB.date.localeCompare(metaA.date)
+                        : metaA.date.localeCompare(metaB.date);
+                }
+                return sortOrder === 'newest' ? b[0].localeCompare(a[0]) : a[0].localeCompare(b[0]);
+            });
             return { year, events };
         });
-    }, [photos, sortOrder]);
+    }, [photos, folderMeta, sortOrder]);
 
     return (
         <Container maxWidth="lg" sx={{ py: 8 }}>
@@ -164,7 +202,7 @@ export default function Photos() {
                             <Box key={event} sx={{ mb: 5 }}>
                                 {event && (
                                     <Typography variant="h6" color="text.secondary" gutterBottom sx={{ ml: 0.5 }}>
-                                        {formatFolderName(event)}
+                                        {getEventDisplayName(year, event)}
                                     </Typography>
                                 )}
                                 <ImageList variant="masonry" cols={cols} gap={8}>
