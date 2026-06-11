@@ -38,8 +38,8 @@ function MeetingFact({ label, line1, line2 }: { label: string; line1: string; li
 function WelcomeStat({ value, label }: { value: string; label: string }) {
   return (
     <Box sx={{ borderTop: '1px solid rgba(216,180,95,0.4)', pt: 1.75, display: 'flex', flexDirection: 'column', gap: 0.5 }}>
-      <Typography sx={{ fontFamily: '"Playfair Display", serif', fontSize: 26, color: 'accent.goldOnDark' }}>{value}</Typography>
-      <Typography sx={{ fontSize: 12, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.6)' }}>{label}</Typography>
+      <Typography sx={{ fontFamily: '"Playfair Display", serif', fontSize: { xs: 19, sm: 26 }, color: 'accent.goldOnDark' }}>{value}</Typography>
+      <Typography sx={{ fontSize: 12, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.75)' }}>{label}</Typography>
     </Box>
   );
 }
@@ -222,10 +222,10 @@ export default function Home() {
                 component={Link}
                 to="/events"
                 sx={{
-                  display: 'inline-block', mt: 2.25, pt: 2.25,
+                  display: 'flex', alignItems: 'center', mt: 2.25, pt: 2.25,
                   borderTop: (theme) => `1px solid ${theme.palette.section.border}`,
-                  width: '100%', fontSize: 14, fontWeight: 600, color: 'accent.gold',
-                  textDecoration: 'none', '&:hover': { color: 'text.primary' },
+                  width: '100%', minHeight: 44, fontSize: 14, fontWeight: 600, color: 'accent.gold',
+                  textDecoration: 'underline', '&:hover': { color: 'text.primary' },
                 }}
               >
                 {t('home.viewAllEvents', 'View all events →')}
@@ -242,7 +242,7 @@ export default function Home() {
           sx={{
             position: 'absolute', left: { xs: 16, md: 32 }, bottom: { xs: 16, md: 24 },
             fontSize: 12, letterSpacing: '0.12em', textTransform: 'uppercase',
-            color: '#FFFFFF', backgroundColor: 'rgba(20,37,60,0.75)', px: 1.75, py: 1,
+            color: '#FFFFFF', backgroundColor: 'rgba(20,37,60,0.92)', px: 1.75, py: 1,
           }}
         >
           {t('home.photoCaption', 'Installation of Officers · 2025')}

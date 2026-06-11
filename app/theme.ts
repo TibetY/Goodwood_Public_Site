@@ -63,18 +63,19 @@ export const getTheme = (mode: 'light' | 'dark') => createTheme({
       contrastText: '#FFFFFF',
     },
     secondary: {
-      main: mode === 'light' ? '#9A8650' : '#D8B45F', // gold
+      main: mode === 'light' ? '#5C4E2A' : '#D8B45F', // gold (light value ≥7:1 on cream/white)
       light: '#D8B45F',
       dark: '#7A693E',
-      contrastText: '#14253C',
+      contrastText: mode === 'light' ? '#FFFFFF' : '#14253C',
     },
     background: {
       default: mode === 'light' ? '#F7F4EE' : '#0B1726',
       paper: mode === 'light' ? '#FFFFFF' : '#122236',
     },
     text: {
+      // Both values hold ≥7:1 (WCAG AAA) on the cream and white surfaces below
       primary: mode === 'light' ? '#14253C' : '#F4F1E9',
-      secondary: mode === 'light' ? '#5C6678' : '#AEB6C2',
+      secondary: mode === 'light' ? '#465062' : '#AEB6C2',
     },
     divider: mode === 'light' ? '#E6E0D2' : 'rgba(255,255,255,0.12)',
     // Custom section colors
@@ -83,11 +84,11 @@ export const getTheme = (mode: 'light' | 'dark') => createTheme({
       accent: '#14253C',                                  // navy band — constant
       neutral: mode === 'light' ? '#FFFFFF' : '#122236',
       border: mode === 'light' ? '#E6E0D2' : 'rgba(255,255,255,0.12)',
-      subtle: mode === 'light' ? '#8A8FA0' : '#8893A6',
+      subtle: mode === 'light' ? '#475063' : '#A9B2C1', // ≥7:1 on all page surfaces
     },
     // Accent colors
     accent: {
-      gold: mode === 'light' ? '#9A8650' : '#D8B45F',
+      gold: mode === 'light' ? '#5C4E2A' : '#D8B45F', // deep bronze in light mode for 7:1 contrast
       navy: '#14253C',        // brand navy — constant in both modes
       goldOnDark: '#D8B45F',  // bright gold on navy — constant
     },
@@ -164,6 +165,41 @@ export const getTheme = (mode: 'light' | 'dark') => createTheme({
     },
   },
   components: {
+    MuiCssBaseline: {
+      styleOverrides: {
+        // Visible focus indicator for plain anchor/button elements (WCAG 2.4.7)
+        'a:focus-visible, button:focus-visible': {
+          outline: `3px solid ${mode === 'light' ? '#14253C' : '#D8B45F'}`,
+          outlineOffset: '2px',
+        },
+        // Respect reduced-motion preference (WCAG 2.3.3)
+        '@media (prefers-reduced-motion: reduce)': {
+          '*, *::before, *::after': {
+            animationDuration: '0.01ms !important',
+            animationIterationCount: '1 !important',
+            transitionDuration: '0.01ms !important',
+            scrollBehavior: 'auto !important',
+          },
+        },
+      },
+    },
+    MuiButtonBase: {
+      styleOverrides: {
+        root: {
+          '&.Mui-focusVisible': {
+            outline: `3px solid ${mode === 'light' ? '#14253C' : '#D8B45F'}`,
+            outlineOffset: '2px',
+          },
+        },
+      },
+    },
+    MuiToggleButton: {
+      styleOverrides: {
+        root: {
+          minHeight: 44, // WCAG 2.5.5 target size
+        },
+      },
+    },
     MuiButton: {
       styleOverrides: {
         root: {
@@ -173,6 +209,7 @@ export const getTheme = (mode: 'light' | 'dark') => createTheme({
           fontWeight: 600,
           padding: '12px 26px',
           transition: 'all 0.25s ease',
+          minHeight: 44, // WCAG 2.5.5 target size
         },
         contained: {
           boxShadow: 'none',

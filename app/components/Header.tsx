@@ -149,7 +149,7 @@ export default function Header() {
 
           {/* Mobile menu icon */}
           <Box sx={{ display: { xs: 'flex', md: 'none' } }}>
-            <IconButton aria-label="menu" onClick={handleOpenMobileMenu} sx={{ color: 'text.primary' }}>
+            <IconButton aria-label={t('nav.openMenu', 'Open menu')} onClick={handleOpenMobileMenu} sx={{ color: 'text.primary', width: 44, height: 44 }}>
               <MenuIcon />
             </IconButton>
           </Box>
@@ -198,7 +198,7 @@ export default function Header() {
               </Button>
             ))}
 
-            <Box sx={{ width: '1px', height: 22, backgroundColor: 'section.border' }} />
+            <Box aria-hidden="true" sx={{ width: '1px', height: 22, backgroundColor: 'section.border' }} />
 
             {user ? (
               <>
@@ -238,26 +238,26 @@ export default function Header() {
             </Button>
 
             {/* Theme toggle */}
-            <IconButton onClick={toggleTheme} size="small" sx={{ color: 'text.secondary', '&:hover': { color: 'accent.gold' } }} aria-label="toggle theme">
+            <IconButton onClick={toggleTheme} sx={{ color: 'text.secondary', width: 44, height: 44, '&:hover': { color: 'accent.gold' } }} aria-label={t('nav.toggleTheme', 'Toggle dark mode')}>
               {mode === 'dark' ? <Brightness7Icon fontSize="small" /> : <Brightness4Icon fontSize="small" />}
             </IconButton>
 
             {/* Language switcher */}
-            <IconButton onClick={handleOpenLangMenu} size="small" sx={{ color: 'text.secondary', '&:hover': { color: 'accent.gold' } }} aria-label="change language">
+            <IconButton onClick={handleOpenLangMenu} sx={{ color: 'text.secondary', width: 44, height: 44, '&:hover': { color: 'accent.gold' } }} aria-label={t('nav.changeLanguage', 'Change language')}>
               <LanguageIcon fontSize="small" />
             </IconButton>
             <Menu anchorEl={langMenuAnchor} open={Boolean(langMenuAnchor)} onClose={handleCloseLangMenu}>
-              <MenuItem onClick={() => changeLanguage('en')} selected={i18n.language === 'en'}>English</MenuItem>
-              <MenuItem onClick={() => changeLanguage('fr')} selected={i18n.language === 'fr'}>Français</MenuItem>
+              <MenuItem lang="en" onClick={() => changeLanguage('en')} selected={i18n.language === 'en'}>English</MenuItem>
+              <MenuItem lang="fr" onClick={() => changeLanguage('fr')} selected={i18n.language === 'fr'}>Français</MenuItem>
             </Menu>
           </Stack>
 
           {/* Mobile theme & language icons */}
           <Box sx={{ display: { xs: 'flex', md: 'none' }, gap: 0.5 }}>
-            <IconButton onClick={toggleTheme} size="small" sx={{ color: 'text.secondary' }} aria-label="toggle theme">
+            <IconButton onClick={toggleTheme} sx={{ color: 'text.secondary', width: 44, height: 44 }} aria-label={t('nav.toggleTheme', 'Toggle dark mode')}>
               {mode === 'dark' ? <Brightness7Icon fontSize="small" /> : <Brightness4Icon fontSize="small" />}
             </IconButton>
-            <IconButton onClick={handleOpenLangMenu} size="small" sx={{ color: 'text.secondary' }} aria-label="change language">
+            <IconButton onClick={handleOpenLangMenu} sx={{ color: 'text.secondary', width: 44, height: 44 }} aria-label={t('nav.changeLanguage', 'Change language')}>
               <LanguageIcon fontSize="small" />
             </IconButton>
           </Box>
@@ -276,10 +276,8 @@ export default function Header() {
             </Typography>
           </Box>
           <List>
-            <ListItem disablePadding>
-              <ListItemButton disabled>
-                <ListItemText primary={t('nav.about')} primaryTypographyProps={{ fontWeight: 600, color: 'accent.gold', fontSize: '0.8rem', sx: { textTransform: 'uppercase', letterSpacing: '0.1em' } }} />
-              </ListItemButton>
+            <ListItem>
+              <ListItemText primary={t('nav.about')} primaryTypographyProps={{ fontWeight: 600, color: 'accent.gold', fontSize: '0.8rem', sx: { textTransform: 'uppercase', letterSpacing: '0.1em' } }} />
             </ListItem>
             {aboutSubmenu.map((item) => (
               <ListItem key={item.key} disablePadding>

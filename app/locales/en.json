@@ -1,346 +1,354 @@
 {
-  "site": {
-    "title": "Goodwood Lodge No. 159",
-    "subtitle": "Grand Lodge of A.F. & A.M. of Canada in the Province of Ontario"
-  },
-  "header": {
-    "title": "Goodwood Lodge No. 159",
-    "tagline": "",
-    "brand": "Goodwood Lodge"
-  },
-  "nav": {
-    "about": "About Us",
-    "history": "History",
-    "officers": "Officers",
-    "committees": "Committees",
-    "pastMasters": "Past Masters",
-    "photos": "Photos",
-    "events": "Events",
-    "contact": "Contact",
-    "login": "Login",
-    "becomeAMason": "Become a Mason"
-  },
-  "home": {
-    "meta": {
-      "title": "Goodwood Lodge No. 159 - Beyond the Square and Compass",
-      "description": "Developing our character and serving the greater good. Grand Lodge of A.F. & A.M. of Canada in the Province of Ontario"
+    "site": {
+        "title": "Goodwood Lodge No. 159",
+        "subtitle": "Grand Lodge of A.F. & A.M. of Canada in the Province of Ontario"
     },
-    "hero": {
-      "title": "Built through effort, bound by brotherhood.",
-      "subtitle": "Where character is forged and lasting bonds are formed.",
-      "eyebrow": "Richmond, Ontario · Est. 1863",
-      "planVisit": "Plan a Visit"
+    "header": {
+        "title": "Goodwood Lodge No. 159",
+        "tagline": "",
+        "brand": "Goodwood Lodge"
     },
-    "welcome": {
-      "greeting": "Welcome to",
-      "lodgeName": "Goodwood Lodge No. 159, GLO, A.F. & A.M.",
-      "description": "We are a fraternal organization dedicated to making good men better through brotherhood, charity, and personal growth.",
-      "extendedDescription": "Located in the heart of Richmond, Ontario, our lodge has been a cornerstone of brotherhood and charitable work for generations. We are proud to be part of the Grand Lodge of A.F. & A.M. of Canada in the Province of Ontario.",
-      "statChartered": "Chartered",
-      "statRegister": "Grand Register",
-      "statHome": "Our Home"
+    "nav": {
+        "about": "About Us",
+        "history": "History",
+        "officers": "Officers",
+        "committees": "Committees",
+        "pastMasters": "Past Masters",
+        "photos": "Photos",
+        "events": "Events",
+        "contact": "Contact",
+        "login": "Login",
+        "becomeAMason": "Become a Mason",
+        "skipToContent": "Skip to main content",
+        "openMenu": "Open menu",
+        "toggleTheme": "Toggle dark mode",
+        "changeLanguage": "Change language"
     },
-    "callToAction": {
-      "sectionTitle": "Your Journey Awaits",
-      "heading": "Grow Through Brotherhood",
-      "description": "Join men committed to self-improvement, integrity, and community impact.",
-      "buttonText": "Become a Mason"
+    "home": {
+        "meta": {
+            "title": "Goodwood Lodge No. 159 - Beyond the Square and Compass",
+            "description": "Developing our character and serving the greater good. Grand Lodge of A.F. & A.M. of Canada in the Province of Ontario"
+        },
+        "hero": {
+            "title": "Built through effort, bound by brotherhood.",
+            "subtitle": "Where character is forged and lasting bonds are formed.",
+            "eyebrow": "Richmond, Ontario · Est. 1863",
+            "planVisit": "Plan a Visit"
+        },
+        "welcome": {
+            "greeting": "Welcome to",
+            "lodgeName": "Goodwood Lodge No. 159, GLO, A.F. & A.M.",
+            "description": "We are a fraternal organization dedicated to making good men better through brotherhood, charity, and personal growth.",
+            "extendedDescription": "Located in the heart of Richmond, Ontario, our lodge has been a cornerstone of brotherhood and charitable work for generations. We are proud to be part of the Grand Lodge of A.F. & A.M. of Canada in the Province of Ontario.",
+            "statChartered": "Chartered",
+            "statRegister": "Grand Register",
+            "statHome": "Our Home"
+        },
+        "callToAction": {
+            "sectionTitle": "Your Journey Awaits",
+            "heading": "Grow Through Brotherhood",
+            "description": "Join men committed to self-improvement, integrity, and community impact.",
+            "buttonText": "Become a Mason"
+        },
+        "values": {
+            "sectionTitle": "Our Values",
+            "heading": "Guided by Timeless Principles",
+            "description": "Charity, integrity, and fellowship form the foundation of everything we do at Goodwood Lodge.",
+            "brotherlyLove": {
+                "title": "Brotherly Love",
+                "description": "We value respect, freedom, kindness, tolerance, and strive for harmony in our communities."
+            },
+            "relief": {
+                "title": "Relief",
+                "description": "We support those in need through charitable works, community service, and compassion for all."
+            },
+            "truth": {
+                "title": "Truth",
+                "description": "We pursue knowledge, integrity, and moral excellence through self-improvement and enlightenment."
+            },
+            "principlesHeading": "Brotherly Love, Relief & Truth"
+        },
+        "learnMore": "Learn More",
+        "contactUs": "Contact Us",
+        "meeting": {
+            "meetLabel": "We Meet",
+            "meetValue": "1st Tuesday · 7:30 PM",
+            "meetNote": "September through June",
+            "hallLabel": "Lodge Hall",
+            "hallValue": "3494 McBean Street",
+            "hallNote": "Richmond, ON K0A 2Z0",
+            "visitorsLabel": "Visitors",
+            "visitorsValue": "Brethren welcome",
+            "visitorsNote": "Inquiries always answered"
+        },
+        "upcomingTitle": "Upcoming at the Lodge",
+        "noUpcoming": "Check back soon for upcoming meetings and events.",
+        "viewAllEvents": "View all events →",
+        "photoCaption": "Installation of Officers · 2025"
     },
-    "values": {
-      "sectionTitle": "Our Values",
-      "heading": "Guided by Timeless Principles",
-      "description": "Charity, integrity, and fellowship form the foundation of everything we do at Goodwood Lodge.",
-      "brotherlyLove": {
-        "title": "Brotherly Love",
-        "description": "We value respect, freedom, kindness, tolerance, and strive for harmony in our communities."
-      },
-      "relief": {
-        "title": "Relief",
-        "description": "We support those in need through charitable works, community service, and compassion for all."
-      },
-      "truth": {
-        "title": "Truth",
-        "description": "We pursue knowledge, integrity, and moral excellence through self-improvement and enlightenment."
-      },
-      "principlesHeading": "Brotherly Love, Relief & Truth"
+    "about": {
+        "title": "About Goodwood Lodge No. 159",
+        "whatIsFreemasonry": "What is Freemasonry?",
+        "ourLodge": "Our Lodge",
+        "meetingTimes": "Meeting Times"
     },
-    "learnMore": "Learn More",
-    "contactUs": "Contact Us",
-    "meeting": {
-      "meetLabel": "We Meet",
-      "meetValue": "1st Tuesday · 7:30 PM",
-      "meetNote": "September through June",
-      "hallLabel": "Lodge Hall",
-      "hallValue": "3494 McBean Street",
-      "hallNote": "Richmond, ON K0A 2Z0",
-      "visitorsLabel": "Visitors",
-      "visitorsValue": "Brethren welcome",
-      "visitorsNote": "Inquiries always answered"
+    "history": {
+        "title": "History of Goodwood Lodge",
+        "masonryInRichmond": {
+            "title": "Masonry in Richmond over 200 years",
+            "p1": "Masonry in the Richmond area actually started before Richmond existed with the soldiers of the 89th Foot Regiment who had a Craft Lodge warranted by the Grand Lodge of Ireland the Charter number being 863 and existing from 1798 to 1818.",
+            "p2": "The original warrant being lost when the regiment's ship sank off the Dutch coast in 1805 a duplicate warrant was issued in 1806. This duplicate warrant was cancelled in 1818 as the Grand Lodge had not received dues since 1808.",
+            "p3": "This is the warrant that was used for the first three years by the Masons of Richmond for the first three years of the settlement (1818, 1819, and 1820). It seems that although the warrant was cancelled it was never returned."
+        },
+        "dukeVisit": {
+            "title": "The Visit of the Duke of Richmond",
+            "p1": "In 1819 Right Worshipful Brother Charles Lennox, the fourth Duke of Richmond visited the village and was said to have found fault with the use of the old warrant by the brethren. By this time regular meetings were held at the Masonic Arms Tavern in Richmond.",
+            "p2": "Efforts to have the Charter legalized not being successful, they applied for and received from \"The Grand Masonic Convention at Kingston\" a Charter dated April 29th 1821, and so Richmond Lodge came into being."
+        },
+        "earlyDays": {
+            "title": "Early Days",
+            "p1": "In the early days, the lodge was prepared with whitewash and a brush, and charts on the floor covered with straw. At the appropriate time with the sweep of a foot the chart was exposed to view for use by the ritualist.",
+            "p2": "It was these brethren that laid the cornerstone of the first Anglican Church in Richmond in 1823, the brethren borrowing regalia from Stephen Burritt's \"Lodge on the Rideau\" at Burritt's rapids. This seems to be the first cornerstone laid by masons in the Ottawa area.",
+            "p3": "Shortly after this the Brethren decided to buy a complete set of Collar Jewels, some which have been lost over the years, but several are still in use by Goodwood Lodge, these are stamped \"Grand Lodge of Upper Canada\"."
+        },
+        "darkPeriod": {
+            "title": "The Dark Period",
+            "p1": "It would seem that Richmond Lodge met until the 1840's. By 1845 The Brethren were only meeting intermittently being reluctant to give up until another meeting place became available.",
+            "p2": "Late in 1846 a new Lodge came into being in Kempville. First as Kempville 25 then later as Kempville 7, and now known as Mount Zion 28. With the new Lodge in Kempville the Richmond Lodge passed into darkness when the brethren started attending in Kempville. The Grand Masonic Convention, the authority under which Richmond Lodge existed had ceased to operate and the charter became non-operative."
+        },
+        "revival": {
+            "title": "Revival and the Birth of Goodwood Lodge",
+            "p1": "In 1855 The Grand Lodge of Canada came into being, and while Richmond lodge had not existed for years, the brethren in Richmond were still busy. Many of which went into Ottawa at least once a month to attend Doric Lodge. Ed Reilly who ran the livery stable provided the transportation. These brethren of Doric Lodge (Bro. Rev. C.B. Pettit, Bro. John McElroy, Bro Edward Reilly, Bro. John Torney and Bro. Johnson Fenton) are responsible for the existence of the present Goodwood Lodge.",
+            "p2": "There are a number of excerpts from Doric Lodge's minutes relating to these brethren. The entry of the most significance being the one asking the officers of Doric Lodge to assist in establishing a Lodge in Richmond and to forward a petition to Grand Lodge. This was sanctioned unanimously.",
+            "p3": "Dispensation to form Goodwood Lodge was dated September 29th 1863.",
+            "p4": "On November 4th 1863 Doric Lodge agreed to grant Goodwood Lodge whatever surplus furniture they possessed and thus came back to Richmond the contents of our early Lodge which had been given to help Doric in its early years."
+        },
+        "notableMembers": {
+            "title": "Notable Members",
+            "p1": "The first master of Goodwood Lodge was Rev C.B. Pettit the Rector of St. John's Anglican Church in Richmond. The brother was a mainstay of the lodge for many years.",
+            "p2": "The second founder of Goodwood Lodge was Robert Lyon, the son of Captain George Lyon, an original settler in Richmond. R.W.Bro. Robert Lyon was DDGM in 1864 when Ottawa was part of the Central district. He also was a member of Builders Lodge and was the one who presented the petition for Builders Lodge to Grand Lodge. He was Mayor of Ottawa 1867 and a member of the first Ontario Legislature after confederation.",
+            "p3": "Arthur Lyon the younger brother of Robert Lyon joined Goodwood 1864 at the age of 26 years. He moved to Shawville in 1867 and was a charter member and first worshipful master of Pontiac Lodge in Shawville. He served four terms as DDGM for the Ottawa-Hull District.",
+            "p4": "R.W.Bro. R.H.Grant was master of Goodwood 1896 and 1897. He later became a charter member of Hazeldean Lodge 517 when it was instituted in 1914. In 1917 he was DDGM for Ottawa District."
+        },
+        "modernEra": {
+            "title": "Modern Era",
+            "p1": "In 1918 the cornerstone for Goodwood Lodge was laid by Most Worshipful Bro. W.H. Wardhope.",
+            "p2": "On October 24th, 1941 a motion was made to change the night of the meeting from the Tuesday before the full moon, it was defeated and so the lodge continued to meet on the Tuesday before the full moon.",
+            "p3": "At a meeting on June 19, 1956, the brethren decided to replace the wood-burning furnace with a modern appliance. An oil space heater was purchased. June 11, 1957 at another meeting the heating problem apparently not satisfactorily resolved they decided to put in proper central heating. It would seem that the problem of heating and cooling the lodge is a chronic problem of the Lodge that some would claim has persisted for almost 100 years. I have to say I think we now have the problem licked however."
+        },
+        "footer": {
+            "detailedHistory": "For a more detailed history, please consult",
+            "detailedHistoryLink": "Freemasonry in Goodwood Lodge No. 159 A.F. & A.M GRC 1989 - 2014.",
+            "artifactsIntro": "Another document worth looking at is a presentation on",
+            "artifactsLink": "Artifacts in Goodwood Lodge."
+        }
     },
-    "upcomingTitle": "Upcoming at the Lodge",
-    "noUpcoming": "Check back soon for upcoming meetings and events.",
-    "viewAllEvents": "View all events →",
-    "photoCaption": "Installation of Officers · 2025"
-  },
-  "about": {
-    "title": "About Goodwood Lodge No. 159",
-    "whatIsFreemasonry": "What is Freemasonry?",
-    "ourLodge": "Our Lodge",
-    "meetingTimes": "Meeting Times"
-  },
-  "history": {
-    "title": "History of Goodwood Lodge",
-    "masonryInRichmond": {
-      "title": "Masonry in Richmond over 200 years",
-      "p1": "Masonry in the Richmond area actually started before Richmond existed with the soldiers of the 89th Foot Regiment who had a Craft Lodge warranted by the Grand Lodge of Ireland the Charter number being 863 and existing from 1798 to 1818.",
-      "p2": "The original warrant being lost when the regiment's ship sank off the Dutch coast in 1805 a duplicate warrant was issued in 1806. This duplicate warrant was cancelled in 1818 as the Grand Lodge had not received dues since 1808.",
-      "p3": "This is the warrant that was used for the first three years by the Masons of Richmond for the first three years of the settlement (1818, 1819, and 1820). It seems that although the warrant was cancelled it was never returned."
+    "committees": {
+        "title": "Lodge Committees",
+        "description": "The following committees and Chairmen in place for the Masonic Year."
     },
-    "dukeVisit": {
-      "title": "The Visit of the Duke of Richmond",
-      "p1": "In 1819 Right Worshipful Brother Charles Lennox, the fourth Duke of Richmond visited the village and was said to have found fault with the use of the old warrant by the brethren. By this time regular meetings were held at the Masonic Arms Tavern in Richmond.",
-      "p2": "Efforts to have the Charter legalized not being successful, they applied for and received from \"The Grand Masonic Convention at Kingston\" a Charter dated April 29th 1821, and so Richmond Lodge came into being."
-    },
-    "earlyDays": {
-      "title": "Early Days",
-      "p1": "In the early days, the lodge was prepared with whitewash and a brush, and charts on the floor covered with straw. At the appropriate time with the sweep of a foot the chart was exposed to view for use by the ritualist.",
-      "p2": "It was these brethren that laid the cornerstone of the first Anglican Church in Richmond in 1823, the brethren borrowing regalia from Stephen Burritt's \"Lodge on the Rideau\" at Burritt's rapids. This seems to be the first cornerstone laid by masons in the Ottawa area.",
-      "p3": "Shortly after this the Brethren decided to buy a complete set of Collar Jewels, some which have been lost over the years, but several are still in use by Goodwood Lodge, these are stamped \"Grand Lodge of Upper Canada\"."
-    },
-    "darkPeriod": {
-      "title": "The Dark Period",
-      "p1": "It would seem that Richmond Lodge met until the 1840's. By 1845 The Brethren were only meeting intermittently being reluctant to give up until another meeting place became available.",
-      "p2": "Late in 1846 a new Lodge came into being in Kempville. First as Kempville 25 then later as Kempville 7, and now known as Mount Zion 28. With the new Lodge in Kempville the Richmond Lodge passed into darkness when the brethren started attending in Kempville. The Grand Masonic Convention, the authority under which Richmond Lodge existed had ceased to operate and the charter became non-operative."
-    },
-    "revival": {
-      "title": "Revival and the Birth of Goodwood Lodge",
-      "p1": "In 1855 The Grand Lodge of Canada came into being, and while Richmond lodge had not existed for years, the brethren in Richmond were still busy. Many of which went into Ottawa at least once a month to attend Doric Lodge. Ed Reilly who ran the livery stable provided the transportation. These brethren of Doric Lodge (Bro. Rev. C.B. Pettit, Bro. John McElroy, Bro Edward Reilly, Bro. John Torney and Bro. Johnson Fenton) are responsible for the existence of the present Goodwood Lodge.",
-      "p2": "There are a number of excerpts from Doric Lodge's minutes relating to these brethren. The entry of the most significance being the one asking the officers of Doric Lodge to assist in establishing a Lodge in Richmond and to forward a petition to Grand Lodge. This was sanctioned unanimously.",
-      "p3": "Dispensation to form Goodwood Lodge was dated September 29th 1863.",
-      "p4": "On November 4th 1863 Doric Lodge agreed to grant Goodwood Lodge whatever surplus furniture they possessed and thus came back to Richmond the contents of our early Lodge which had been given to help Doric in its early years."
-    },
-    "notableMembers": {
-      "title": "Notable Members",
-      "p1": "The first master of Goodwood Lodge was Rev C.B. Pettit the Rector of St. John's Anglican Church in Richmond. The brother was a mainstay of the lodge for many years.",
-      "p2": "The second founder of Goodwood Lodge was Robert Lyon, the son of Captain George Lyon, an original settler in Richmond. R.W.Bro. Robert Lyon was DDGM in 1864 when Ottawa was part of the Central district. He also was a member of Builders Lodge and was the one who presented the petition for Builders Lodge to Grand Lodge. He was Mayor of Ottawa 1867 and a member of the first Ontario Legislature after confederation.",
-      "p3": "Arthur Lyon the younger brother of Robert Lyon joined Goodwood 1864 at the age of 26 years. He moved to Shawville in 1867 and was a charter member and first worshipful master of Pontiac Lodge in Shawville. He served four terms as DDGM for the Ottawa-Hull District.",
-      "p4": "R.W.Bro. R.H.Grant was master of Goodwood 1896 and 1897. He later became a charter member of Hazeldean Lodge 517 when it was instituted in 1914. In 1917 he was DDGM for Ottawa District."
-    },
-    "modernEra": {
-      "title": "Modern Era",
-      "p1": "In 1918 the cornerstone for Goodwood Lodge was laid by Most Worshipful Bro. W.H. Wardhope.",
-      "p2": "On October 24th, 1941 a motion was made to change the night of the meeting from the Tuesday before the full moon, it was defeated and so the lodge continued to meet on the Tuesday before the full moon.",
-      "p3": "At a meeting on June 19, 1956, the brethren decided to replace the wood-burning furnace with a modern appliance. An oil space heater was purchased. June 11, 1957 at another meeting the heating problem apparently not satisfactorily resolved they decided to put in proper central heating. It would seem that the problem of heating and cooling the lodge is a chronic problem of the Lodge that some would claim has persisted for almost 100 years. I have to say I think we now have the problem licked however."
-    },
-    "footer": {
-      "detailedHistory": "For a more detailed history, please consult",
-      "detailedHistoryLink": "Freemasonry in Goodwood Lodge No. 159 A.F. & A.M GRC 1989 - 2014.",
-      "artifactsIntro": "Another document worth looking at is a presentation on",
-      "artifactsLink": "Artifacts in Goodwood Lodge."
-    }
-  },
-  "committees": {
-    "title": "Lodge Committees",
-    "description": "The following committees and Chairmen in place for the Masonic Year."
-  },
-  "events": {
-    "title": "Upcoming Events",
-    "viewEvents": "View our calendar of upcoming lodge meetings and events.",
-    "subtitle": "Regular meetings, degree work, and community events. Visiting brethren are always welcome at our regular meetings.",
-    "listView": "Events",
-    "calendarView": "Calendar",
-    "upcoming": "Upcoming",
-    "past": "Past Events",
-    "noUpcoming": "No upcoming events scheduled at the moment. Please check back soon.",
-    "noEventsConfigured": "Our calendar will appear here shortly. In the meantime, please check back or contact the lodge."
-  },
-  "contact": {
-    "title": "Contact Us",
-    "subtitle": "Interested in learning more about Freemasonry?",
-    "name": {
-      "first": "First name",
-      "last": "Last name"
-    },
-    "email": "Email",
-    "phone": "Phone",
-    "message": "Message",
-    "send": "Send Message",
-    "successMessage": "Thank you for your message. We will be in touch soon.",
-    "sendHeading": "Send us a message",
-    "whenWeMeet": "When We Meet",
-    "meetNote": "September through June. Visiting brethren are always welcome.",
-    "joiningLabel": "Thinking of Joining?",
-    "joiningText": "Freemasonry is open to men of good character. Learn what membership involves at the Grand Lodge of Ontario.",
-    "followUs": "Follow Us",
-    "messagePlaceholder": "Tell us a little about yourself and what you'd like to know…"
-  },
-  "footer": {
-    "address": {
-      "title": "Visit Us",
-      "street": "3494 McBean St,",
-      "city": "Richmond, ON",
-      "postal": "K0A 2Z0"
+    "events": {
+        "title": "Upcoming Events",
+        "viewEvents": "View our calendar of upcoming lodge meetings and events.",
+        "subtitle": "Regular meetings, degree work, and community events. Visiting brethren are always welcome at our regular meetings.",
+        "listView": "Events",
+        "calendarView": "Calendar",
+        "upcoming": "Upcoming",
+        "past": "Past Events",
+        "noUpcoming": "No upcoming events scheduled at the moment. Please check back soon.",
+        "noEventsConfigured": "Our calendar will appear here shortly. In the meantime, please check back or contact the lodge."
     },
     "contact": {
-      "title": "Contact",
-      "email": "secretary@goodwoodlodge159.ca"
+        "title": "Contact Us",
+        "subtitle": "Interested in learning more about Freemasonry?",
+        "name": {
+            "first": "First name",
+            "last": "Last name"
+        },
+        "email": "Email",
+        "phone": "Phone",
+        "message": "Message",
+        "send": "Send Message",
+        "successMessage": "Thank you for your message. We will be in touch soon.",
+        "sendHeading": "Send us a message",
+        "whenWeMeet": "When We Meet",
+        "meetNote": "September through June. Visiting brethren are always welcome.",
+        "joiningLabel": "Thinking of Joining?",
+        "joiningText": "Freemasonry is open to men of good character. Learn what membership involves at the Grand Lodge of Ontario.",
+        "followUs": "Follow Us",
+        "messagePlaceholder": "Tell us a little about yourself and what you'd like to know…",
+        "sending": "Sending…",
+        "submitError": "There was an error submitting the form. Please try again."
     },
-    "links": {
-      "title": "Links",
-      "grandLodge": "Grand Lodge of Ontario",
-      "instagram": "Follow us on Instagram",
-      "becomeAMason": "Becoming a Mason"
+    "footer": {
+        "address": {
+            "title": "Visit Us",
+            "street": "3494 McBean St,",
+            "city": "Richmond, ON",
+            "postal": "K0A 2Z0"
+        },
+        "contact": {
+            "title": "Contact",
+            "email": "secretary@goodwoodlodge159.ca"
+        },
+        "links": {
+            "title": "Links",
+            "grandLodge": "Grand Lodge of Ontario",
+            "instagram": "Follow us on Instagram",
+            "becomeAMason": "Becoming a Mason"
+        },
+        "copyright": "© {{year}} Goodwood Lodge No. 159. All rights reserved.",
+        "tagline": "Developing our character and serving the greater good in Richmond, Ontario since 1863.",
+        "meetTime": "1st Tuesday · 7:30 PM",
+        "lodge": "Lodge"
     },
-    "copyright": "© {{year}} Goodwood Lodge No. 159. All rights reserved.",
-    "tagline": "Developing our character and serving the greater good in Richmond, Ontario since 1863.",
-    "meetTime": "1st Tuesday · 7:30 PM",
-    "lodge": "Lodge"
-  },
-  "photos": {
-    "title": "Photos",
-    "noPhotos": "No photos available.",
-    "newestFirst": "Newest First",
-    "oldestFirst": "Oldest First"
-  },
-  "common": {
-    "loading": "Loading...",
-    "error": "An error occurred",
-    "notFound": "Page not found"
-  },
-  "officers": {
-    "title": "Lodge Officers",
-    "description": "Meet the dedicated officers serving Goodwood Lodge for the {{currentYear}} - {{endYear}} Masonic Year.",
-    "wm": "Worshipful Master",
-    "im": "Imm. Past Master",
-    "sw": "Senior Warden",
-    "jw": "Junior Warden",
-    "sec": "Secretary",
-    "treas": "Treasurer",
-    "doc": "Dir. of Ceremonies",
-    "sd": "Senior Deacon",
-    "jd": "Junior Deacon",
-    "chaplain": "Chaplain",
-    "ig": "Inner Guard",
-    "tyler": "Tyler",
-    "ss": "Senior Steward",
-    "js": "Junior Steward"
-  },
-  "login": {
-    "emailAddress": "Email Address",
-    "password": "Password",
-    "pleaseWait": "Please wait...",
-    "signIn": "Sign In",
-    "signUp": "Sign Up",
-    "forgotPassword": "Forgot Password?",
-    "registrationNote": "Registration is by invitation only. Please contact the lodge secretary if you need assistance.",
-    "checkEmailConfirmation": "Check your email for the confirmation link!",
-    "errorOccurred": "An error occurred"
-  },
-  "setPassword": {
-    "title": "Set Your Password",
-    "welcomeMessage": "Welcome! Please create a password for your account.",
-    "displayName": "Display Name",
-    "phoneNumber": "Phone Number",
-    "password": "Password",
-    "confirmPassword": "Confirm Password",
-    "settingPassword": "Setting Password...",
-    "completeSetup": "Complete Setup",
-    "displayNameHelper": "e.g., John Smith or W. Bro. John Smith",
-    "phoneHelper": "Optional - for lodge communications",
-    "passwordHelper": "Minimum 8 characters",
-    "invalidToken": "Invalid or expired invitation link. Please request a new invitation.",
-    "backToLogin": "Back to Login",
-    "passwordTooShort": "Password must be at least 8 characters long",
-    "passwordsDoNotMatch": "Passwords do not match",
-    "failedToSetPassword": "Failed to set password"
-  },
-  "portal": {
-    "title": "Goodwood Lodge Portal",
-    "welcome": "Welcome, Bro. {{name}}",
+    "photos": {
+        "title": "Photos",
+        "noPhotos": "No photos available.",
+        "newestFirst": "Newest First",
+        "oldestFirst": "Oldest First",
+        "viewPhoto": "View photo",
+        "closePhoto": "Close photo"
+    },
+    "common": {
+        "loading": "Loading...",
+        "error": "An error occurred",
+        "notFound": "Page not found"
+    },
+    "officers": {
+        "title": "Lodge Officers",
+        "description": "Meet the dedicated officers serving Goodwood Lodge for the {{currentYear}} - {{endYear}} Masonic Year.",
+        "wm": "Worshipful Master",
+        "im": "Imm. Past Master",
+        "sw": "Senior Warden",
+        "jw": "Junior Warden",
+        "sec": "Secretary",
+        "treas": "Treasurer",
+        "doc": "Dir. of Ceremonies",
+        "sd": "Senior Deacon",
+        "jd": "Junior Deacon",
+        "chaplain": "Chaplain",
+        "ig": "Inner Guard",
+        "tyler": "Tyler",
+        "ss": "Senior Steward",
+        "js": "Junior Steward"
+    },
+    "login": {
+        "emailAddress": "Email Address",
+        "password": "Password",
+        "pleaseWait": "Please wait...",
+        "signIn": "Sign In",
+        "signUp": "Sign Up",
+        "forgotPassword": "Forgot Password?",
+        "registrationNote": "Registration is by invitation only. Please contact the lodge secretary if you need assistance.",
+        "checkEmailConfirmation": "Check your email for the confirmation link!",
+        "errorOccurred": "An error occurred"
+    },
+    "setPassword": {
+        "title": "Set Your Password",
+        "welcomeMessage": "Welcome! Please create a password for your account.",
+        "displayName": "Display Name",
+        "phoneNumber": "Phone Number",
+        "password": "Password",
+        "confirmPassword": "Confirm Password",
+        "settingPassword": "Setting Password...",
+        "completeSetup": "Complete Setup",
+        "displayNameHelper": "e.g., John Smith or W. Bro. John Smith",
+        "phoneHelper": "Optional - for lodge communications",
+        "passwordHelper": "Minimum 8 characters",
+        "invalidToken": "Invalid or expired invitation link. Please request a new invitation.",
+        "backToLogin": "Back to Login",
+        "passwordTooShort": "Password must be at least 8 characters long",
+        "passwordsDoNotMatch": "Passwords do not match",
+        "failedToSetPassword": "Failed to set password"
+    },
+    "portal": {
+        "title": "Goodwood Lodge Portal",
+        "welcome": "Welcome, Bro. {{name}}",
+        "manageMembers": {
+            "title": "Manage Members",
+            "description": "View and manage lodge members"
+        },
+        "manageCommittees": {
+            "title": "Manage Committees",
+            "description": "Update committee information and assignments"
+        },
+        "manageOfficers": {
+            "title": "Manage Officers",
+            "description": "Update lodge officers and positions"
+        },
+        "managePhotos": {
+            "title": "Manage Photos",
+            "description": "Upload and organize lodge photos"
+        },
+        "degreeWork": {
+            "title": "Degree Work",
+            "description": "Practice degree ceremonies"
+        },
+        "manageEvents": {
+            "title": "Manage Events",
+            "description": "Manage lodge events and calendar"
+        },
+        "sendSummons": {
+            "title": "Send Summons",
+            "description": "Create and send event summons to members"
+        },
+        "payDues": {
+            "title": "Pay Dues",
+            "description": "Pay your annual lodge dues online"
+        }
+    },
     "manageMembers": {
-      "title": "Manage Members",
-      "description": "View and manage lodge members"
-    },
-    "manageCommittees": {
-      "title": "Manage Committees",
-      "description": "Update committee information and assignments"
-    },
-    "manageOfficers": {
-      "title": "Manage Officers",
-      "description": "Update lodge officers and positions"
-    },
-    "managePhotos": {
-      "title": "Manage Photos",
-      "description": "Upload and organize lodge photos"
-    },
-    "degreeWork": {
-      "title": "Degree Work",
-      "description": "Practice degree ceremonies"
-    },
-    "manageEvents": {
-      "title": "Manage Events",
-      "description": "Manage lodge events and calendar"
-    },
-    "sendSummons": {
-      "title": "Send Summons",
-      "description": "Create and send event summons to members"
-    },
-    "payDues": {
-      "title": "Pay Dues",
-      "description": "Pay your annual lodge dues online"
+        "title": "Manage Members",
+        "description": "View and manage lodge members",
+        "inviteMember": "Invite Member",
+        "tableHeaders": {
+            "displayName": "Display Name",
+            "email": "Email",
+            "phone": "Phone",
+            "status": "Status",
+            "lastSignIn": "Last Sign In",
+            "actions": "Actions"
+        },
+        "status": {
+            "active": "Active",
+            "invited": "Invited",
+            "pending": "Pending"
+        },
+        "noMembers": "No members found. Click \"Invite Member\" to add members.",
+        "never": "Never",
+        "tooltips": {
+            "sendPasswordReset": "Send Password Reset",
+            "deleteMember": "Delete Member"
+        },
+        "inviteDialog": {
+            "title": "Invite New Member",
+            "emailAddress": "Email Address",
+            "displayNameOptional": "Display Name (Optional)",
+            "displayNameHelper": "e.g., W. Bro. John Smith",
+            "cancel": "Cancel",
+            "sending": "Sending...",
+            "sendInvitation": "Send Invitation"
+        },
+        "deleteDialog": {
+            "title": "Confirm Delete",
+            "message": "Are you sure you want to delete member {{email}}? This action cannot be undone.",
+            "cancel": "Cancel",
+            "deleting": "Deleting...",
+            "delete": "Delete"
+        },
+        "errors": {
+            "emailRequired": "Email is required",
+            "failedToFetch": "Failed to fetch members",
+            "failedToSendInvitation": "Failed to send invitation",
+            "failedToDelete": "Failed to delete member",
+            "failedToSendPasswordReset": "Failed to send password reset",
+            "failedToLoadMembers": "Failed to load members"
+        },
+        "success": {
+            "invitationSent": "Invitation sent to {{email}}",
+            "memberDeleted": "Member {{email}} deleted successfully",
+            "passwordResetSent": "Password reset email sent to {{email}}"
+        }
     }
-  },
-  "manageMembers": {
-    "title": "Manage Members",
-    "description": "View and manage lodge members",
-    "inviteMember": "Invite Member",
-    "tableHeaders": {
-      "displayName": "Display Name",
-      "email": "Email",
-      "phone": "Phone",
-      "status": "Status",
-      "lastSignIn": "Last Sign In",
-      "actions": "Actions"
-    },
-    "status": {
-      "active": "Active",
-      "invited": "Invited",
-      "pending": "Pending"
-    },
-    "noMembers": "No members found. Click \"Invite Member\" to add members.",
-    "never": "Never",
-    "tooltips": {
-      "sendPasswordReset": "Send Password Reset",
-      "deleteMember": "Delete Member"
-    },
-    "inviteDialog": {
-      "title": "Invite New Member",
-      "emailAddress": "Email Address",
-      "displayNameOptional": "Display Name (Optional)",
-      "displayNameHelper": "e.g., W. Bro. John Smith",
-      "cancel": "Cancel",
-      "sending": "Sending...",
-      "sendInvitation": "Send Invitation"
-    },
-    "deleteDialog": {
-      "title": "Confirm Delete",
-      "message": "Are you sure you want to delete member {{email}}? This action cannot be undone.",
-      "cancel": "Cancel",
-      "deleting": "Deleting...",
-      "delete": "Delete"
-    },
-    "errors": {
-      "emailRequired": "Email is required",
-      "failedToFetch": "Failed to fetch members",
-      "failedToSendInvitation": "Failed to send invitation",
-      "failedToDelete": "Failed to delete member",
-      "failedToSendPasswordReset": "Failed to send password reset",
-      "failedToLoadMembers": "Failed to load members"
-    },
-    "success": {
-      "invitationSent": "Invitation sent to {{email}}",
-      "memberDeleted": "Member {{email}} deleted successfully",
-      "passwordResetSent": "Password reset email sent to {{email}}"
-    }
-  }
 }

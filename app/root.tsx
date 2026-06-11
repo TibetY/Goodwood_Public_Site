@@ -9,6 +9,7 @@ import {
 import CssBaseline from '@mui/material/CssBaseline';
 import { Container, Typography, Box } from '@mui/material';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 
 import type { Route } from "./+types/root";
 import "./app.css";
@@ -41,8 +42,9 @@ export async function action({ request }: Route.ActionArgs) {
 }
 
 export function Layout({ children }: { children: React.ReactNode }) {
+  const { i18n } = useTranslation();
   return (
-    <html lang="en">
+    <html lang={i18n.language?.split('-')[0] || 'en'}>
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -74,6 +76,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 }
 
 export default function App() {
+  const { t } = useTranslation();
   return (
     <Box
       sx={{
@@ -82,8 +85,27 @@ export default function App() {
         minHeight: '100vh',
       }}
     >
+      {/* Skip link for keyboard users (WCAG 2.4.1) */}
+      <Box
+        component="a"
+        href="#main-content"
+        sx={{
+          position: 'absolute',
+          left: '-9999px',
+          zIndex: (theme) => theme.zIndex.appBar + 1,
+          backgroundColor: 'accent.navy',
+          color: '#FFFFFF',
+          px: 3,
+          py: 1.5,
+          fontWeight: 600,
+          textDecoration: 'none',
+          '&:focus': { left: 16, top: 16 },
+        }}
+      >
+        {t('nav.skipToContent', 'Skip to main content')}
+      </Box>
       <Header />
-      <Box component="main" sx={{ flex: 1 }}>
+      <Box component="main" id="main-content" sx={{ flex: 1 }}>
         <Outlet />
       </Box>
       <FreemasonryChatbot/>

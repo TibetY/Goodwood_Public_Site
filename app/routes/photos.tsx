@@ -251,27 +251,35 @@ export default function Photos() {
                                             )}
                                             <ImageList variant="masonry" cols={cols} gap={8}>
                                                 {eventPhotos.map((photo) => (
-                                                    <ImageListItem
-                                                        key={photo.path}
-                                                        onClick={() => setSelected(photo)}
-                                                        sx={{
-                                                            cursor: 'pointer',
-                                                            borderRadius: 1,
-                                                            overflow: 'hidden',
-                                                            border: '1px solid',
-                                                            borderColor: 'section.border',
-                                                            transition: 'transform 0.25s ease, opacity 0.25s ease',
-                                                            '& img': { transition: 'opacity 0.25s ease' },
-                                                            '&:hover': { transform: 'translateY(-2px)' },
-                                                            '&:hover img': { opacity: 0.85 },
-                                                        }}
-                                                    >
-                                                        <img
-                                                            src={photo.url}
-                                                            alt={photo.name}
-                                                            loading="lazy"
-                                                            style={{ display: 'block', width: '100%', borderRadius: 4 }}
-                                                        />
+                                                    <ImageListItem key={photo.path}>
+                                                        {/* Real <button> so the lightbox is keyboard-operable (WCAG 2.1.1) */}
+                                                        <Box
+                                                            component="button"
+                                                            type="button"
+                                                            onClick={() => setSelected(photo)}
+                                                            aria-label={`${t('photos.viewPhoto', 'View photo')}: ${photo.name}`}
+                                                            sx={{
+                                                                p: 0,
+                                                                width: '100%',
+                                                                backgroundColor: 'transparent',
+                                                                cursor: 'pointer',
+                                                                borderRadius: 1,
+                                                                overflow: 'hidden',
+                                                                border: '1px solid',
+                                                                borderColor: 'section.border',
+                                                                transition: 'transform 0.25s ease, opacity 0.25s ease',
+                                                                '& img': { transition: 'opacity 0.25s ease' },
+                                                                '&:hover': { transform: 'translateY(-2px)' },
+                                                                '&:hover img': { opacity: 0.85 },
+                                                            }}
+                                                        >
+                                                            <img
+                                                                src={photo.url}
+                                                                alt={photo.name}
+                                                                loading="lazy"
+                                                                style={{ display: 'block', width: '100%', borderRadius: 4 }}
+                                                            />
+                                                        </Box>
                                                     </ImageListItem>
                                                 ))}
                                             </ImageList>
@@ -298,7 +306,7 @@ export default function Photos() {
                 <DialogContent sx={{ p: 0, position: 'relative', backgroundColor: 'rgba(11, 23, 38, 0.95)' }}>
                     <IconButton
                         onClick={() => setSelected(null)}
-                        aria-label="close"
+                        aria-label={t('photos.closePhoto', 'Close photo')}
                         sx={{
                             position: 'absolute',
                             top: 8,

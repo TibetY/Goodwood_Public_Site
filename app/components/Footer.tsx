@@ -17,6 +17,9 @@ const linkSx = {
   textDecoration: 'none',
   cursor: 'pointer',
   transition: 'color 0.2s ease',
+  display: 'flex',
+  alignItems: 'center',
+  minHeight: 44, // WCAG 2.5.5 target size
   '&:hover': { color: '#FFFFFF' },
 } as const;
 
@@ -41,7 +44,7 @@ export default function Footer() {
                 </Typography>
               </Box>
             </Box>
-            <Typography sx={{ fontSize: 13.5, lineHeight: 1.7, color: 'rgba(255,255,255,0.55)', maxWidth: '36ch' }}>
+            <Typography sx={{ fontSize: 13.5, lineHeight: 1.7, color: 'rgba(255,255,255,0.65)', maxWidth: '36ch' }}>
               {t('footer.tagline', 'Developing our character and serving the greater good in Richmond, Ontario since 1863.')}
             </Typography>
           </Grid>
@@ -54,7 +57,7 @@ export default function Footer() {
                 {t('footer.address.street')}<br />
                 {t('footer.address.city')} {t('footer.address.postal')}
               </Typography>
-              <Typography sx={{ fontSize: 13, color: 'rgba(255,255,255,0.55)' }}>
+              <Typography sx={{ fontSize: 13, color: 'rgba(255,255,255,0.65)' }}>
                 {t('footer.meetTime', '1st Tuesday · 7:30 PM')}
               </Typography>
             </Box>
@@ -109,10 +112,10 @@ export default function Footer() {
             gap: 1,
           }}
         >
-          <Typography sx={{ fontSize: 12.5, color: 'rgba(255,255,255,0.45)' }}>
+          <Typography sx={{ fontSize: 12.5, color: 'rgba(255,255,255,0.65)' }}>
             {t('footer.copyright', { year: currentYear })}
           </Typography>
-          <Box component={Link} to="/login" sx={{ fontSize: 12.5, color: 'rgba(255,255,255,0.45)', textDecoration: 'none', '&:hover': { color: '#FFFFFF' } }}>
+          <Box component={Link} to="/login" sx={{ fontSize: 12.5, color: 'rgba(255,255,255,0.65)', textDecoration: 'none', display: 'flex', alignItems: 'center', minHeight: 44, '&:hover': { color: '#FFFFFF' } }}>
             {t('nav.login')}
           </Box>
         </Box>

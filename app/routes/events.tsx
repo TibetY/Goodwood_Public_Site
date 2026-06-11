@@ -133,7 +133,7 @@ export default function Events() {
                         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                             {/* Upcoming */}
                             <Box>
-                                <Typography variant="h4" sx={{ mb: 1 }}>{t('events.upcoming', 'Upcoming')}</Typography>
+                                <Typography variant="h4" component="h2" sx={{ mb: 1 }}>{t('events.upcoming', 'Upcoming')}</Typography>
                                 {upcoming.length > 0 ? (
                                     <Box sx={{ borderBottom: (theme) => `1px solid ${theme.palette.section.border}` }}>
                                         {upcoming.map((ev) => <EventRow key={ev.id} ev={ev} />)}
@@ -153,10 +153,10 @@ export default function Events() {
                             {/* Past */}
                             {past.length > 0 && (
                                 <Box>
-                                    <Typography variant="h4" sx={{ mb: 1 }}>{t('events.past', 'Past Events')}</Typography>
+                                    <Typography variant="h4" component="h2" sx={{ mb: 1 }}>{t('events.past', 'Past Events')}</Typography>
                                     <Box sx={{ borderBottom: (theme) => `1px solid ${theme.palette.section.border}` }}>
                                         {past.map((ev) => (
-                                            <Box key={ev.id} sx={{ display: 'flex', gap: 2, py: 2, borderTop: (theme) => `1px solid ${theme.palette.section.border}`, alignItems: 'baseline' }}>
+                                            <Box key={ev.id} sx={{ display: 'flex', gap: 2, py: 2, borderTop: (theme) => `1px solid ${theme.palette.section.border}`, alignItems: 'baseline', flexWrap: 'wrap' }}>
                                                 <Typography sx={{ fontSize: 13, color: 'section.subtle', width: 110, flexShrink: 0 }}>{eventMonthYear(ev)}</Typography>
                                                 <Typography sx={{ fontSize: 16, color: 'text.primary' }}>{ev.title}</Typography>
                                             </Box>

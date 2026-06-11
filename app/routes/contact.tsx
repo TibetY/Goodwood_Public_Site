@@ -37,7 +37,19 @@ const inputSx = {
     width: '100%',
     transition: 'border-color 0.2s ease',
     '&:focus': { borderColor: 'accent.gold' },
+    '&:focus-visible': { outline: '2px solid', outlineColor: 'accent.gold', outlineOffset: '1px' },
     '&::placeholder': { color: 'section.subtle' },
+} as const;
+
+const sidebarLinkSx = {
+    fontSize: 14,
+    fontWeight: 600,
+    color: 'accent.gold',
+    textDecoration: 'underline',
+    display: 'inline-flex',
+    alignItems: 'center',
+    minHeight: 44, // WCAG 2.5.5 target size
+    '&:hover': { color: 'text.primary' },
 } as const;
 
 function InfoBlock({ label, children }: { label: string; children: React.ReactNode }) {
@@ -84,7 +96,7 @@ export default function Contact() {
             navigate('/thank-you');
         } catch (error) {
             console.error('Error submitting form:', error);
-            alert('There was an error submitting the form. Please try again.');
+            alert(t('contact.submitError', 'There was an error submitting the form. Please try again.'));
             setSubmitting(false);
         }
     };
@@ -106,7 +118,7 @@ export default function Contact() {
                     <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1.2fr 0.8fr' }, gap: { xs: 6, md: 9 }, alignItems: 'start' }}>
                         {/* Form */}
                         <Box>
-                            <Typography variant="h4" sx={{ mb: 3 }}>{t('contact.sendHeading', 'Send us a message')}</Typography>
+                            <Typography variant="h4" component="h2" sx={{ mb: 3 }}>{t('contact.sendHeading', 'Send us a message')}</Typography>
                             <Box
                                 component="form"
                                 name="contact"
@@ -122,19 +134,19 @@ export default function Contact() {
                                 <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' }, gap: 2.25 }}>
                                     <Box component="label" sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
                                         <Typography component="span" sx={fieldLabelSx}>{t('contact.name.first')} *</Typography>
-                                        <Box component="input" required name="firstName" value={formData.firstName} onChange={handleChange} disabled={submitting} placeholder="John" sx={inputSx} />
+                                        <Box component="input" required name="firstName" autoComplete="given-name" value={formData.firstName} onChange={handleChange} disabled={submitting} placeholder="John" sx={inputSx} />
                                     </Box>
                                     <Box component="label" sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
                                         <Typography component="span" sx={fieldLabelSx}>{t('contact.name.last')} *</Typography>
-                                        <Box component="input" required name="lastName" value={formData.lastName} onChange={handleChange} disabled={submitting} placeholder="Smith" sx={inputSx} />
+                                        <Box component="input" required name="lastName" autoComplete="family-name" value={formData.lastName} onChange={handleChange} disabled={submitting} placeholder="Smith" sx={inputSx} />
                                     </Box>
                                     <Box component="label" sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
                                         <Typography component="span" sx={fieldLabelSx}>{t('contact.email')} *</Typography>
-                                        <Box component="input" required type="email" name="email" value={formData.email} onChange={handleChange} disabled={submitting} placeholder="john@example.com" sx={inputSx} />
+                                        <Box component="input" required type="email" name="email" autoComplete="email" value={formData.email} onChange={handleChange} disabled={submitting} placeholder="john@example.com" sx={inputSx} />
                                     </Box>
                                     <Box component="label" sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
                                         <Typography component="span" sx={fieldLabelSx}>{t('contact.phone')} *</Typography>
-                                        <Box component="input" required type="tel" name="phone" value={formData.phone} onChange={handleChange} disabled={submitting} placeholder="(613) 555-0123" sx={inputSx} />
+                                        <Box component="input" required type="tel" name="phone" autoComplete="tel" value={formData.phone} onChange={handleChange} disabled={submitting} placeholder="(613) 555-0123" sx={inputSx} />
                                     </Box>
                                 </Box>
 
@@ -150,7 +162,7 @@ export default function Contact() {
                                         startIcon={submitting ? <CircularProgress size={18} color="inherit" /> : null}
                                         sx={{ backgroundColor: 'accent.navy', color: '#fff', px: 4, py: 1.75, '&:hover': { backgroundColor: 'primary.light' } }}
                                     >
-                                        {submitting ? 'Sending…' : t('contact.send')}
+                                        {submitting ? t('contact.sending', 'Sending…') : t('contact.send')}
                                     </Button>
                                 </Box>
                             </Box>
@@ -170,13 +182,13 @@ export default function Contact() {
 
                             <InfoBlock label={t('contact.joiningLabel', 'Thinking of Joining?')}>
                                 <Typography sx={{ fontSize: 14, lineHeight: 1.7, color: 'text.secondary' }}>{t('contact.joiningText', 'Freemasonry is open to men of good character. Learn what membership involves at the Grand Lodge of Ontario.')}</Typography>
-                                <Box component="a" href="https://ontariomasons.ca/becoming-a-mason/" target="_blank" rel="noopener noreferrer" sx={{ fontSize: 14, fontWeight: 600, color: 'accent.gold', textDecoration: 'none', '&:hover': { color: 'text.primary' } }}>
+                                <Box component="a" href="https://ontariomasons.ca/becoming-a-mason/" target="_blank" rel="noopener noreferrer" sx={sidebarLinkSx}>
                                     {t('footer.links.becomeAMason')} →
                                 </Box>
                             </InfoBlock>
 
                             <InfoBlock label={t('contact.followUs', 'Follow Us')}>
-                                <Box component="a" href="https://www.instagram.com/goodwood_lodge_159/" target="_blank" rel="noopener noreferrer" sx={{ fontSize: 14, fontWeight: 600, color: 'accent.gold', textDecoration: 'none', '&:hover': { color: 'text.primary' } }}>
+                                <Box component="a" href="https://www.instagram.com/goodwood_lodge_159/" target="_blank" rel="noopener noreferrer" sx={sidebarLinkSx}>
                                     Instagram · @goodwood_lodge_159 →
                                 </Box>
                             </InfoBlock>

@@ -47,7 +47,7 @@ export default function History() {
                         <Box component="section">
                             <Typography
                                 variant="h4"
-                                component="h3"
+                                component="h2"
                                 gutterBottom
                                 sx={{ borderTop: theme => `2px solid ${theme.palette.accent.navy}`, pt: 2.5, mb: 2.5 }}
                             >
@@ -66,7 +66,7 @@ export default function History() {
                         <Box component="section">
                             <Typography
                                 variant="h4"
-                                component="h3"
+                                component="h2"
                                 gutterBottom
                                 sx={{ borderTop: theme => `2px solid ${theme.palette.accent.navy}`, pt: 2.5, mb: 2.5 }}
                             >
@@ -88,7 +88,7 @@ export default function History() {
                         <Box component="section">
                             <Typography
                                 variant="h4"
-                                component="h3"
+                                component="h2"
                                 gutterBottom
                                 sx={{ borderTop: theme => `2px solid ${theme.palette.accent.navy}`, pt: 2.5, mb: 2.5 }}
                             >
@@ -107,7 +107,7 @@ export default function History() {
                         <Box component="section">
                             <Typography
                                 variant="h4"
-                                component="h3"
+                                component="h2"
                                 gutterBottom
                                 sx={{ borderTop: theme => `2px solid ${theme.palette.accent.navy}`, pt: 2.5, mb: 2.5 }}
                             >
@@ -132,7 +132,7 @@ export default function History() {
                         <Box component="section">
                             <Typography
                                 variant="h4"
-                                component="h3"
+                                component="h2"
                                 gutterBottom
                                 sx={{ borderTop: theme => `2px solid ${theme.palette.accent.navy}`, pt: 2.5, mb: 2.5 }}
                             >
@@ -157,7 +157,7 @@ export default function History() {
                         <Box component="section">
                             <Typography
                                 variant="h4"
-                                component="h3"
+                                component="h2"
                                 gutterBottom
                                 sx={{ borderTop: theme => `2px solid ${theme.palette.accent.navy}`, pt: 2.5, mb: 2.5 }}
                             >
@@ -184,7 +184,7 @@ export default function History() {
                                 <Box
                                     component="a"
                                     href="files/Goodwood Lodge History 1989 - 2014 Version 1.0.pdf"
-                                    sx={{ color: 'accent.gold', fontWeight: 600 }}
+                                    sx={{ color: 'accent.gold', fontWeight: 600, textDecoration: 'underline' }}
                                 >
                                     {t('history.footer.detailedHistoryLink')}
                                 </Box>
@@ -195,7 +195,7 @@ export default function History() {
                                 <Box
                                     component="a"
                                     href="files/Lodge Artifacts.pdf"
-                                    sx={{ color: 'accent.gold', fontWeight: 600 }}
+                                    sx={{ color: 'accent.gold', fontWeight: 600, textDecoration: 'underline' }}
                                 >
                                     {t('history.footer.artifactsLink')}
                                 </Box>
