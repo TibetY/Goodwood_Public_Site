@@ -5,7 +5,8 @@
   },
   "header": {
     "title": "Goodwood Lodge No. 159",
-    "tagline": ""
+    "tagline": "",
+    "brand": "Goodwood Lodge"
   },
   "nav": {
     "about": "About Us",
@@ -16,7 +17,8 @@
     "photos": "Photos",
     "events": "Events",
     "contact": "Contact",
-    "login": "Login"
+    "login": "Login",
+    "becomeAMason": "Become a Mason"
   },
   "home": {
     "meta": {
@@ -25,13 +27,18 @@
     },
     "hero": {
       "title": "Built through effort, bound by brotherhood.",
-      "subtitle": "Where character is forged and lasting bonds are formed."
+      "subtitle": "Where character is forged and lasting bonds are formed.",
+      "eyebrow": "Richmond, Ontario · Est. 1863",
+      "planVisit": "Plan a Visit"
     },
     "welcome": {
       "greeting": "Welcome to",
       "lodgeName": "Goodwood Lodge No. 159, GLO, A.F. & A.M.",
       "description": "We are a fraternal organization dedicated to making good men better through brotherhood, charity, and personal growth.",
-      "extendedDescription": "Located in the heart of Richmond, Ontario, our lodge has been a cornerstone of brotherhood and charitable work for generations. We are proud to be part of the Grand Lodge of A.F. & A.M. of Canada in the Province of Ontario."
+      "extendedDescription": "Located in the heart of Richmond, Ontario, our lodge has been a cornerstone of brotherhood and charitable work for generations. We are proud to be part of the Grand Lodge of A.F. & A.M. of Canada in the Province of Ontario.",
+      "statChartered": "Chartered",
+      "statRegister": "Grand Register",
+      "statHome": "Our Home"
     },
     "callToAction": {
       "sectionTitle": "Your Journey Awaits",
@@ -54,10 +61,26 @@
       "truth": {
         "title": "Truth",
         "description": "We pursue knowledge, integrity, and moral excellence through self-improvement and enlightenment."
-      }
+      },
+      "principlesHeading": "Brotherly Love, Relief & Truth"
     },
     "learnMore": "Learn More",
-    "contactUs": "Contact Us"
+    "contactUs": "Contact Us",
+    "meeting": {
+      "meetLabel": "We Meet",
+      "meetValue": "1st Tuesday · 7:30 PM",
+      "meetNote": "September through June",
+      "hallLabel": "Lodge Hall",
+      "hallValue": "3494 McBean Street",
+      "hallNote": "Richmond, ON K0A 2Z0",
+      "visitorsLabel": "Visitors",
+      "visitorsValue": "Brethren welcome",
+      "visitorsNote": "Inquiries always answered"
+    },
+    "upcomingTitle": "Upcoming at the Lodge",
+    "noUpcoming": "Check back soon for upcoming meetings and events.",
+    "viewAllEvents": "View all events →",
+    "photoCaption": "Installation of Officers · 2025"
   },
   "about": {
     "title": "About Goodwood Lodge No. 159",
@@ -122,7 +145,14 @@
   },
   "events": {
     "title": "Upcoming Events",
-    "viewEvents": "View our calendar of upcoming lodge meetings and events."
+    "viewEvents": "View our calendar of upcoming lodge meetings and events.",
+    "subtitle": "Regular meetings, degree work, and community events. Visiting brethren are always welcome at our regular meetings.",
+    "listView": "Events",
+    "calendarView": "Calendar",
+    "upcoming": "Upcoming",
+    "past": "Past Events",
+    "noUpcoming": "No upcoming events scheduled at the moment. Please check back soon.",
+    "noEventsConfigured": "Our calendar will appear here shortly. In the meantime, please check back or contact the lodge."
   },
   "contact": {
     "title": "Contact Us",
@@ -135,7 +165,14 @@
     "phone": "Phone",
     "message": "Message",
     "send": "Send Message",
-    "successMessage": "Thank you for your message. We will be in touch soon."
+    "successMessage": "Thank you for your message. We will be in touch soon.",
+    "sendHeading": "Send us a message",
+    "whenWeMeet": "When We Meet",
+    "meetNote": "September through June. Visiting brethren are always welcome.",
+    "joiningLabel": "Thinking of Joining?",
+    "joiningText": "Freemasonry is open to men of good character. Learn what membership involves at the Grand Lodge of Ontario.",
+    "followUs": "Follow Us",
+    "messagePlaceholder": "Tell us a little about yourself and what you'd like to know…"
   },
   "footer": {
     "address": {
@@ -154,7 +191,10 @@
       "instagram": "Follow us on Instagram",
       "becomeAMason": "Becoming a Mason"
     },
-    "copyright": "© {{year}} Goodwood Lodge No. 159. All rights reserved."
+    "copyright": "© {{year}} Goodwood Lodge No. 159. All rights reserved.",
+    "tagline": "Developing our character and serving the greater good in Richmond, Ontario since 1863.",
+    "meetTime": "1st Tuesday · 7:30 PM",
+    "lodge": "Lodge"
   },
   "photos": {
     "title": "Photos",

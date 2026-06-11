@@ -171,89 +171,143 @@ export default function Photos() {
     }, [photos, folderMeta, sortOrder]);
 
     return (
-        <Container maxWidth="lg" sx={{ py: 8 }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 2, mb: 2 }}>
-                <Typography variant="h3" component="h1" fontWeight="bold">
-                    {t('photos.title')}
-                </Typography>
-                <ToggleButtonGroup
-                    value={sortOrder}
-                    exclusive
-                    onChange={(_, val) => val && setSortOrder(val)}
-                    size="small"
-                >
-                    <ToggleButton value="newest">{t('photos.newestFirst')}</ToggleButton>
-                    <ToggleButton value="oldest">{t('photos.oldestFirst')}</ToggleButton>
-                </ToggleButtonGroup>
+        <>
+            {/* Page Header Band */}
+            <Box
+                sx={{
+                    backgroundColor: 'section.hero',
+                    borderBottom: (theme) => `1px solid ${theme.palette.section.border}`,
+                }}
+            >
+                <Container maxWidth="lg" sx={{ py: { xs: 6, md: 9 }, display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+                    <Typography variant="overline" sx={{ color: 'accent.gold' }}>
+                        Goodwood Lodge No. 159
+                    </Typography>
+                    <Box
+                        sx={{
+                            display: 'flex',
+                            flexDirection: { xs: 'column', sm: 'row' },
+                            alignItems: { xs: 'flex-start', sm: 'flex-end' },
+                            justifyContent: 'space-between',
+                            gap: 2,
+                        }}
+                    >
+                        <Typography variant="h3" component="h1" sx={{ fontSize: { xs: '2.25rem', md: '3rem' } }}>
+                            {t('photos.title')}
+                        </Typography>
+                        <ToggleButtonGroup
+                            value={sortOrder}
+                            exclusive
+                            onChange={(_, val) => val && setSortOrder(val)}
+                            size="small"
+                            sx={{
+                                backgroundColor: 'background.paper',
+                                '& .MuiToggleButton-root': {
+                                    borderColor: 'section.border',
+                                    color: 'text.secondary',
+                                    '&.Mui-selected': {
+                                        color: 'accent.navy',
+                                        backgroundColor: 'section.hero',
+                                    },
+                                },
+                            }}
+                        >
+                            <ToggleButton value="newest">{t('photos.newestFirst')}</ToggleButton>
+                            <ToggleButton value="oldest">{t('photos.oldestFirst')}</ToggleButton>
+                        </ToggleButtonGroup>
+                    </Box>
+                </Container>
             </Box>
 
-            {photos.length === 0 ? (
-                <Typography textAlign="center" color="text.secondary" sx={{ mt: 4 }}>
-                    {t('photos.noPhotos')}
-                </Typography>
-            ) : (
-                groups.map(({ year, events }) => (
-                    <Box key={year} sx={{ mt: 6 }}>
-                        <Typography variant="h4" fontWeight="bold" gutterBottom>
-                            {formatFolderName(year)}
+            {/* Gallery Content */}
+            <Box sx={{ backgroundColor: 'background.paper' }}>
+                <Container maxWidth="lg" sx={{ py: { xs: 6, md: 9 } }}>
+                    {photos.length === 0 ? (
+                        <Typography textAlign="center" sx={{ color: 'section.subtle', mt: 4 }}>
+                            {t('photos.noPhotos')}
                         </Typography>
-                        <Divider sx={{ mb: 3 }} />
-                        {events.map(([event, eventPhotos]) => {
-                            const eventMeta = event ? folderMeta?.[`${year}/${event}`] : undefined;
-                            return (
-                            <Box key={event} sx={{ mb: 5 }}>
-                                {event && (
-                                    <Box sx={{ ml: 0.5, mb: 1 }}>
-                                        <Typography variant="h6" color="text.secondary">
-                                            {getEventDisplayName(year, event)}
-                                        </Typography>
-                                        {eventMeta?.date && (
-                                            <Typography variant="body2" color="text.disabled">
-                                                {new Date(eventMeta.date + 'T00:00:00').toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}
-                                            </Typography>
-                                        )}
-                                    </Box>
-                                )}
-                                <ImageList variant="masonry" cols={cols} gap={8}>
-                                    {eventPhotos.map((photo) => (
-                                        <ImageListItem
-                                            key={photo.path}
-                                            onClick={() => setSelected(photo)}
-                                            sx={{
-                                                cursor: 'pointer',
-                                                borderRadius: 1,
-                                                overflow: 'hidden',
-                                                '& img': { transition: 'opacity 0.2s' },
-                                                '&:hover img': { opacity: 0.85 },
-                                            }}
-                                        >
-                                            <img
-                                                src={photo.url}
-                                                alt={photo.name}
-                                                loading="lazy"
-                                                style={{ display: 'block', width: '100%', borderRadius: 4 }}
-                                            />
-                                        </ImageListItem>
-                                    ))}
-                                </ImageList>
+                    ) : (
+                        groups.map(({ year, events }, yearIndex) => (
+                            <Box key={year} sx={{ mt: yearIndex === 0 ? 0 : 8 }}>
+                                <Typography variant="h4" component="h2" gutterBottom>
+                                    {formatFolderName(year)}
+                                </Typography>
+                                <Divider sx={{ mb: 4, borderColor: 'section.border' }} />
+                                {events.map(([event, eventPhotos]) => {
+                                    const eventMeta = event ? folderMeta?.[`${year}/${event}`] : undefined;
+                                    return (
+                                        <Box key={event} sx={{ mb: 5 }}>
+                                            {event && (
+                                                <Box sx={{ mb: 2 }}>
+                                                    <Typography variant="overline" sx={{ color: 'accent.gold' }}>
+                                                        {getEventDisplayName(year, event)}
+                                                    </Typography>
+                                                    {eventMeta?.date && (
+                                                        <Typography variant="body2" sx={{ color: 'section.subtle' }}>
+                                                            {new Date(eventMeta.date + 'T00:00:00').toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}
+                                                        </Typography>
+                                                    )}
+                                                </Box>
+                                            )}
+                                            <ImageList variant="masonry" cols={cols} gap={8}>
+                                                {eventPhotos.map((photo) => (
+                                                    <ImageListItem
+                                                        key={photo.path}
+                                                        onClick={() => setSelected(photo)}
+                                                        sx={{
+                                                            cursor: 'pointer',
+                                                            borderRadius: 1,
+                                                            overflow: 'hidden',
+                                                            border: '1px solid',
+                                                            borderColor: 'section.border',
+                                                            transition: 'transform 0.25s ease, opacity 0.25s ease',
+                                                            '& img': { transition: 'opacity 0.25s ease' },
+                                                            '&:hover': { transform: 'translateY(-2px)' },
+                                                            '&:hover img': { opacity: 0.85 },
+                                                        }}
+                                                    >
+                                                        <img
+                                                            src={photo.url}
+                                                            alt={photo.name}
+                                                            loading="lazy"
+                                                            style={{ display: 'block', width: '100%', borderRadius: 4 }}
+                                                        />
+                                                    </ImageListItem>
+                                                ))}
+                                            </ImageList>
+                                        </Box>
+                                    );
+                                })}
                             </Box>
-                        );
-                        })}
-                    </Box>
-                ))
-            )}
+                        ))
+                    )}
+                </Container>
+            </Box>
 
             <Dialog
                 open={!!selected}
                 onClose={() => setSelected(null)}
                 maxWidth="lg"
                 fullWidth
+                slotProps={{
+                    paper: {
+                        sx: { backgroundColor: 'transparent', boxShadow: 'none' },
+                    },
+                }}
             >
-                <DialogContent sx={{ p: 0, position: 'relative', backgroundColor: 'black' }}>
+                <DialogContent sx={{ p: 0, position: 'relative', backgroundColor: 'rgba(11, 23, 38, 0.95)' }}>
                     <IconButton
                         onClick={() => setSelected(null)}
                         aria-label="close"
-                        sx={{ position: 'absolute', top: 8, right: 8, color: 'white', zIndex: 1 }}
+                        sx={{
+                            position: 'absolute',
+                            top: 8,
+                            right: 8,
+                            color: 'common.white',
+                            zIndex: 1,
+                            backgroundColor: 'rgba(0, 0, 0, 0.35)',
+                            '&:hover': { backgroundColor: 'rgba(0, 0, 0, 0.55)' },
+                        }}
                     >
                         <CloseIcon />
                     </IconButton>
@@ -273,6 +327,6 @@ export default function Photos() {
                     )}
                 </DialogContent>
             </Dialog>
-        </Container>
+        </>
     );
 }

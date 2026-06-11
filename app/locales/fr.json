@@ -5,7 +5,8 @@
   },
   "header": {
     "title": "Au-delà de l'Équerre et du Compas",
-    "tagline": "Développer notre caractère et servir le bien commun."
+    "tagline": "Développer notre caractère et servir le bien commun.",
+    "brand": "Loge Goodwood"
   },
   "nav": {
     "home": "Accueil",
@@ -17,7 +18,8 @@
     "photos": "Photos",
     "events": "Événements",
     "contact": "Contact",
-    "becomeAMason": "Devenir Franc-Maçon"
+    "becomeAMason": "Devenir Franc-Maçon",
+    "login": "Connexion"
   },
   "home": {
     "meta": {
@@ -26,13 +28,18 @@
     },
     "hero": {
       "title": "Au-delà de l'Équerre et du Compas",
-      "subtitle": "Développer notre caractère et servir le bien commun."
+      "subtitle": "Développer notre caractère et servir le bien commun.",
+      "eyebrow": "Richmond, Ontario · Fondée en 1863",
+      "planVisit": "Planifier une visite"
     },
     "welcome": {
       "greeting": "Bienvenue à",
       "lodgeName": "Loge Goodwood No. 159, GRQ, A.F. & A.M.",
       "description": "Nous sommes une organisation fraternelle dédiée à améliorer les bons hommes par la fraternité, la charité et la croissance personnelle.",
-      "extendedDescription": "Située au cœur de la communauté de Goodwood, notre loge est une pierre angulaire de la fraternité et du travail caritatif depuis des générations. Nous sommes fiers de faire partie de la Grande Loge A.F. & A.M. du Canada dans la Province de l'Ontario."
+      "extendedDescription": "Située au cœur de la communauté de Goodwood, notre loge est une pierre angulaire de la fraternité et du travail caritatif depuis des générations. Nous sommes fiers de faire partie de la Grande Loge A.F. & A.M. du Canada dans la Province de l'Ontario.",
+      "statChartered": "Constituée",
+      "statRegister": "Registre",
+      "statHome": "Notre foyer"
     },
     "callToAction": {
       "sectionTitle": "Différences Positives",
@@ -46,10 +53,26 @@
       "brotherlyLove": {
         "title": "Amour Fraternel",
         "description": "Nous valorisons le respect, la liberté, la gentillesse, la tolérance et nous efforçons d'atteindre l'harmonie dans nos communautés."
-      }
+      },
+      "principlesHeading": "Amour fraternel, Secours et Vérité"
     },
     "learnMore": "En Savoir Plus",
-    "contactUs": "Nous Contacter"
+    "contactUs": "Nous Contacter",
+    "meeting": {
+      "meetLabel": "Nous nous réunissons",
+      "meetValue": "1er mardi · 19 h 30",
+      "meetNote": "De septembre à juin",
+      "hallLabel": "Temple",
+      "hallValue": "3494 rue McBean",
+      "hallNote": "Richmond, ON K0A 2Z0",
+      "visitorsLabel": "Visiteurs",
+      "visitorsValue": "Frères bienvenus",
+      "visitorsNote": "Nous répondons toujours aux demandes"
+    },
+    "upcomingTitle": "À venir à la loge",
+    "noUpcoming": "Revenez bientôt pour les prochaines réunions et événements.",
+    "viewAllEvents": "Voir tous les événements →",
+    "photoCaption": "Installation des officiers · 2025"
   },
   "about": {
     "title": "À Propos de la Loge Goodwood No. 159",
@@ -110,17 +133,34 @@
   },
   "events": {
     "title": "Événements à Venir",
-    "noEvents": "Aucun événement à venir pour le moment."
+    "noEvents": "Aucun événement à venir pour le moment.",
+    "subtitle": "Réunions régulières, travaux de degrés et événements communautaires. Les frères visiteurs sont toujours les bienvenus à nos réunions régulières.",
+    "listView": "Événements",
+    "calendarView": "Calendrier",
+    "upcoming": "À venir",
+    "past": "Événements passés",
+    "noUpcoming": "Aucun événement à venir pour le moment. Revenez bientôt.",
+    "noEventsConfigured": "Notre calendrier apparaîtra ici sous peu. Entre-temps, revenez nous voir ou contactez la loge."
   },
   "contact": {
     "title": "Nous Contacter",
     "subtitle": "Intéressé à en savoir plus sur la Franc-Maçonnerie?",
-    "name": "Nom",
+    "name": {
+      "first": "Prénom",
+      "last": "Nom"
+    },
     "email": "Courriel",
     "phone": "Téléphone",
     "message": "Message",
     "send": "Envoyer le Message",
-    "successMessage": "Merci pour votre message. Nous vous contacterons bientôt."
+    "successMessage": "Merci pour votre message. Nous vous contacterons bientôt.",
+    "sendHeading": "Envoyez-nous un message",
+    "whenWeMeet": "Nos réunions",
+    "meetNote": "De septembre à juin. Les frères visiteurs sont toujours les bienvenus.",
+    "joiningLabel": "Envie de nous rejoindre?",
+    "joiningText": "La franc-maçonnerie est ouverte aux hommes de bon caractère. Découvrez ce qu'implique l'adhésion auprès de la Grande Loge de l'Ontario.",
+    "followUs": "Suivez-nous",
+    "messagePlaceholder": "Parlez-nous un peu de vous et de ce que vous aimeriez savoir…"
   },
   "footer": {
     "address": {
@@ -141,7 +181,10 @@
     },
     "copyright": "© {{year}} Loge Goodwood No. 159. Tous droits réservés.",
     "privacyPolicy": "Politique de Confidentialité",
-    "termsOfUse": "Conditions d'Utilisation"
+    "termsOfUse": "Conditions d'Utilisation",
+    "tagline": "Développer notre caractère et servir le bien commun à Richmond, Ontario depuis 1863.",
+    "meetTime": "1er mardi · 19 h 30",
+    "lodge": "La Loge"
   },
   "privacy": {
     "title": "Politique de Confidentialité",
