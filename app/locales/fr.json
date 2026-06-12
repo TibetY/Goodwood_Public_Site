@@ -1,301 +1,352 @@
 {
-  "site": {
-    "title": "Loge Goodwood No. 159",
-    "subtitle": "Grande Loge de A.F. & A.M. du Canada dans la Province de l'Ontario"
-  },
-  "header": {
-    "title": "Au-delà de l'Équerre et du Compas",
-    "tagline": "Développer notre caractère et servir le bien commun."
-  },
-  "nav": {
-    "home": "Accueil",
-    "about": "À Propos",
-    "history": "Histoire",
-    "officers": "Officiers",
-    "committees": "Comités",
-    "pastMasters": "Vénérables Passés",
-    "photos": "Photos",
-    "events": "Événements",
-    "contact": "Contact",
-    "becomeAMason": "Devenir Franc-Maçon"
-  },
-  "home": {
-    "meta": {
-      "title": "Loge Goodwood No. 159 - Au-delà de l'Équerre et du Compas",
-      "description": "Développer notre caractère et servir le bien commun. Grande Loge A.F. & A.M. du Canada dans la Province de l'Ontario"
+    "site": {
+        "title": "Loge Goodwood No. 159",
+        "subtitle": "Grande Loge de A.F. & A.M. du Canada dans la Province de l'Ontario"
     },
-    "hero": {
-      "title": "Au-delà de l'Équerre et du Compas",
-      "subtitle": "Développer notre caractère et servir le bien commun."
+    "header": {
+        "title": "Au-delà de l'Équerre et du Compas",
+        "tagline": "Développer notre caractère et servir le bien commun.",
+        "brand": "Loge Goodwood"
     },
-    "welcome": {
-      "greeting": "Bienvenue à",
-      "lodgeName": "Loge Goodwood No. 159, GRQ, A.F. & A.M.",
-      "description": "Nous sommes une organisation fraternelle dédiée à améliorer les bons hommes par la fraternité, la charité et la croissance personnelle.",
-      "extendedDescription": "Située au cœur de la communauté de Goodwood, notre loge est une pierre angulaire de la fraternité et du travail caritatif depuis des générations. Nous sommes fiers de faire partie de la Grande Loge A.F. & A.M. du Canada dans la Province de l'Ontario."
+    "nav": {
+        "home": "Accueil",
+        "about": "À Propos",
+        "history": "Histoire",
+        "officers": "Officiers",
+        "committees": "Comités",
+        "pastMasters": "Vénérables Passés",
+        "photos": "Photos",
+        "events": "Événements",
+        "contact": "Contact",
+        "becomeAMason": "Devenir Franc-Maçon",
+        "login": "Connexion",
+        "skipToContent": "Aller au contenu principal",
+        "openMenu": "Ouvrir le menu",
+        "toggleTheme": "Basculer le mode sombre",
+        "changeLanguage": "Changer de langue"
     },
-    "callToAction": {
-      "sectionTitle": "Différences Positives",
-      "heading": "Entrez dans la Franc-Maçonnerie",
-      "description": "Trouvez Communauté et Opportunité à Proximité."
+    "home": {
+        "meta": {
+            "title": "Loge Goodwood No. 159 - Au-delà de l'Équerre et du Compas",
+            "description": "Développer notre caractère et servir le bien commun. Grande Loge A.F. & A.M. du Canada dans la Province de l'Ontario"
+        },
+        "hero": {
+            "title": "Au-delà de l'Équerre et du Compas",
+            "subtitle": "Développer notre caractère et servir le bien commun.",
+            "eyebrow": "Richmond, Ontario · Fondée en 1863",
+            "planVisit": "Planifier une visite"
+        },
+        "welcome": {
+            "greeting": "Bienvenue à",
+            "lodgeName": "Loge Goodwood No. 159, GRQ, A.F. & A.M.",
+            "description": "Nous sommes une organisation fraternelle dédiée à améliorer les bons hommes par la fraternité, la charité et la croissance personnelle.",
+            "extendedDescription": "Située au cœur de la communauté de Goodwood, notre loge est une pierre angulaire de la fraternité et du travail caritatif depuis des générations. Nous sommes fiers de faire partie de la Grande Loge A.F. & A.M. du Canada dans la Province de l'Ontario.",
+            "statChartered": "Constituée",
+            "statRegister": "Registre",
+            "statHome": "Notre foyer"
+        },
+        "callToAction": {
+            "sectionTitle": "Différences Positives",
+            "heading": "Entrez dans la Franc-Maçonnerie",
+            "description": "Trouvez Communauté et Opportunité à Proximité."
+        },
+        "values": {
+            "sectionTitle": "Nos Valeurs",
+            "heading": "Entrez dans la Franc-Maçonnerie",
+            "description": "La Franc-Maçonnerie est construite sur une fondation de valeurs intemporelles qui façonnent notre caractère et guident nos actions. Ces principes ne sont pas de simples mots, mais un mode de vie pour chaque Franc-Maçon.",
+            "brotherlyLove": {
+                "title": "Amour Fraternel",
+                "description": "Nous valorisons le respect, la liberté, la gentillesse, la tolérance et nous efforçons d'atteindre l'harmonie dans nos communautés."
+            },
+            "principlesHeading": "Amour fraternel, Secours et Vérité"
+        },
+        "learnMore": "En Savoir Plus",
+        "contactUs": "Nous Contacter",
+        "meeting": {
+            "meetLabel": "Nous nous réunissons",
+            "meetValue": "1er mardi · 19 h 30",
+            "meetNote": "De septembre à juin",
+            "hallLabel": "Temple",
+            "hallValue": "3494 rue McBean",
+            "hallNote": "Richmond, ON K0A 2Z0",
+            "visitorsLabel": "Visiteurs",
+            "visitorsValue": "Frères bienvenus",
+            "visitorsNote": "Nous répondons toujours aux demandes"
+        },
+        "upcomingTitle": "À venir à la loge",
+        "noUpcoming": "Revenez bientôt pour les prochaines réunions et événements.",
+        "viewAllEvents": "Voir tous les événements →",
+        "photoCaption": "Installation des officiers · 2025"
     },
-    "values": {
-      "sectionTitle": "Nos Valeurs",
-      "heading": "Entrez dans la Franc-Maçonnerie",
-      "description": "La Franc-Maçonnerie est construite sur une fondation de valeurs intemporelles qui façonnent notre caractère et guident nos actions. Ces principes ne sont pas de simples mots, mais un mode de vie pour chaque Franc-Maçon.",
-      "brotherlyLove": {
-        "title": "Amour Fraternel",
-        "description": "Nous valorisons le respect, la liberté, la gentillesse, la tolérance et nous efforçons d'atteindre l'harmonie dans nos communautés."
-      }
+    "about": {
+        "title": "À Propos de la Loge Goodwood No. 159",
+        "whatIsFreemasonry": "Qu'est-ce que la Franc-Maçonnerie?",
+        "ourLodge": "Notre Loge",
+        "meetingTimes": "Heures de Réunion"
     },
-    "learnMore": "En Savoir Plus",
-    "contactUs": "Nous Contacter"
-  },
-  "about": {
-    "title": "À Propos de la Loge Goodwood No. 159",
-    "whatIsFreemasonry": "Qu'est-ce que la Franc-Maçonnerie?",
-    "ourLodge": "Notre Loge",
-    "meetingTimes": "Heures de Réunion"
-  },
-  "history": {
-    "title": "Histoire de la Loge Goodwood",
-    "masonryInRichmond": {
-      "title": "La Franc-Maçonnerie à Richmond depuis plus de 200 ans",
-      "p1": "La Franc-Maçonnerie dans la région de Richmond a en fait commencé avant l'existence de Richmond avec les soldats du 89e Régiment d'infanterie qui avaient une Loge de Métier garantie par la Grande Loge d'Irlande, le numéro de Charte étant 863 et existant de 1798 à 1818.",
-      "p2": "Le mandat original ayant été perdu lorsque le navire du régiment a coulé au large de la côte néerlandaise en 1805, un mandat en double a été délivré en 1806. Ce mandat en double a été annulé en 1818 car la Grande Loge n'avait pas reçu de cotisations depuis 1808.",
-      "p3": "C'est le mandat qui a été utilisé pendant les trois premières années par les Maçons de Richmond pour les trois premières années de la colonie (1818, 1819 et 1820). Il semble que bien que le mandat ait été annulé, il n'a jamais été retourné."
+    "history": {
+        "title": "Histoire de la Loge Goodwood",
+        "masonryInRichmond": {
+            "title": "La Franc-Maçonnerie à Richmond depuis plus de 200 ans",
+            "p1": "La Franc-Maçonnerie dans la région de Richmond a en fait commencé avant l'existence de Richmond avec les soldats du 89e Régiment d'infanterie qui avaient une Loge de Métier garantie par la Grande Loge d'Irlande, le numéro de Charte étant 863 et existant de 1798 à 1818.",
+            "p2": "Le mandat original ayant été perdu lorsque le navire du régiment a coulé au large de la côte néerlandaise en 1805, un mandat en double a été délivré en 1806. Ce mandat en double a été annulé en 1818 car la Grande Loge n'avait pas reçu de cotisations depuis 1808.",
+            "p3": "C'est le mandat qui a été utilisé pendant les trois premières années par les Maçons de Richmond pour les trois premières années de la colonie (1818, 1819 et 1820). Il semble que bien que le mandat ait été annulé, il n'a jamais été retourné."
+        },
+        "dukeVisit": {
+            "title": "La Visite du Duc de Richmond",
+            "p1": "En 1819, le Très Vénérable Frère Charles Lennox, le quatrième Duc de Richmond a visité le village et aurait trouvé à redire à l'utilisation de l'ancien mandat par les frères. À cette époque, des réunions régulières se tenaient à la Taverne des Armes Maçonniques à Richmond.",
+            "p2": "Les efforts pour faire légaliser la Charte n'ayant pas abouti, ils ont demandé et reçu de \"La Grande Convention Maçonnique de Kingston\" une Charte datée du 29 avril 1821, et ainsi la Loge de Richmond a vu le jour."
+        },
+        "earlyDays": {
+            "title": "Les Premiers Jours",
+            "p1": "Aux premiers jours, la loge était préparée avec du badigeon et un pinceau, et des tableaux sur le sol couverts de paille. Au moment approprié, d'un coup de pied, le tableau était exposé pour être utilisé par le ritualiste.",
+            "p2": "Ce sont ces frères qui ont posé la pierre angulaire de la première église anglicane à Richmond en 1823, les frères empruntant des regalia de la \"Loge sur le Rideau\" de Stephen Burritt aux rapides de Burritt. Cela semble être la première pierre angulaire posée par des maçons dans la région d'Ottawa.",
+            "p3": "Peu après, les Frères ont décidé d'acheter un ensemble complet de Bijoux de Collier, dont certains ont été perdus au fil des ans, mais plusieurs sont encore utilisés par la Loge Goodwood, ceux-ci sont estampillés \"Grande Loge du Haut-Canada\"."
+        },
+        "darkPeriod": {
+            "title": "La Période Sombre",
+            "p1": "Il semblerait que la Loge de Richmond ait tenu des réunions jusqu'aux années 1840. En 1845, les Frères ne se réunissaient plus qu'de façon intermittente, réticents à abandonner jusqu'à ce qu'un autre lieu de réunion devienne disponible.",
+            "p2": "Fin 1846, une nouvelle Loge a vu le jour à Kempville. D'abord comme Kempville 25, puis plus tard comme Kempville 7, et maintenant connue sous le nom de Mount Zion 28. Avec la nouvelle Loge à Kempville, la Loge de Richmond est passée dans l'obscurité lorsque les frères ont commencé à fréquenter Kempville. La Grande Convention Maçonnique, l'autorité sous laquelle la Loge de Richmond existait, avait cessé de fonctionner et la charte est devenue inopérante."
+        },
+        "revival": {
+            "title": "Renaissance et Naissance de la Loge Goodwood",
+            "p1": "En 1855, la Grande Loge du Canada a vu le jour, et bien que la loge de Richmond n'ait pas existé depuis des années, les frères de Richmond étaient toujours actifs. Beaucoup d'entre eux se rendaient à Ottawa au moins une fois par mois pour assister à la Loge Doric. Ed Reilly qui dirigeait l'écurie de louage assurait le transport. Ces frères de la Loge Doric (Frère Rév. C.B. Pettit, Frère John McElroy, Frère Edward Reilly, Frère John Torney et Frère Johnson Fenton) sont responsables de l'existence de l'actuelle Loge Goodwood.",
+            "p2": "Il existe un certain nombre d'extraits des procès-verbaux de la Loge Doric concernant ces frères. L'entrée la plus significative étant celle demandant aux officiers de la Loge Doric d'aider à établir une Loge à Richmond et de transmettre une pétition à la Grande Loge. Cela a été sanctionné à l'unanimité.",
+            "p3": "La dispense pour former la Loge Goodwood est datée du 29 septembre 1863.",
+            "p4": "Le 4 novembre 1863, la Loge Doric a accepté d'accorder à la Loge Goodwood tout le mobilier excédentaire qu'ils possédaient et ainsi est revenu à Richmond le contenu de notre première Loge qui avait été donné pour aider Doric dans ses premières années."
+        },
+        "notableMembers": {
+            "title": "Membres Notables",
+            "p1": "Le premier maître de la Loge Goodwood était le Révérend C.B. Pettit, le recteur de l'église anglicane St. John's à Richmond. Le frère a été un pilier de la loge pendant de nombreuses années.",
+            "p2": "Le deuxième fondateur de la Loge Goodwood était Robert Lyon, le fils du Capitaine George Lyon, un colon original de Richmond. R.V.Frère Robert Lyon était DDGM en 1864 lorsque Ottawa faisait partie du district central. Il était également membre de la Loge Builders et était celui qui a présenté la pétition pour la Loge Builders à la Grande Loge. Il a été maire d'Ottawa en 1867 et membre de la première législature de l'Ontario après la confédération.",
+            "p3": "Arthur Lyon, le frère cadet de Robert Lyon, a rejoint Goodwood en 1864 à l'âge de 26 ans. Il a déménagé à Shawville en 1867 et a été membre fondateur et premier vénérable maître de la Loge Pontiac à Shawville. Il a servi quatre mandats en tant que DDGM pour le district Ottawa-Hull.",
+            "p4": "R.V.Frère R.H.Grant était maître de Goodwood en 1896 et 1897. Il est ensuite devenu membre fondateur de la Loge Hazeldean 517 lorsqu'elle a été instituée en 1914. En 1917, il était DDGM pour le district d'Ottawa."
+        },
+        "modernEra": {
+            "title": "Ère Moderne",
+            "p1": "En 1918, la pierre angulaire de la Loge Goodwood a été posée par le Très Vénérable Frère W.H. Wardhope.",
+            "p2": "Le 24 octobre 1941, une motion a été faite pour changer la nuit de réunion du mardi avant la pleine lune, elle a été rejetée et ainsi la loge a continué à se réunir le mardi avant la pleine lune.",
+            "p3": "Lors d'une réunion le 19 juin 1956, les frères ont décidé de remplacer la fournaise au bois par un appareil moderne. Un chauffage d'appoint à l'huile a été acheté. Le 11 juin 1957, lors d'une autre réunion, le problème de chauffage apparemment pas résolu de manière satisfaisante, ils ont décidé d'installer un chauffage central approprié. Il semblerait que le problème de chauffage et de refroidissement de la loge soit un problème chronique de la Loge que certains prétendent avoir persisté pendant près de 100 ans. Je dois dire que je pense que nous avons maintenant résolu le problème cependant."
+        },
+        "footer": {
+            "detailedHistory": "Pour une histoire plus détaillée, veuillez consulter",
+            "detailedHistoryLink": "La Franc-Maçonnerie dans la Loge Goodwood No. 159 A.F. & A.M GRC 1989 - 2014.",
+            "artifactsIntro": "Un autre document qui mérite d'être consulté est une présentation sur",
+            "artifactsLink": "Les Artefacts de la Loge Goodwood."
+        }
     },
-    "dukeVisit": {
-      "title": "La Visite du Duc de Richmond",
-      "p1": "En 1819, le Très Vénérable Frère Charles Lennox, le quatrième Duc de Richmond a visité le village et aurait trouvé à redire à l'utilisation de l'ancien mandat par les frères. À cette époque, des réunions régulières se tenaient à la Taverne des Armes Maçonniques à Richmond.",
-      "p2": "Les efforts pour faire légaliser la Charte n'ayant pas abouti, ils ont demandé et reçu de \"La Grande Convention Maçonnique de Kingston\" une Charte datée du 29 avril 1821, et ainsi la Loge de Richmond a vu le jour."
-    },
-    "earlyDays": {
-      "title": "Les Premiers Jours",
-      "p1": "Aux premiers jours, la loge était préparée avec du badigeon et un pinceau, et des tableaux sur le sol couverts de paille. Au moment approprié, d'un coup de pied, le tableau était exposé pour être utilisé par le ritualiste.",
-      "p2": "Ce sont ces frères qui ont posé la pierre angulaire de la première église anglicane à Richmond en 1823, les frères empruntant des regalia de la \"Loge sur le Rideau\" de Stephen Burritt aux rapides de Burritt. Cela semble être la première pierre angulaire posée par des maçons dans la région d'Ottawa.",
-      "p3": "Peu après, les Frères ont décidé d'acheter un ensemble complet de Bijoux de Collier, dont certains ont été perdus au fil des ans, mais plusieurs sont encore utilisés par la Loge Goodwood, ceux-ci sont estampillés \"Grande Loge du Haut-Canada\"."
-    },
-    "darkPeriod": {
-      "title": "La Période Sombre",
-      "p1": "Il semblerait que la Loge de Richmond ait tenu des réunions jusqu'aux années 1840. En 1845, les Frères ne se réunissaient plus qu'de façon intermittente, réticents à abandonner jusqu'à ce qu'un autre lieu de réunion devienne disponible.",
-      "p2": "Fin 1846, une nouvelle Loge a vu le jour à Kempville. D'abord comme Kempville 25, puis plus tard comme Kempville 7, et maintenant connue sous le nom de Mount Zion 28. Avec la nouvelle Loge à Kempville, la Loge de Richmond est passée dans l'obscurité lorsque les frères ont commencé à fréquenter Kempville. La Grande Convention Maçonnique, l'autorité sous laquelle la Loge de Richmond existait, avait cessé de fonctionner et la charte est devenue inopérante."
-    },
-    "revival": {
-      "title": "Renaissance et Naissance de la Loge Goodwood",
-      "p1": "En 1855, la Grande Loge du Canada a vu le jour, et bien que la loge de Richmond n'ait pas existé depuis des années, les frères de Richmond étaient toujours actifs. Beaucoup d'entre eux se rendaient à Ottawa au moins une fois par mois pour assister à la Loge Doric. Ed Reilly qui dirigeait l'écurie de louage assurait le transport. Ces frères de la Loge Doric (Frère Rév. C.B. Pettit, Frère John McElroy, Frère Edward Reilly, Frère John Torney et Frère Johnson Fenton) sont responsables de l'existence de l'actuelle Loge Goodwood.",
-      "p2": "Il existe un certain nombre d'extraits des procès-verbaux de la Loge Doric concernant ces frères. L'entrée la plus significative étant celle demandant aux officiers de la Loge Doric d'aider à établir une Loge à Richmond et de transmettre une pétition à la Grande Loge. Cela a été sanctionné à l'unanimité.",
-      "p3": "La dispense pour former la Loge Goodwood est datée du 29 septembre 1863.",
-      "p4": "Le 4 novembre 1863, la Loge Doric a accepté d'accorder à la Loge Goodwood tout le mobilier excédentaire qu'ils possédaient et ainsi est revenu à Richmond le contenu de notre première Loge qui avait été donné pour aider Doric dans ses premières années."
-    },
-    "notableMembers": {
-      "title": "Membres Notables",
-      "p1": "Le premier maître de la Loge Goodwood était le Révérend C.B. Pettit, le recteur de l'église anglicane St. John's à Richmond. Le frère a été un pilier de la loge pendant de nombreuses années.",
-      "p2": "Le deuxième fondateur de la Loge Goodwood était Robert Lyon, le fils du Capitaine George Lyon, un colon original de Richmond. R.V.Frère Robert Lyon était DDGM en 1864 lorsque Ottawa faisait partie du district central. Il était également membre de la Loge Builders et était celui qui a présenté la pétition pour la Loge Builders à la Grande Loge. Il a été maire d'Ottawa en 1867 et membre de la première législature de l'Ontario après la confédération.",
-      "p3": "Arthur Lyon, le frère cadet de Robert Lyon, a rejoint Goodwood en 1864 à l'âge de 26 ans. Il a déménagé à Shawville en 1867 et a été membre fondateur et premier vénérable maître de la Loge Pontiac à Shawville. Il a servi quatre mandats en tant que DDGM pour le district Ottawa-Hull.",
-      "p4": "R.V.Frère R.H.Grant était maître de Goodwood en 1896 et 1897. Il est ensuite devenu membre fondateur de la Loge Hazeldean 517 lorsqu'elle a été instituée en 1914. En 1917, il était DDGM pour le district d'Ottawa."
-    },
-    "modernEra": {
-      "title": "Ère Moderne",
-      "p1": "En 1918, la pierre angulaire de la Loge Goodwood a été posée par le Très Vénérable Frère W.H. Wardhope.",
-      "p2": "Le 24 octobre 1941, une motion a été faite pour changer la nuit de réunion du mardi avant la pleine lune, elle a été rejetée et ainsi la loge a continué à se réunir le mardi avant la pleine lune.",
-      "p3": "Lors d'une réunion le 19 juin 1956, les frères ont décidé de remplacer la fournaise au bois par un appareil moderne. Un chauffage d'appoint à l'huile a été acheté. Le 11 juin 1957, lors d'une autre réunion, le problème de chauffage apparemment pas résolu de manière satisfaisante, ils ont décidé d'installer un chauffage central approprié. Il semblerait que le problème de chauffage et de refroidissement de la loge soit un problème chronique de la Loge que certains prétendent avoir persisté pendant près de 100 ans. Je dois dire que je pense que nous avons maintenant résolu le problème cependant."
-    },
-    "footer": {
-      "detailedHistory": "Pour une histoire plus détaillée, veuillez consulter",
-      "detailedHistoryLink": "La Franc-Maçonnerie dans la Loge Goodwood No. 159 A.F. & A.M GRC 1989 - 2014.",
-      "artifactsIntro": "Un autre document qui mérite d'être consulté est une présentation sur",
-      "artifactsLink": "Les Artefacts de la Loge Goodwood."
-    }
-  },
-  "events": {
-    "title": "Événements à Venir",
-    "noEvents": "Aucun événement à venir pour le moment."
-  },
-  "contact": {
-    "title": "Nous Contacter",
-    "subtitle": "Intéressé à en savoir plus sur la Franc-Maçonnerie?",
-    "name": "Nom",
-    "email": "Courriel",
-    "phone": "Téléphone",
-    "message": "Message",
-    "send": "Envoyer le Message",
-    "successMessage": "Merci pour votre message. Nous vous contacterons bientôt."
-  },
-  "footer": {
-    "address": {
-      "title": "Visitez-nous",
-      "street": "6032 Perth Road 180",
-      "city": "Richmond, ON",
-      "postal": "K0A 2Z0"
+    "events": {
+        "title": "Événements à Venir",
+        "noEvents": "Aucun événement à venir pour le moment.",
+        "subtitle": "Réunions régulières, travaux de degrés et événements communautaires. Les frères visiteurs sont toujours les bienvenus à nos réunions régulières.",
+        "listView": "Événements",
+        "calendarView": "Calendrier",
+        "upcoming": "À venir",
+        "past": "Événements passés",
+        "noUpcoming": "Aucun événement à venir pour le moment. Revenez bientôt.",
+        "noEventsConfigured": "Notre calendrier apparaîtra ici sous peu. Entre-temps, revenez nous voir ou contactez la loge."
     },
     "contact": {
-      "title": "Contact",
-      "email": "secretary@goodwoodlodge159.ca"
+        "title": "Nous Contacter",
+        "subtitle": "Intéressé à en savoir plus sur la Franc-Maçonnerie?",
+        "name": {
+            "first": "Prénom",
+            "last": "Nom"
+        },
+        "email": "Courriel",
+        "phone": "Téléphone",
+        "message": "Message",
+        "send": "Envoyer le Message",
+        "successMessage": "Merci pour votre message. Nous vous contacterons bientôt.",
+        "sendHeading": "Envoyez-nous un message",
+        "whenWeMeet": "Nos réunions",
+        "meetNote": "De septembre à juin. Les frères visiteurs sont toujours les bienvenus.",
+        "joiningLabel": "Envie de nous rejoindre?",
+        "joiningText": "La franc-maçonnerie est ouverte aux hommes de bon caractère. Découvrez ce qu'implique l'adhésion auprès de la Grande Loge de l'Ontario.",
+        "followUs": "Suivez-nous",
+        "messagePlaceholder": "Parlez-nous un peu de vous et de ce que vous aimeriez savoir…",
+        "sending": "Envoi en cours…",
+        "submitError": "Une erreur s'est produite lors de l'envoi du formulaire. Veuillez réessayer."
     },
-    "links": {
-      "title": "Liens",
-      "grandLodge": "Grande Loge de l'Ontario",
-      "instagram": "Suivez-nous sur Instagram",
-      "becomeAMason": "Devenir Franc-Maçon"
+    "footer": {
+        "address": {
+            "title": "Visitez-nous",
+            "street": "6032 Perth Road 180",
+            "city": "Richmond, ON",
+            "postal": "K0A 2Z0"
+        },
+        "contact": {
+            "title": "Contact",
+            "email": "secretary@goodwoodlodge159.ca"
+        },
+        "links": {
+            "title": "Liens",
+            "grandLodge": "Grande Loge de l'Ontario",
+            "instagram": "Suivez-nous sur Instagram",
+            "becomeAMason": "Devenir Franc-Maçon"
+        },
+        "copyright": "© {{year}} Loge Goodwood No. 159. Tous droits réservés.",
+        "privacyPolicy": "Politique de Confidentialité",
+        "termsOfUse": "Conditions d'Utilisation",
+        "tagline": "Développer notre caractère et servir le bien commun à Richmond, Ontario depuis 1863.",
+        "meetTime": "1er mardi · 19 h 30",
+        "lodge": "La Loge"
     },
-    "copyright": "© {{year}} Loge Goodwood No. 159. Tous droits réservés.",
-    "privacyPolicy": "Politique de Confidentialité",
-    "termsOfUse": "Conditions d'Utilisation"
-  },
-  "privacy": {
-    "title": "Politique de Confidentialité",
-    "lastUpdated": "Dernière Mise à Jour: {{date}}"
-  },
-  "terms": {
-    "title": "Conditions d'Utilisation",
-    "lastUpdated": "Dernière Mise à Jour: {{date}}"
-  },
-  "photos": {
-    "title": "Photos",
-    "noPhotos": "Aucune photo disponible.",
-    "newestFirst": "Plus Récent",
-    "oldestFirst": "Plus Ancien"
-  },
-  "common": {
-    "loading": "Chargement...",
-    "error": "Une erreur s'est produite",
-    "notFound": "Page non trouvée"
-  },
-  "officers": {
-    "title": "Officiers de la Loge",
-    "description": "Rencontrez les officiers dévoués servant la Loge Goodwood pour l'année maçonnique {{currentYear}} - {{endYear}}.",
-    "wm": "Vénérable Maître",
-    "im": "Premier Surveillant Passé",
-    "sw": "Premier Surveillant",
-    "jw": "Deuxième Surveillant",
-    "sec": "Secrétaire",
-    "treas": "Trésorier",
-    "doc": "Dir. des Cérémonies",
-    "sd": "Premier Diacre",
-    "jd": "Deuxième Diacre",
-    "chaplain": "Chapelain",
-    "ig": "Garde Intérieur",
-    "tyler": "Tuileur",
-    "ss": "Premier Steward",
-    "js": "Deuxième Steward"
-  },
-  "login": {
-    "emailAddress": "Adresse Courriel",
-    "password": "Mot de Passe",
-    "pleaseWait": "Veuillez patienter...",
-    "signIn": "Se Connecter",
-    "signUp": "S'inscrire",
-    "forgotPassword": "Mot de Passe Oublié?",
-    "registrationNote": "L'inscription se fait uniquement sur invitation. Veuillez contacter le secrétaire de la loge si vous avez besoin d'aide.",
-    "checkEmailConfirmation": "Vérifiez votre courriel pour le lien de confirmation!",
-    "errorOccurred": "Une erreur s'est produite"
-  },
-  "setPassword": {
-    "title": "Définir Votre Mot de Passe",
-    "welcomeMessage": "Bienvenue! Veuillez créer un mot de passe pour votre compte.",
-    "displayName": "Nom d'Affichage",
-    "phoneNumber": "Numéro de Téléphone",
-    "password": "Mot de Passe",
-    "confirmPassword": "Confirmer le Mot de Passe",
-    "settingPassword": "Définition du Mot de Passe...",
-    "completeSetup": "Terminer la Configuration",
-    "displayNameHelper": "par ex., John Smith ou V. Fr. John Smith",
-    "phoneHelper": "Optionnel - pour les communications de la loge",
-    "passwordHelper": "Minimum 8 caractères",
-    "invalidToken": "Lien d'invitation invalide ou expiré. Veuillez demander une nouvelle invitation.",
-    "backToLogin": "Retour à la Connexion",
-    "passwordTooShort": "Le mot de passe doit contenir au moins 8 caractères",
-    "passwordsDoNotMatch": "Les mots de passe ne correspondent pas",
-    "failedToSetPassword": "Échec de la définition du mot de passe"
-  },
-  "portal": {
-    "title": "Portail de la Loge Goodwood",
-    "welcome": "Bienvenue, Fr. {{name}}",
+    "privacy": {
+        "title": "Politique de Confidentialité",
+        "lastUpdated": "Dernière Mise à Jour: {{date}}"
+    },
+    "terms": {
+        "title": "Conditions d'Utilisation",
+        "lastUpdated": "Dernière Mise à Jour: {{date}}"
+    },
+    "photos": {
+        "title": "Photos",
+        "noPhotos": "Aucune photo disponible.",
+        "newestFirst": "Plus Récent",
+        "oldestFirst": "Plus Ancien",
+        "viewPhoto": "Voir la photo",
+        "closePhoto": "Fermer la photo"
+    },
+    "common": {
+        "loading": "Chargement...",
+        "error": "Une erreur s'est produite",
+        "notFound": "Page non trouvée"
+    },
+    "officers": {
+        "title": "Officiers de la Loge",
+        "description": "Rencontrez les officiers dévoués servant la Loge Goodwood pour l'année maçonnique {{currentYear}} - {{endYear}}.",
+        "wm": "Vénérable Maître",
+        "im": "Premier Surveillant Passé",
+        "sw": "Premier Surveillant",
+        "jw": "Deuxième Surveillant",
+        "sec": "Secrétaire",
+        "treas": "Trésorier",
+        "doc": "Dir. des Cérémonies",
+        "sd": "Premier Diacre",
+        "jd": "Deuxième Diacre",
+        "chaplain": "Chapelain",
+        "ig": "Garde Intérieur",
+        "tyler": "Tuileur",
+        "ss": "Premier Steward",
+        "js": "Deuxième Steward"
+    },
+    "login": {
+        "emailAddress": "Adresse Courriel",
+        "password": "Mot de Passe",
+        "pleaseWait": "Veuillez patienter...",
+        "signIn": "Se Connecter",
+        "signUp": "S'inscrire",
+        "forgotPassword": "Mot de Passe Oublié?",
+        "registrationNote": "L'inscription se fait uniquement sur invitation. Veuillez contacter le secrétaire de la loge si vous avez besoin d'aide.",
+        "checkEmailConfirmation": "Vérifiez votre courriel pour le lien de confirmation!",
+        "errorOccurred": "Une erreur s'est produite"
+    },
+    "setPassword": {
+        "title": "Définir Votre Mot de Passe",
+        "welcomeMessage": "Bienvenue! Veuillez créer un mot de passe pour votre compte.",
+        "displayName": "Nom d'Affichage",
+        "phoneNumber": "Numéro de Téléphone",
+        "password": "Mot de Passe",
+        "confirmPassword": "Confirmer le Mot de Passe",
+        "settingPassword": "Définition du Mot de Passe...",
+        "completeSetup": "Terminer la Configuration",
+        "displayNameHelper": "par ex., John Smith ou V. Fr. John Smith",
+        "phoneHelper": "Optionnel - pour les communications de la loge",
+        "passwordHelper": "Minimum 8 caractères",
+        "invalidToken": "Lien d'invitation invalide ou expiré. Veuillez demander une nouvelle invitation.",
+        "backToLogin": "Retour à la Connexion",
+        "passwordTooShort": "Le mot de passe doit contenir au moins 8 caractères",
+        "passwordsDoNotMatch": "Les mots de passe ne correspondent pas",
+        "failedToSetPassword": "Échec de la définition du mot de passe"
+    },
+    "portal": {
+        "title": "Portail de la Loge Goodwood",
+        "welcome": "Bienvenue, Fr. {{name}}",
+        "manageMembers": {
+            "title": "Gérer les Membres",
+            "description": "Voir et gérer les membres de la loge"
+        },
+        "manageCommittees": {
+            "title": "Gérer les Comités",
+            "description": "Mettre à jour les informations et les affectations des comités"
+        },
+        "manageOfficers": {
+            "title": "Gérer les Officiers",
+            "description": "Mettre à jour les officiers et les positions de la loge"
+        },
+        "managePhotos": {
+            "title": "Gérer les Photos",
+            "description": "Téléverser et organiser les photos de la loge"
+        },
+        "degreeWork": {
+            "title": "Travail des Degrés",
+            "description": "Pratiquer les cérémonies des degrés"
+        },
+        "manageEvents": {
+            "title": "Gérer les Événements",
+            "description": "Gérer les événements et le calendrier de la loge"
+        },
+        "sendSummons": {
+            "title": "Envoyer les Convocations",
+            "description": "Créer et envoyer des convocations d'événements aux membres"
+        },
+        "payDues": {
+            "title": "Payer les Cotisations",
+            "description": "Payez vos cotisations annuelles de loge en ligne"
+        }
+    },
     "manageMembers": {
-      "title": "Gérer les Membres",
-      "description": "Voir et gérer les membres de la loge"
-    },
-    "manageCommittees": {
-      "title": "Gérer les Comités",
-      "description": "Mettre à jour les informations et les affectations des comités"
-    },
-    "manageOfficers": {
-      "title": "Gérer les Officiers",
-      "description": "Mettre à jour les officiers et les positions de la loge"
-    },
-    "managePhotos": {
-      "title": "Gérer les Photos",
-      "description": "Téléverser et organiser les photos de la loge"
-    },
-    "degreeWork": {
-      "title": "Travail des Degrés",
-      "description": "Pratiquer les cérémonies des degrés"
-    },
-    "manageEvents": {
-      "title": "Gérer les Événements",
-      "description": "Gérer les événements et le calendrier de la loge"
-    },
-    "sendSummons": {
-      "title": "Envoyer les Convocations",
-      "description": "Créer et envoyer des convocations d'événements aux membres"
-    },
-    "payDues": {
-      "title": "Payer les Cotisations",
-      "description": "Payez vos cotisations annuelles de loge en ligne"
+        "title": "Gérer les Membres",
+        "description": "Voir et gérer les membres de la loge",
+        "inviteMember": "Inviter un Membre",
+        "tableHeaders": {
+            "displayName": "Nom d'Affichage",
+            "email": "Courriel",
+            "phone": "Téléphone",
+            "status": "Statut",
+            "lastSignIn": "Dernière Connexion",
+            "actions": "Actions"
+        },
+        "status": {
+            "active": "Actif",
+            "invited": "Invité",
+            "pending": "En Attente"
+        },
+        "noMembers": "Aucun membre trouvé. Cliquez sur \"Inviter un Membre\" pour ajouter des membres.",
+        "never": "Jamais",
+        "tooltips": {
+            "sendPasswordReset": "Envoyer la Réinitialisation du Mot de Passe",
+            "deleteMember": "Supprimer le Membre"
+        },
+        "inviteDialog": {
+            "title": "Inviter un Nouveau Membre",
+            "emailAddress": "Adresse Courriel",
+            "displayNameOptional": "Nom d'Affichage (Optionnel)",
+            "displayNameHelper": "par ex., V. Fr. John Smith",
+            "cancel": "Annuler",
+            "sending": "Envoi...",
+            "sendInvitation": "Envoyer l'Invitation"
+        },
+        "deleteDialog": {
+            "title": "Confirmer la Suppression",
+            "message": "Êtes-vous sûr de vouloir supprimer le membre {{email}}? Cette action ne peut pas être annulée.",
+            "cancel": "Annuler",
+            "deleting": "Suppression...",
+            "delete": "Supprimer"
+        },
+        "errors": {
+            "emailRequired": "Le courriel est requis",
+            "failedToFetch": "Échec de la récupération des membres",
+            "failedToSendInvitation": "Échec de l'envoi de l'invitation",
+            "failedToDelete": "Échec de la suppression du membre",
+            "failedToSendPasswordReset": "Échec de l'envoi de la réinitialisation du mot de passe",
+            "failedToLoadMembers": "Échec du chargement des membres"
+        },
+        "success": {
+            "invitationSent": "Invitation envoyée à {{email}}",
+            "memberDeleted": "Membre {{email}} supprimé avec succès",
+            "passwordResetSent": "Courriel de réinitialisation du mot de passe envoyé à {{email}}"
+        }
     }
-  },
-  "manageMembers": {
-    "title": "Gérer les Membres",
-    "description": "Voir et gérer les membres de la loge",
-    "inviteMember": "Inviter un Membre",
-    "tableHeaders": {
-      "displayName": "Nom d'Affichage",
-      "email": "Courriel",
-      "phone": "Téléphone",
-      "status": "Statut",
-      "lastSignIn": "Dernière Connexion",
-      "actions": "Actions"
-    },
-    "status": {
-      "active": "Actif",
-      "invited": "Invité",
-      "pending": "En Attente"
-    },
-    "noMembers": "Aucun membre trouvé. Cliquez sur \"Inviter un Membre\" pour ajouter des membres.",
-    "never": "Jamais",
-    "tooltips": {
-      "sendPasswordReset": "Envoyer la Réinitialisation du Mot de Passe",
-      "deleteMember": "Supprimer le Membre"
-    },
-    "inviteDialog": {
-      "title": "Inviter un Nouveau Membre",
-      "emailAddress": "Adresse Courriel",
-      "displayNameOptional": "Nom d'Affichage (Optionnel)",
-      "displayNameHelper": "par ex., V. Fr. John Smith",
-      "cancel": "Annuler",
-      "sending": "Envoi...",
-      "sendInvitation": "Envoyer l'Invitation"
-    },
-    "deleteDialog": {
-      "title": "Confirmer la Suppression",
-      "message": "Êtes-vous sûr de vouloir supprimer le membre {{email}}? Cette action ne peut pas être annulée.",
-      "cancel": "Annuler",
-      "deleting": "Suppression...",
-      "delete": "Supprimer"
-    },
-    "errors": {
-      "emailRequired": "Le courriel est requis",
-      "failedToFetch": "Échec de la récupération des membres",
-      "failedToSendInvitation": "Échec de l'envoi de l'invitation",
-      "failedToDelete": "Échec de la suppression du membre",
-      "failedToSendPasswordReset": "Échec de l'envoi de la réinitialisation du mot de passe",
-      "failedToLoadMembers": "Échec du chargement des membres"
-    },
-    "success": {
-      "invitationSent": "Invitation envoyée à {{email}}",
-      "memberDeleted": "Membre {{email}} supprimé avec succès",
-      "passwordResetSent": "Courriel de réinitialisation du mot de passe envoyé à {{email}}"
-    }
-  }
 }

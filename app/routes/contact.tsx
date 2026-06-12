@@ -2,7 +2,7 @@ import type { Route } from "./+types/contact";
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
-import { Container, Typography, Box, Paper, TextField, Button, CircularProgress } from '@mui/material';
+import { Container, Typography, Box, Button, CircularProgress } from '@mui/material';
 
 export function meta({ }: Route.MetaArgs) {
     return [
@@ -16,6 +16,50 @@ const encode = (data: Record<string, string>) => {
         .map(key => encodeURIComponent(key) + "=" + encodeURIComponent(data[key]))
         .join("&");
 };
+
+const fieldLabelSx = {
+    fontSize: '11px',
+    fontWeight: 600,
+    letterSpacing: '0.14em',
+    textTransform: 'uppercase',
+    color: 'text.secondary',
+} as const;
+
+const inputSx = {
+    fontFamily: '"Public Sans", sans-serif',
+    fontSize: '15px',
+    color: 'text.primary',
+    p: '13px 14px',
+    border: (theme: any) => `1px solid ${theme.palette.section.border}`,
+    borderRadius: '3px',
+    backgroundColor: 'background.paper',
+    outline: 'none',
+    width: '100%',
+    transition: 'border-color 0.2s ease',
+    '&:focus': { borderColor: 'accent.gold' },
+    '&:focus-visible': { outline: '2px solid', outlineColor: 'accent.gold', outlineOffset: '1px' },
+    '&::placeholder': { color: 'section.subtle' },
+} as const;
+
+const sidebarLinkSx = {
+    fontSize: 14,
+    fontWeight: 600,
+    color: 'accent.gold',
+    textDecoration: 'underline',
+    display: 'inline-flex',
+    alignItems: 'center',
+    minHeight: 44, // WCAG 2.5.5 target size
+    '&:hover': { color: 'text.primary' },
+} as const;
+
+function InfoBlock({ label, children }: { label: string; children: React.ReactNode }) {
+    return (
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.25, borderTop: (theme) => `2px solid ${theme.palette.accent.navy}`, pt: 2.5 }}>
+            <Typography variant="overline" sx={{ color: 'accent.gold', letterSpacing: '0.18em' }}>{label}</Typography>
+            {children}
+        </Box>
+    );
+}
 
 export default function Contact() {
     const { t } = useTranslation();
@@ -52,216 +96,103 @@ export default function Contact() {
             navigate('/thank-you');
         } catch (error) {
             console.error('Error submitting form:', error);
-            alert('There was an error submitting the form. Please try again.');
+            alert(t('contact.submitError', 'There was an error submitting the form. Please try again.'));
             setSubmitting(false);
         }
     };
 
     return (
         <>
-            {/* Hero Section */}
-            <Box
-                sx={{
-                    backgroundColor: 'section.accent',
-                    color: 'white',
-                    py: { xs: 6, md: 8 },
-                    borderBottom: '1px solid rgba(255,255,255,0.1)',
-                }}
-            >
-                <Container maxWidth="md">
-                    <Typography
-                        variant="h1"
-                        sx={{
-                            fontSize: { xs: '2.5rem', md: '3rem' },
-                            mb: 2,
-                            textAlign: 'center',
-                        }}
-                    >
-                        {t('contact.title')}
-                    </Typography>
-                    <Typography
-                        variant="body1"
-                        sx={{
-                            fontSize: '1.25rem',
-                            textAlign: 'center',
-                            color: 'rgba(255,255,255,0.9)',
-                        }}
-                    >
-                        {t('contact.subtitle')}
-                    </Typography>
+            {/* Header band */}
+            <Box sx={{ backgroundColor: 'section.hero', borderBottom: (theme) => `1px solid ${theme.palette.section.border}` }}>
+                <Container maxWidth="lg" sx={{ py: { xs: 6, md: 9 }, display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+                    <Typography variant="overline" sx={{ color: 'accent.gold' }}>Goodwood Lodge No. 159</Typography>
+                    <Typography variant="h3" component="h1" sx={{ fontSize: { xs: '2.25rem', md: '3rem' } }}>{t('contact.title')}</Typography>
+                    <Typography variant="body1" sx={{ color: 'text.secondary', maxWidth: '60ch' }}>{t('contact.subtitle')}</Typography>
                 </Container>
             </Box>
 
-            {/* Form Section */}
-            <Box
-                sx={{
-                    backgroundColor: 'section.neutral',
-                    py: { xs: 6, md: 10 },
-                }}
-            >
-                <Container maxWidth="md">
-                    <Paper
-                        elevation={0}
-                        sx={{
-                            p: { xs: 3, md: 5 },
-                            borderRadius: 2,
-                            boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
-                        }}
-                    >
-                        <form
-                            name="contact"
-                            method="POST"
-                            data-netlify="true"
-                            data-netlify-honeypot="bot-field"
-                            onSubmit={handleSubmit}
-                        >
-                            {/* Hidden fields for Netlify Forms */}
-                            <input type="hidden" name="form-name" value="contact" />
+            {/* Body */}
+            <Box sx={{ backgroundColor: 'background.paper' }}>
+                <Container maxWidth="lg" sx={{ py: { xs: 6, md: 9 } }}>
+                    <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1.2fr 0.8fr' }, gap: { xs: 6, md: 9 }, alignItems: 'start' }}>
+                        {/* Form */}
+                        <Box>
+                            <Typography variant="h4" component="h2" sx={{ mb: 3 }}>{t('contact.sendHeading', 'Send us a message')}</Typography>
+                            <Box
+                                component="form"
+                                name="contact"
+                                method="POST"
+                                data-netlify="true"
+                                data-netlify-honeypot="bot-field"
+                                onSubmit={handleSubmit}
+                                sx={{ display: 'flex', flexDirection: 'column', gap: 2.25 }}
+                            >
+                                <input type="hidden" name="form-name" value="contact" />
+                                <Box sx={{ display: 'none' }}><input name="bot-field" /></Box>
 
-                            {/* Honeypot (hidden) */}
-                            <Box sx={{ display: 'none' }}>
-                                <input name="bot-field" />
-                            </Box>
-
-                            {/* Form Header */}
-                            <Box sx={{ mb: 4 }}>
-                                <Typography
-                                    variant="h4"
-                                    sx={{
-                                        color: 'text.primary',
-                                        textAlign: 'center',
-                                    }}
-                                >
-                                    Send us a message
-                                </Typography>
-                                <Typography
-                                    variant="body2"
-                                    sx={{
-                                        textAlign: 'center',
-                                        color: 'text.secondary',
-                                        mb: 4,
-                                    }}
-                                >
-                                    Fill out the form below and we'll get back to you as soon as possible.
-                                </Typography>
-                            </Box>
-
-                            {/* Form Fields */}
-                            <Box sx={{ textAlign: 'center', mt: 4 }}>
-                                <Box sx={{
-                                    display: 'flex',
-                                    flexDirection: 'row',
-                                    gap: { xs: 0, md: 2 },
-                                    flexWrap: { xs: 'wrap', md: 'nowrap' },
-                                    justifyContent: 'center'
-                                }}>
-                                    <TextField
-                                        required
-                                        name="firstName"
-                                        value={formData.firstName}
-                                        onChange={handleChange}
-                                        label={t('contact.name.first')}
-                                        fullWidth
-                                        margin="normal"
-                                        disabled={submitting}
-                                    />
-                                    <TextField
-                                        required
-                                        name="lastName"
-                                        value={formData.lastName}
-                                        onChange={handleChange}
-                                        label={t('contact.name.last')}
-                                        fullWidth
-                                        margin="normal"
-                                        disabled={submitting}
-                                    />
+                                <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' }, gap: 2.25 }}>
+                                    <Box component="label" sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                                        <Typography component="span" sx={fieldLabelSx}>{t('contact.name.first')} *</Typography>
+                                        <Box component="input" required name="firstName" autoComplete="given-name" value={formData.firstName} onChange={handleChange} disabled={submitting} placeholder="John" sx={inputSx} />
+                                    </Box>
+                                    <Box component="label" sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                                        <Typography component="span" sx={fieldLabelSx}>{t('contact.name.last')} *</Typography>
+                                        <Box component="input" required name="lastName" autoComplete="family-name" value={formData.lastName} onChange={handleChange} disabled={submitting} placeholder="Smith" sx={inputSx} />
+                                    </Box>
+                                    <Box component="label" sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                                        <Typography component="span" sx={fieldLabelSx}>{t('contact.email')} *</Typography>
+                                        <Box component="input" required type="email" name="email" autoComplete="email" value={formData.email} onChange={handleChange} disabled={submitting} placeholder="john@example.com" sx={inputSx} />
+                                    </Box>
+                                    <Box component="label" sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                                        <Typography component="span" sx={fieldLabelSx}>{t('contact.phone')} *</Typography>
+                                        <Box component="input" required type="tel" name="phone" autoComplete="tel" value={formData.phone} onChange={handleChange} disabled={submitting} placeholder="(613) 555-0123" sx={inputSx} />
+                                    </Box>
                                 </Box>
 
-                                <TextField
-                                    required
-                                    name="phone"
-                                    value={formData.phone}
-                                    onChange={handleChange}
-                                    label={t('contact.phone')}
-                                    type="tel"
-                                    fullWidth
-                                    margin="normal"
-                                    disabled={submitting}
-                                />
+                                <Box component="label" sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                                    <Typography component="span" sx={fieldLabelSx}>{t('contact.message')} *</Typography>
+                                    <Box component="textarea" required name="message" rows={6} value={formData.message} onChange={handleChange} disabled={submitting} placeholder={t('contact.messagePlaceholder', "Tell us a little about yourself and what you'd like to know…")} sx={{ ...inputSx, resize: 'vertical' }} />
+                                </Box>
 
-                                <TextField
-                                    required
-                                    name="email"
-                                    value={formData.email}
-                                    onChange={handleChange}
-                                    label={t('contact.email')}
-                                    type="email"
-                                    fullWidth
-                                    margin="normal"
-                                    disabled={submitting}
-                                />
-
-                                <TextField
-                                    required
-                                    name="message"
-                                    value={formData.message}
-                                    onChange={handleChange}
-                                    label={t('contact.message')}
-                                    multiline
-                                    rows={4}
-                                    fullWidth
-                                    margin="normal"
-                                    disabled={submitting}
-                                />
+                                <Box>
+                                    <Button
+                                        type="submit"
+                                        disabled={submitting}
+                                        startIcon={submitting ? <CircularProgress size={18} color="inherit" /> : null}
+                                        sx={{ backgroundColor: 'accent.navy', color: '#fff', px: 4, py: 1.75, '&:hover': { backgroundColor: 'primary.light' } }}
+                                    >
+                                        {submitting ? t('contact.sending', 'Sending…') : t('contact.send')}
+                                    </Button>
+                                </Box>
                             </Box>
+                        </Box>
 
-                            {/* Submit Button - INSIDE FORM */}
-                            <Button
-                                variant="contained"
-                                color="primary"
-                                fullWidth
-                                type="submit"
-                                disabled={submitting}
-                                startIcon={submitting ? <CircularProgress size={20} color="inherit" /> : null}
-                                sx={{ mt: 4, py: 1.5 }}
-                            >
-                                {submitting ? 'Sending...' : t('contact.send')}
-                            </Button>
-                        </form>
-                    </Paper>
-                </Container>
-            </Box>
+                        {/* Info sidebar */}
+                        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 4.5 }}>
+                            <InfoBlock label={t('footer.address.title')}>
+                                <Typography sx={{ fontFamily: '"Playfair Display", serif', fontSize: 20, color: 'text.primary' }}>{t('footer.address.street')}</Typography>
+                                <Typography sx={{ fontSize: 14, color: 'text.secondary' }}>{t('footer.address.city')} {t('footer.address.postal')}</Typography>
+                            </InfoBlock>
 
-            {/* Additional Info Section */}
-            <Box
-                sx={{
-                    backgroundColor: 'background.default',
-                    py: { xs: 6, md: 8 },
-                }}
-            >
-                <Container maxWidth="md">
-                    <Box sx={{ textAlign: 'center' }}>
-                        <Typography
-                            variant="h4"
-                            sx={{
-                                mb: 3,
-                                color: 'text.primary',
-                            }}
-                        >
-                            Other Ways to Connect
-                        </Typography>
-                        <Typography
-                            variant="body1"
-                            sx={{
-                                fontSize: '1.125rem',
-                                lineHeight: 1.8,
-                                color: 'text.secondary',
-                                mb: 2,
-                            }}
-                        >
-                            You can also reach us through our regular meetings or community events.
-                            We're always happy to answer questions about Freemasonry and our lodge.
-                        </Typography>
+                            <InfoBlock label={t('contact.whenWeMeet', 'When We Meet')}>
+                                <Typography sx={{ fontFamily: '"Playfair Display", serif', fontSize: 20, color: 'text.primary' }}>{t('home.meeting.meetValue', '1st Tuesday · 7:30 PM')}</Typography>
+                                <Typography sx={{ fontSize: 14, color: 'text.secondary' }}>{t('contact.meetNote', 'September through June. Visiting brethren are always welcome.')}</Typography>
+                            </InfoBlock>
+
+                            <InfoBlock label={t('contact.joiningLabel', 'Thinking of Joining?')}>
+                                <Typography sx={{ fontSize: 14, lineHeight: 1.7, color: 'text.secondary' }}>{t('contact.joiningText', 'Freemasonry is open to men of good character. Learn what membership involves at the Grand Lodge of Ontario.')}</Typography>
+                                <Box component="a" href="https://ontariomasons.ca/becoming-a-mason/" target="_blank" rel="noopener noreferrer" sx={sidebarLinkSx}>
+                                    {t('footer.links.becomeAMason')} →
+                                </Box>
+                            </InfoBlock>
+
+                            <InfoBlock label={t('contact.followUs', 'Follow Us')}>
+                                <Box component="a" href="https://www.instagram.com/goodwood_lodge_159/" target="_blank" rel="noopener noreferrer" sx={sidebarLinkSx}>
+                                    Instagram · @goodwood_lodge_159 →
+                                </Box>
+                            </InfoBlock>
+                        </Box>
                     </Box>
                 </Container>
             </Box>

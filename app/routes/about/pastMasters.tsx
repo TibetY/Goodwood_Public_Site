@@ -1,4 +1,4 @@
-import { Container, Typography, Box, Paper, Grid, Divider } from '@mui/material';
+import { Container, Typography, Box, Grid } from '@mui/material';
 import type { Route } from '../../+types/root';
 import { supabase } from '~/utils/supabase';
 import { useLoaderData } from 'react-router';
@@ -51,60 +51,101 @@ export default function PastMasters() {
         <Grid container spacing={2}>
             {masters.map((master, index) => (
                 <Grid size={{ xs: 12, sm: 6, md: 4 }} key={index}>
-                    <Paper
-                        elevation={1}
+                    <Box
                         sx={{
                             p: 2,
+                            height: '100%',
+                            border: theme => `1px solid ${theme.palette.section.border}`,
+                            transition: 'transform 0.25s ease, border-color 0.25s ease',
+                            '&:hover': {
+                                transform: 'translateY(-3px)',
+                                borderColor: 'accent.gold',
+                            },
                         }}
                     >
-                        <Typography variant="body1" fontWeight="medium">
+                        <Typography variant="body1" fontWeight={500}>
                             {master.name}
                         </Typography>
-                        <Typography variant="body2" color="text.secondary">
+                        <Typography variant="body2" sx={{ color: 'text.secondary' }}>
                             {master.years}
                         </Typography>
-                    </Paper>
+                    </Box>
                 </Grid>
             ))}
         </Grid>
     );
 
     return (
-        <Container maxWidth="lg" sx={{ py: 8 }}>
-            <Typography variant="h3" component="h1" gutterBottom fontWeight="bold" textAlign="center">
-                Past Masters
-            </Typography>
-            <Typography variant="body1" color="text.secondary" paragraph textAlign="center" sx={{ mb: 6 }}>
-                Honoring the Worshipful Masters who have led Goodwood Lodge since 1863
-            </Typography>
-
-            {/* 2000s */}
-            <Box>
-                <Typography variant="h4" component="h2" gutterBottom color="primary" sx={{ mb: 3 }}>
-                    Present - 2000
-                </Typography>
-                <PastMastersList masters={century2000s} />
+        <>
+            {/* Page header band */}
+            <Box sx={{ backgroundColor: 'section.hero', borderBottom: theme => `1px solid ${theme.palette.section.border}` }}>
+                <Container maxWidth="lg" sx={{ py: { xs: 6, md: 9 }, display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+                    <Typography variant="overline" sx={{ color: 'accent.gold' }}>
+                        Goodwood Lodge No. 159
+                    </Typography>
+                    <Typography variant="h3" component="h1" sx={{ fontSize: { xs: '2.25rem', md: '3rem' } }}>
+                        Past Masters
+                    </Typography>
+                    <Typography variant="body1" sx={{ color: 'text.secondary', maxWidth: '60ch' }}>
+                        Honoring the Worshipful Masters who have led Goodwood Lodge since 1863
+                    </Typography>
+                </Container>
             </Box>
 
-            <Divider sx={{ my: 6 }} />
+            {/* Past Masters groupings */}
+            <Box sx={{ backgroundColor: 'background.paper' }}>
+                <Container maxWidth="lg" sx={{ py: { xs: 6, md: 9 } }}>
+                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: { xs: 6, md: 8 } }}>
+                        {/* 2000s */}
+                        <Box component="section">
+                            <Typography variant="overline" sx={{ color: 'accent.gold', display: 'block', mb: 1 }}>
+                                Present Day
+                            </Typography>
+                            <Typography
+                                variant="h4"
+                                component="h2"
+                                gutterBottom
+                                sx={{ borderTop: theme => `2px solid ${theme.palette.accent.navy}`, pt: 2.5, mb: 3 }}
+                            >
+                                Present - 2000
+                            </Typography>
+                            <PastMastersList masters={century2000s} />
+                        </Box>
 
-            {/* 1900s */}
-            <Box sx={{ mb: 6 }}>
-                <Typography variant="h4" component="h2" gutterBottom color="primary" sx={{ mb: 3 }}>
-                    1999 – 1900
-                </Typography>
-                <PastMastersList masters={century1900s} />
+                        {/* 1900s */}
+                        <Box component="section">
+                            <Typography variant="overline" sx={{ color: 'accent.gold', display: 'block', mb: 1 }}>
+                                The 20th Century
+                            </Typography>
+                            <Typography
+                                variant="h4"
+                                component="h2"
+                                gutterBottom
+                                sx={{ borderTop: theme => `2px solid ${theme.palette.accent.navy}`, pt: 2.5, mb: 3 }}
+                            >
+                                1999 – 1900
+                            </Typography>
+                            <PastMastersList masters={century1900s} />
+                        </Box>
+
+                        {/* 1800s */}
+                        <Box component="section">
+                            <Typography variant="overline" sx={{ color: 'accent.gold', display: 'block', mb: 1 }}>
+                                The Founding Era
+                            </Typography>
+                            <Typography
+                                variant="h4"
+                                component="h2"
+                                gutterBottom
+                                sx={{ borderTop: theme => `2px solid ${theme.palette.accent.navy}`, pt: 2.5, mb: 3 }}
+                            >
+                                1899 – 1863
+                            </Typography>
+                            <PastMastersList masters={century1800s} />
+                        </Box>
+                    </Box>
+                </Container>
             </Box>
-
-            <Divider sx={{ my: 6 }} />
-
-            {/* 1800s */}
-            <Box sx={{ mb: 6 }}>
-                <Typography variant="h4" component="h2" gutterBottom color="primary" sx={{ mb: 3 }}>
-                    1899 – 1863
-                </Typography>
-                <PastMastersList masters={century1800s} />
-            </Box>
-        </Container>
+        </>
     );
 }

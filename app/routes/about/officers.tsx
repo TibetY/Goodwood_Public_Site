@@ -1,5 +1,5 @@
 import { useLoaderData } from 'react-router';
-import { Container, Typography, Box, Grid, Card, CardContent, CardMedia, Avatar } from '@mui/material';
+import { Container, Typography, Box, Grid } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { supabase } from '../../utils/supabase';
 import type { Route } from './+types/officers';
@@ -59,72 +59,88 @@ export default function Officers() {
     };
 
     return (
-        <Container maxWidth="lg" sx={{ py: 8 }}>
-            <Typography variant="h3" component="h1" gutterBottom fontWeight="bold" textAlign="center">
-                {t('officers.title')}
-            </Typography>
-            <Typography variant="body1" color="text.secondary" textAlign="center" sx={{ mb: 6 }}>
-                {t('officers.description', { currentYear, endYear: currentYear + 1 })}
-            </Typography>
+        <>
+            {/* Page header band */}
+            <Box sx={{ backgroundColor: 'section.hero', borderBottom: theme => `1px solid ${theme.palette.section.border}` }}>
+                <Container maxWidth="lg" sx={{ py: { xs: 6, md: 9 }, display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+                    <Typography variant="overline" sx={{ color: 'accent.gold' }}>
+                        Goodwood Lodge No. 159
+                    </Typography>
+                    <Typography variant="h3" component="h1" sx={{ fontSize: { xs: '2.25rem', md: '3rem' } }}>
+                        {t('officers.title')}
+                    </Typography>
+                    <Typography variant="body1" sx={{ color: 'text.secondary', maxWidth: '60ch' }}>
+                        {t('officers.description', { currentYear, endYear: currentYear + 1 })}
+                    </Typography>
+                </Container>
+            </Box>
 
-            <Grid container spacing={4}>
-                {officers.map((officer: Officer, index: number) => (
-                    <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }} key={index}>
-                        <Card
-                            elevation={2}
-                            sx={{
-                                height: '100%',
-                                display: 'flex',
-                                flexDirection: 'column',
-                                transition: 'transform 0.2s, box-shadow 0.2s',
-                                '&:hover': {
-                                    transform: 'translateY(-4px)',
-                                    boxShadow: 4
-                                }
-                            }}
-                        >
-                            {officer.image ? (
-                                <CardMedia
-                                    component="img"
-                                    height="300"
-                                    image={officer.image}
-                                    alt={officer.name}
-                                    sx={{ objectFit: 'cover', objectPosition: 'center top' }}
-                                />
-                            ) : (
+            {/* Officers grid */}
+            <Box sx={{ backgroundColor: 'background.paper' }}>
+                <Container maxWidth="lg" sx={{ py: { xs: 6, md: 9 } }}>
+                    <Grid container spacing={3}>
+                        {officers.map((officer: Officer, index: number) => (
+                            <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }} key={index}>
                                 <Box
                                     sx={{
-                                        height: 300,
+                                        height: '100%',
                                         display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                        bgcolor: 'primary.main'
+                                        flexDirection: 'column',
+                                        textAlign: 'center',
+                                        border: theme => `1px solid ${theme.palette.section.border}`,
+                                        transition: 'transform 0.25s ease, border-color 0.25s ease',
+                                        '&:hover': {
+                                            transform: 'translateY(-3px)',
+                                            borderColor: 'accent.gold',
+                                        },
                                     }}
                                 >
-                                    <Avatar
-                                        sx={{
-                                            width: 120,
-                                            height: 120,
-                                            fontSize: '2rem',
-                                            bgcolor: 'primary.dark'
-                                        }}
-                                    >
-                                        {getInitials(officer.name)}
-                                    </Avatar>
+                                    {officer.image ? (
+                                        <Box
+                                            component="img"
+                                            src={officer.image}
+                                            alt={officer.name}
+                                            sx={{
+                                                width: '100%',
+                                                height: 280,
+                                                objectFit: 'cover',
+                                                objectPosition: 'center top',
+                                                display: 'block',
+                                            }}
+                                        />
+                                    ) : (
+                                        <Box
+                                            sx={{
+                                                height: 280,
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
+                                                backgroundColor: 'section.accent',
+                                            }}
+                                        >
+                                            <Typography
+                                                variant="h3"
+                                                component="span"
+                                                sx={{ color: 'accent.goldOnDark', fontSize: '2.5rem' }}
+                                            >
+                                                {getInitials(officer.name)}
+                                            </Typography>
+                                        </Box>
+                                    )}
+                                    <Box sx={{ flexGrow: 1, py: 2.5, px: 2 }}>
+                                        <Typography variant="overline" sx={{ color: 'accent.gold', display: 'block' }}>
+                                            {t(officer.title)}
+                                        </Typography>
+                                        <Typography variant="h6" component="h2" sx={{ mt: 0.5 }}>
+                                            {officer.name}
+                                        </Typography>
+                                    </Box>
                                 </Box>
-                            )}
-                            <CardContent sx={{ flexGrow: 1, textAlign: 'center' }}>
-                                <Typography variant="h6" component="h2" gutterBottom>
-                                    {t(officer.title)}
-                                </Typography>
-                                <Typography variant="body1" color="text.secondary">
-                                    {officer.name}
-                                </Typography>
-                            </CardContent>
-                        </Card>
+                            </Grid>
+                        ))}
                     </Grid>
-                ))}
-            </Grid>
-        </Container>
+                </Container>
+            </Box>
+        </>
     );
 }
