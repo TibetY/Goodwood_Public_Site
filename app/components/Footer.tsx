@@ -91,7 +91,7 @@ export default function Footer() {
                 href="https://ontariomasons.ca"
                 target="_blank"
                 rel="noopener noreferrer"
-                sx={{ display: 'inline-flex', backgroundColor: '#FFFFFF', p: '8px 12px', borderRadius: '4px', mt: 1, width: 'fit-content' }}
+                sx={{ display: 'inline-flex', alignItems: 'center', minHeight: 44, mt: 1, width: 'fit-content' }}
               >
                 <Box component="img" src="/images/grand_lodge/Ontario-Masons-Wordmark-Colour-300x53.png" alt="Grand Lodge of Ontario" sx={{ height: 26, display: 'block' }} />
               </Box>
