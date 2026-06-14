@@ -126,7 +126,7 @@ export const handler: Handler = async (event) => {
         from: process.env.CONTACT_EMAIL_FROM || 'Goodwood Lodge Website <onboarding@resend.dev>',
         to: [to],
         reply_to: email,
-        subject: `New contact form submission from ${fullName}`,
+        subject: `Website Enquiry — ${fullName}`,
         html,
         text,
       }),
