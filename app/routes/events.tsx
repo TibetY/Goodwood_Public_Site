@@ -8,17 +8,17 @@ import {
 import EventIcon from '@mui/icons-material/Event';
 import {
     fetchEvents, eventDateCard, eventTimeLabel, eventYear, eventMonthIndex,
-    eventTimestamp, MONTH_NAMES, type LodgeEvent,
+    eventTimestamp, eventMonthYear, MONTH_NAMES, type LodgeEvent,
 } from '../utils/events';
 
-function DateCard({ ev }: { ev: LodgeEvent }) {
+function DateCard({ ev, isPast }: { ev: LodgeEvent; isPast?: boolean }) {
     const { day, month } = eventDateCard(ev);
     return (
         <Box
             sx={{
                 width: 84,
                 flexShrink: 0,
-                backgroundColor: 'accent.navy',
+                backgroundColor: isPast ? 'section.subtle' : 'accent.navy',
                 color: '#FFFFFF',
                 display: 'flex',
                 flexDirection: 'column',
@@ -33,7 +33,7 @@ function DateCard({ ev }: { ev: LodgeEvent }) {
     );
 }
 
-function EventRow({ ev }: { ev: LodgeEvent }) {
+function EventRow({ ev, isPast }: { ev: LodgeEvent; isPast?: boolean }) {
     const time = eventTimeLabel(ev);
     const meta = [time, ev.location].filter(Boolean).join(' · ');
     return (
@@ -44,9 +44,10 @@ function EventRow({ ev }: { ev: LodgeEvent }) {
                 py: 3,
                 borderTop: (theme) => `1px solid ${theme.palette.section.border}`,
                 alignItems: 'center',
+                opacity: isPast ? 0.55 : 1,
             }}
         >
-            <DateCard ev={ev} />
+            <DateCard ev={ev} isPast={isPast} />
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5, flex: 1 }}>
                 <Typography sx={{ fontFamily: '"Playfair Display", serif', fontSize: 22, color: 'text.primary' }}>
                     {ev.htmlLink ? (
@@ -96,6 +97,20 @@ export default function Events() {
                 .sort((a, b) => eventTimestamp(a) - eventTimestamp(b)),
         [allEvents, year, month],
     );
+
+    const isCurrentMonthView = month === now.getMonth() && year === now.getFullYear();
+
+    // Always-visible recap of the last 2 months, regardless of the selected filter.
+    const recentPast = useMemo(() => {
+        const cutoff = new Date(now.getFullYear(), now.getMonth() - 2, 1).getTime();
+        const nowMs = now.getTime();
+        return allEvents
+            .filter((ev) => {
+                const ts = eventTimestamp(ev);
+                return ts < nowMs && ts >= cutoff;
+            })
+            .sort((a, b) => eventTimestamp(b) - eventTimestamp(a));
+    }, [allEvents]);
 
     return (
         <>
@@ -182,7 +197,9 @@ export default function Events() {
 
                             {monthEvents.length > 0 ? (
                                 <Box sx={{ borderBottom: (theme) => `1px solid ${theme.palette.section.border}` }}>
-                                    {monthEvents.map((ev) => <EventRow key={ev.id} ev={ev} />)}
+                                    {monthEvents.map((ev) => (
+                                        <EventRow key={ev.id} ev={ev} isPast={isCurrentMonthView && eventTimestamp(ev) < now.getTime()} />
+                                    ))}
                                 </Box>
                             ) : (
                                 <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1.5, py: 6, color: 'section.subtle', borderTop: (theme) => `1px solid ${theme.palette.section.border}` }}>
@@ -192,6 +209,21 @@ export default function Events() {
                                             ? t('events.noEventsConfigured', 'Our calendar will appear here shortly. In the meantime, please check back or contact the lodge.')
                                             : t('events.noEventsThisMonth', 'No events scheduled for {{month}} {{year}}.', { month: t(`events.months.${month}`, MONTH_NAMES[month]), year })}
                                     </Typography>
+                                </Box>
+                            )}
+
+                            {/* Recent Past Events recap — always visible, independent of the Month/Year filter */}
+                            {recentPast.length > 0 && (
+                                <Box sx={{ mt: 3 }}>
+                                    <Typography variant="h6" component="h3" sx={{ mb: 1 }}>{t('events.recentPast', 'Recent Past Events')}</Typography>
+                                    <Box sx={{ borderBottom: (theme) => `1px solid ${theme.palette.section.border}` }}>
+                                        {recentPast.map((ev) => (
+                                            <Box key={ev.id} sx={{ display: 'flex', gap: 2, py: 2, borderTop: (theme) => `1px solid ${theme.palette.section.border}`, alignItems: 'baseline', flexWrap: 'wrap' }}>
+                                                <Typography sx={{ fontSize: 13, color: 'section.subtle', width: 110, flexShrink: 0 }}>{eventMonthYear(ev)}</Typography>
+                                                <Typography sx={{ fontSize: 16, color: 'text.primary' }}>{ev.title}</Typography>
+                                            </Box>
+                                        ))}
+                                    </Box>
                                 </Box>
                             )}
                         </Box>

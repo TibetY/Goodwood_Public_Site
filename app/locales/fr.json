@@ -143,6 +143,7 @@
         "calendarView": "Calendrier",
         "upcoming": "À venir",
         "past": "Événements passés",
+        "recentPast": "Événements récents passés",
         "month": "Mois",
         "year": "Année",
         "noUpcoming": "Aucun événement à venir pour le moment. Revenez bientôt.",

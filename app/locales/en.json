@@ -155,6 +155,7 @@
         "calendarView": "Calendar",
         "upcoming": "Upcoming",
         "past": "Past Events",
+        "recentPast": "Recent Past Events",
         "month": "Month",
         "year": "Year",
         "noUpcoming": "No upcoming events scheduled at the moment. Please check back soon.",
