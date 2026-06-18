@@ -3,7 +3,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "react-router build",
+    "build": "react-router build && node scripts/prerender.mjs",
+    "prerender": "node scripts/prerender.mjs",
     "dev": "npx netlify dev",
     "dev:vite": "react-router dev",
     "start": "react-router-serve ./build/server/index.js",
