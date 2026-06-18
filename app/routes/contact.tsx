@@ -40,7 +40,10 @@ const errorTextSx = {
     color: 'error.main',
 } as const;
 
-const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+// HTML5 email-input spec pattern, tightened with a trailing `+` so the domain
+// must include at least one dot and a TLD (rejects e.g. "name@protonmail").
+const EMAIL_PATTERN =
+    /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+$/;
 
 const formatPhone = (raw: string) => {
     const digits = raw.replace(/\D/g, '').slice(0, 10);
