@@ -35,6 +35,26 @@ const inputSx = {
     '&::placeholder': { color: 'section.subtle' },
 } as const;
 
+const errorTextSx = {
+    fontSize: 13,
+    color: 'error.main',
+} as const;
+
+// HTML5 email-input spec pattern, tightened with a trailing `+` so the domain
+// must include at least one dot and a TLD (rejects e.g. "name@protonmail").
+const EMAIL_PATTERN =
+    /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+$/;
+
+const formatPhone = (raw: string) => {
+    const digits = raw.replace(/\D/g, '').slice(0, 10);
+    if (digits.length === 0) return '';
+    if (digits.length < 4) return `(${digits}`;
+    if (digits.length < 7) return `(${digits.slice(0, 3)})-${digits.slice(3)}`;
+    return `(${digits.slice(0, 3)})-${digits.slice(3, 6)}-${digits.slice(6)}`;
+};
+
+const isValidPhone = (formatted: string) => formatted.replace(/\D/g, '').length === 10;
+
 const sidebarLinkSx = {
     fontSize: 14,
     fontWeight: 600,
@@ -66,6 +86,7 @@ export default function Contact() {
         email: '',
         message: ''
     });
+    const [errors, setErrors] = useState({ phone: '', email: '' });
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         setFormData({
@@ -74,8 +95,23 @@ export default function Contact() {
         });
     };
 
+    const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setFormData({ ...formData, phone: formatPhone(e.target.value) });
+    };
+
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+
+        const emailValid = EMAIL_PATTERN.test(formData.email.trim());
+        const phoneValid = isValidPhone(formData.phone);
+        setErrors({
+            email: emailValid ? '' : t('contact.errors.email', 'Enter a valid email address.'),
+            phone: phoneValid ? '' : t('contact.errors.phone', 'Enter a valid 10-digit phone number.'),
+        });
+        if (!emailValid || !phoneValid) {
+            return;
+        }
+
         setSubmitting(true);
 
         try {
@@ -137,10 +173,12 @@ export default function Contact() {
                                     <Box component="label" sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
                                         <Typography component="span" sx={fieldLabelSx}>{t('contact.email')} *</Typography>
                                         <Box component="input" required type="email" name="email" autoComplete="email" value={formData.email} onChange={handleChange} disabled={submitting} placeholder="john@example.com" sx={inputSx} />
+                                        {errors.email && <Typography sx={errorTextSx}>{errors.email}</Typography>}
                                     </Box>
                                     <Box component="label" sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
                                         <Typography component="span" sx={fieldLabelSx}>{t('contact.phone')} *</Typography>
-                                        <Box component="input" required type="tel" name="phone" autoComplete="tel" value={formData.phone} onChange={handleChange} disabled={submitting} placeholder="(613) 555-0123" sx={inputSx} />
+                                        <Box component="input" required type="tel" name="phone" autoComplete="tel" value={formData.phone} onChange={handlePhoneChange} disabled={submitting} placeholder="(613)-555-0123" sx={inputSx} />
+                                        {errors.phone && <Typography sx={errorTextSx}>{errors.phone}</Typography>}
                                     </Box>
                                 </Box>
 

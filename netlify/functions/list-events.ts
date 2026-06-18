@@ -75,8 +75,9 @@ export const handler: Handler = async (event) => {
     const pastJson = await pastRes.json();
 
     const upcoming = (upcomingJson.items || []).map(mapEvent);
-    // Past events come back ascending; show most-recent first and cap the list.
-    const past = (pastJson.items || []).map(mapEvent).reverse().slice(0, 8);
+    // Past events come back ascending; show most-recent first. The full past
+    // year is returned so the Month/Year filter on the events page can browse it.
+    const past = (pastJson.items || []).map(mapEvent).reverse();
 
     return { statusCode: 200, headers, body: JSON.stringify({ upcoming, past, configured: true }) };
   } catch (err: any) {
