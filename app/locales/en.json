@@ -155,8 +155,15 @@
         "calendarView": "Calendar",
         "upcoming": "Upcoming",
         "past": "Past Events",
+        "month": "Month",
+        "year": "Year",
         "noUpcoming": "No upcoming events scheduled at the moment. Please check back soon.",
-        "noEventsConfigured": "Our calendar will appear here shortly. In the meantime, please check back or contact the lodge."
+        "noEventsThisMonth": "No events scheduled for {{month}} {{year}}.",
+        "noEventsConfigured": "Our calendar will appear here shortly. In the meantime, please check back or contact the lodge.",
+        "months": [
+            "January", "February", "March", "April", "May", "June",
+            "July", "August", "September", "October", "November", "December"
+        ]
     },
     "contact": {
         "title": "Contact Us",

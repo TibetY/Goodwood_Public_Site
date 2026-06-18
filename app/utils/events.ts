@@ -29,6 +29,11 @@ export async function fetchEvents(): Promise<EventsResponse> {
 
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
+export const MONTH_NAMES = [
+    'January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December',
+];
+
 /** Parse an event start, treating all-day (YYYY-MM-DD) values as local dates. */
 function toDate(value: string, allDay: boolean): Date {
     if (allDay && /^\d{4}-\d{2}-\d{2}$/.test(value)) {
@@ -55,4 +60,19 @@ export function eventTimeLabel(ev: LodgeEvent): string {
 export function eventMonthYear(ev: LodgeEvent): string {
     const date = toDate(ev.start, ev.allDay);
     return `${MONTHS[date.getMonth()]} ${date.getFullYear()}`;
+}
+
+/** Calendar year of an event's start, e.g. 2025. */
+export function eventYear(ev: LodgeEvent): number {
+    return toDate(ev.start, ev.allDay).getFullYear();
+}
+
+/** Zero-based month index of an event's start (0 = January). */
+export function eventMonthIndex(ev: LodgeEvent): number {
+    return toDate(ev.start, ev.allDay).getMonth();
+}
+
+/** Sortable millisecond timestamp of an event's start. */
+export function eventTimestamp(ev: LodgeEvent): number {
+    return toDate(ev.start, ev.allDay).getTime();
 }

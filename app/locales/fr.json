@@ -143,8 +143,15 @@
         "calendarView": "Calendrier",
         "upcoming": "À venir",
         "past": "Événements passés",
+        "month": "Mois",
+        "year": "Année",
         "noUpcoming": "Aucun événement à venir pour le moment. Revenez bientôt.",
-        "noEventsConfigured": "Notre calendrier apparaîtra ici sous peu. Entre-temps, revenez nous voir ou contactez la loge."
+        "noEventsThisMonth": "Aucun événement prévu pour {{month}} {{year}}.",
+        "noEventsConfigured": "Notre calendrier apparaîtra ici sous peu. Entre-temps, revenez nous voir ou contactez la loge.",
+        "months": [
+            "janvier", "février", "mars", "avril", "mai", "juin",
+            "juillet", "août", "septembre", "octobre", "novembre", "décembre"
+        ]
     },
     "contact": {
         "title": "Nous Contacter",

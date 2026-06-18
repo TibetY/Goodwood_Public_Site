@@ -1,14 +1,14 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useQuery } from '@tanstack/react-query';
 import {
     Container, Typography, Box, ToggleButton, ToggleButtonGroup,
-    CircularProgress, Link as MuiLink,
+    CircularProgress, Link as MuiLink, TextField, MenuItem,
 } from '@mui/material';
 import EventIcon from '@mui/icons-material/Event';
 import {
-    fetchEvents, eventDateCard, eventTimeLabel, eventMonthYear,
-    type LodgeEvent,
+    fetchEvents, eventDateCard, eventTimeLabel, eventYear, eventMonthIndex,
+    eventTimestamp, MONTH_NAMES, type LodgeEvent,
 } from '../utils/events';
 
 function DateCard({ ev }: { ev: LodgeEvent }) {
@@ -63,7 +63,10 @@ function EventRow({ ev }: { ev: LodgeEvent }) {
 
 export default function Events() {
     const { t } = useTranslation();
+    const now = new Date();
     const [view, setView] = useState<'list' | 'calendar'>('list');
+    const [month, setMonth] = useState(now.getMonth());
+    const [year, setYear] = useState(now.getFullYear());
     const calendarUrl = import.meta.env.VITE_GOOGLE_CAL;
 
     const { data, isLoading, isError } = useQuery({
@@ -73,8 +76,26 @@ export default function Events() {
         staleTime: 5 * 60 * 1000,
     });
 
-    const upcoming = data?.upcoming ?? [];
-    const past = data?.past ?? [];
+    const allEvents = useMemo(
+        () => [...(data?.upcoming ?? []), ...(data?.past ?? [])],
+        [data],
+    );
+
+    // Years available in the dropdown: every year present in the data, plus the
+    // current year, newest first.
+    const years = useMemo(() => {
+        const set = new Set<number>([now.getFullYear()]);
+        allEvents.forEach((ev) => set.add(eventYear(ev)));
+        return Array.from(set).sort((a, b) => b - a);
+    }, [allEvents]);
+
+    const monthEvents = useMemo(
+        () =>
+            allEvents
+                .filter((ev) => eventYear(ev) === year && eventMonthIndex(ev) === month)
+                .sort((a, b) => eventTimestamp(a) - eventTimestamp(b)),
+        [allEvents, year, month],
+    );
 
     return (
         <>
@@ -130,38 +151,47 @@ export default function Events() {
                     ) : isLoading ? (
                         <Box sx={{ textAlign: 'center', py: 8 }}><CircularProgress /></Box>
                     ) : (
-                        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                            {/* Upcoming */}
-                            <Box>
-                                <Typography variant="h4" component="h2" sx={{ mb: 1 }}>{t('events.upcoming', 'Upcoming')}</Typography>
-                                {upcoming.length > 0 ? (
-                                    <Box sx={{ borderBottom: (theme) => `1px solid ${theme.palette.section.border}` }}>
-                                        {upcoming.map((ev) => <EventRow key={ev.id} ev={ev} />)}
-                                    </Box>
-                                ) : (
-                                    <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1.5, py: 6, color: 'section.subtle', borderTop: (theme) => `1px solid ${theme.palette.section.border}` }}>
-                                        <EventIcon sx={{ fontSize: 36, opacity: 0.5 }} />
-                                        <Typography sx={{ color: 'text.secondary' }}>
-                                            {isError || data?.configured === false
-                                                ? t('events.noEventsConfigured', 'Our calendar will appear here shortly. In the meantime, please check back or contact the lodge.')
-                                                : t('events.noUpcoming', 'No upcoming events scheduled at the moment. Please check back soon.')}
-                                        </Typography>
-                                    </Box>
-                                )}
+                        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+                            {/* Month / Year filter */}
+                            <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
+                                <TextField
+                                    select
+                                    size="small"
+                                    label={t('events.month', 'Month')}
+                                    value={month}
+                                    onChange={(e) => setMonth(Number(e.target.value))}
+                                    sx={{ minWidth: 160 }}
+                                >
+                                    {MONTH_NAMES.map((name, idx) => (
+                                        <MenuItem key={name} value={idx}>{t(`events.months.${idx}`, name)}</MenuItem>
+                                    ))}
+                                </TextField>
+                                <TextField
+                                    select
+                                    size="small"
+                                    label={t('events.year', 'Year')}
+                                    value={year}
+                                    onChange={(e) => setYear(Number(e.target.value))}
+                                    sx={{ minWidth: 120 }}
+                                >
+                                    {years.map((y) => (
+                                        <MenuItem key={y} value={y}>{y}</MenuItem>
+                                    ))}
+                                </TextField>
                             </Box>
 
-                            {/* Past */}
-                            {past.length > 0 && (
-                                <Box>
-                                    <Typography variant="h4" component="h2" sx={{ mb: 1 }}>{t('events.past', 'Past Events')}</Typography>
-                                    <Box sx={{ borderBottom: (theme) => `1px solid ${theme.palette.section.border}` }}>
-                                        {past.map((ev) => (
-                                            <Box key={ev.id} sx={{ display: 'flex', gap: 2, py: 2, borderTop: (theme) => `1px solid ${theme.palette.section.border}`, alignItems: 'baseline', flexWrap: 'wrap' }}>
-                                                <Typography sx={{ fontSize: 13, color: 'section.subtle', width: 110, flexShrink: 0 }}>{eventMonthYear(ev)}</Typography>
-                                                <Typography sx={{ fontSize: 16, color: 'text.primary' }}>{ev.title}</Typography>
-                                            </Box>
-                                        ))}
-                                    </Box>
+                            {monthEvents.length > 0 ? (
+                                <Box sx={{ borderBottom: (theme) => `1px solid ${theme.palette.section.border}` }}>
+                                    {monthEvents.map((ev) => <EventRow key={ev.id} ev={ev} />)}
+                                </Box>
+                            ) : (
+                                <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1.5, py: 6, color: 'section.subtle', borderTop: (theme) => `1px solid ${theme.palette.section.border}` }}>
+                                    <EventIcon sx={{ fontSize: 36, opacity: 0.5 }} />
+                                    <Typography sx={{ color: 'text.secondary' }}>
+                                        {isError || data?.configured === false
+                                            ? t('events.noEventsConfigured', 'Our calendar will appear here shortly. In the meantime, please check back or contact the lodge.')
+                                            : t('events.noEventsThisMonth', 'No events scheduled for {{month}} {{year}}.', { month: t(`events.months.${month}`, MONTH_NAMES[month]), year })}
+                                    </Typography>
                                 </Box>
                             )}
                         </Box>
