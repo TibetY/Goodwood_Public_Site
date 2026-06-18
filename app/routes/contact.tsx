@@ -11,12 +11,6 @@ export function meta({ }: Route.MetaArgs) {
     ];
 }
 
-const encode = (data: Record<string, string>) => {
-    return Object.keys(data)
-        .map(key => encodeURIComponent(key) + "=" + encodeURIComponent(data[key]))
-        .join("&");
-};
-
 const fieldLabelSx = {
     fontSize: '11px',
     fontWeight: 600,
@@ -85,14 +79,17 @@ export default function Contact() {
         setSubmitting(true);
 
         try {
-            await fetch("/", {
+            const res = await fetch("/.netlify/functions/submit-contact", {
                 method: "POST",
-                headers: { "Content-Type": "application/x-www-form-urlencoded" },
-                body: encode({
-                    "form-name": "contact",
-                    ...formData
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    ...formData,
+                    botField: (e.currentTarget.elements.namedItem('bot-field') as HTMLInputElement | null)?.value || '',
                 })
             });
+            if (!res.ok) {
+                throw new Error(`Submit failed: ${res.status}`);
+            }
             navigate('/thank-you');
         } catch (error) {
             console.error('Error submitting form:', error);
@@ -123,13 +120,10 @@ export default function Contact() {
                                 component="form"
                                 name="contact"
                                 method="POST"
-                                data-netlify="true"
-                                data-netlify-honeypot="bot-field"
                                 onSubmit={handleSubmit}
                                 sx={{ display: 'flex', flexDirection: 'column', gap: 2.25 }}
                             >
-                                <input type="hidden" name="form-name" value="contact" />
-                                <Box sx={{ display: 'none' }}><input name="bot-field" /></Box>
+                                <Box sx={{ display: 'none' }}><input name="bot-field" tabIndex={-1} autoComplete="off" /></Box>
 
                                 <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' }, gap: 2.25 }}>
                                     <Box component="label" sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>

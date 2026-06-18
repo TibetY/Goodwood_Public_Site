@@ -59,7 +59,7 @@ The external-facing website for **Goodwood Lodge No. 159**, A.F. & A.M., Grand L
 │   │   ├── home.tsx            # Landing page
 │   │   ├── photos.tsx          # Public photo gallery
 │   │   ├── events.tsx          # Google Calendar embed
-│   │   ├── contact.tsx         # Netlify Forms contact form
+│   │   ├── contact.tsx         # Contact form (emails via Resend function)
 │   │   ├── login.tsx           # Supabase Auth login
 │   │   ├── setPassword.tsx     # Invited member password setup
 │   │   └── chatBot.tsx         # AI-powered Freemasonry chatbot
@@ -125,6 +125,11 @@ Set these in a `.env` file locally or in the Netlify dashboard for production:
 | `VITE_SUPABASE_SERVICE_ROLE_KEY` | Supabase service role key (secret) | Netlify Functions only |
 | `VITE_ANTHROPIC_API_KEY` | Anthropic API key for chatbot | `chat-function.ts` |
 | `VITE_GOOGLE_CAL` | Google Calendar embed URL | Events page |
+| `VITE_GOOGLE_CAL_API_KEY` | Google Cloud API key with Calendar API enabled (secret) | `list-events.ts` |
+| `VITE_GOOGLE_CAL_ID` | Google Calendar ID (e.g. `xxxx@group.calendar.google.com`) | `list-events.ts` |
+| `RESEND_API_KEY` | Resend API key for contact-form emails (secret) | `submit-contact.ts` |
+| `CONTACT_EMAIL_TO` | Address that receives contact-form submissions | `submit-contact.ts` |
+| `CONTACT_EMAIL_FROM` | Optional verified Resend sender (defaults to `onboarding@resend.dev`) | `submit-contact.ts` |
 
 > **Note:** `VITE_SUPABASE_SERVICE_ROLE_KEY` and `VITE_ANTHROPIC_API_KEY` are server-side secrets — they are only accessed in Netlify Functions via `process.env`, never exposed to the browser.
 
@@ -159,7 +164,7 @@ Routes are defined in `app/routes.ts` using React Router v7's file-based routing
 | `/past-masters` | Past Masters | Historical past masters listing |
 | `/photos` | Photo Gallery | Masonry-layout gallery with year/event grouping |
 | `/events` | Events | Embedded Google Calendar |
-| `/contact` | Contact | Netlify Forms contact form |
+| `/contact` | Contact | Contact form (emails via Resend function) |
 | `/login` | Login | Supabase email/password authentication |
 | `/set-password` | Set Password | Invitation-based account setup |
 
