@@ -13,3 +13,11 @@
 
 [functions]
   directory = "netlify/functions"
+
+# .com is a domain alias for this site (.ca is primary); Netlify's automatic
+# alias redirect hasn't been reliably kicking in, so force it explicitly.
+[[redirects]]
+  from = "https://goodwood159.com/*"
+  to = "https://goodwood159.ca/:splat"
+  status = 301
+  force = true
