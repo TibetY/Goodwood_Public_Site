@@ -84,7 +84,12 @@
         "upcomingTitle": "Upcoming at the Lodge",
         "noUpcoming": "Check back soon for upcoming meetings and events.",
         "viewAllEvents": "View all events →",
-        "photoCaption": "Installation of Officers · 2025"
+        "becomeBand": {
+            "eyebrow": "Freemasonry",
+            "heading": "Interested in becoming a Mason?",
+            "description": "Freemasonry is open to men of good character who wish to grow in knowledge, fellowship, and service. Learn what membership involves at the Grand Lodge of Ontario.",
+            "buttonText": "Become a Mason"
+        }
     },
     "about": {
         "title": "About Goodwood Lodge No. 159",

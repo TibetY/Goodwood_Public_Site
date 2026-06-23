@@ -76,7 +76,12 @@
         "upcomingTitle": "À venir à la loge",
         "noUpcoming": "Revenez bientôt pour les prochaines réunions et événements.",
         "viewAllEvents": "Voir tous les événements →",
-        "photoCaption": "Installation des officiers · 2025"
+        "becomeBand": {
+            "eyebrow": "Franc-Maçonnerie",
+            "heading": "Envie de devenir Franc-Maçon?",
+            "description": "La Franc-Maçonnerie est ouverte aux hommes de bonne moralité qui souhaitent grandir en connaissance, en fraternité et en service. Découvrez ce qu'implique l'adhésion auprès de la Grande Loge de l'Ontario.",
+            "buttonText": "Devenir Franc-Maçon"
+        }
     },
     "about": {
         "title": "À Propos de la Loge Goodwood No. 159",

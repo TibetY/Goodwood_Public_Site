@@ -235,18 +235,63 @@ export default function Home() {
         </Container>
       </Box>
 
-      {/* ===== Photo band ===== */}
-      <Box component="section" sx={{ position: 'relative' }}>
-        <Box component="img" src="images/goodwood/Goodwood_Install_2_2025_DSC_5380.jpg" alt="Brethren of Goodwood Lodge at the 2025 Installation of Officers" sx={{ width: '100%', height: { xs: 280, md: 460 }, objectFit: 'cover', display: 'block' }} />
-        <Typography
+      {/* ===== Become a Mason band ===== */}
+      <Box component="section" sx={{ position: 'relative', overflow: 'hidden' }}>
+        {/* Masonic mosaic-pavement checkerboard (decorative) */}
+        <Box
+          aria-hidden
           sx={{
-            position: 'absolute', left: { xs: 16, md: 32 }, bottom: { xs: 16, md: 24 },
-            fontSize: 12, letterSpacing: '0.12em', textTransform: 'uppercase',
-            color: '#FFFFFF', backgroundColor: 'rgba(20,37,60,0.92)', px: 1.75, py: 1,
+            position: 'absolute', inset: 0,
+            backgroundColor: '#f5f5f5',
+            backgroundImage: `linear-gradient(45deg, #0d0d0d 25%, transparent 25%),
+                              linear-gradient(-45deg, #0d0d0d 25%, transparent 25%),
+                              linear-gradient(45deg, transparent 75%, #0d0d0d 75%),
+                              linear-gradient(-45deg, transparent 75%, #0d0d0d 75%)`,
+            backgroundSize: { xs: '48px 48px', md: '72px 72px' },
+            backgroundPosition: {
+              xs: '0 0, 0 24px, 24px -24px, -24px 0',
+              md: '0 0, 0 36px, 36px -36px, -36px 0',
+            },
           }}
-        >
-          {t('home.photoCaption', 'Installation of Officers · 2025')}
-        </Typography>
+        />
+        {/* Navy fade overlay (decorative) */}
+        <Box
+          aria-hidden
+          sx={{
+            position: 'absolute', inset: 0,
+            background: 'linear-gradient(180deg, rgba(20,37,60,0.86), rgba(20,37,60,0.94))',
+          }}
+        />
+        {/* Content */}
+        <Container maxWidth="md" sx={{ position: 'relative', py: { xs: 8, md: 12 }, textAlign: 'center' }}>
+          <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2.5 }}>
+            <Typography variant="overline" sx={{ color: 'accent.goldOnDark' }}>
+              {t('home.becomeBand.eyebrow', 'Freemasonry')}
+            </Typography>
+            <Typography variant="h2" sx={{ fontSize: { xs: '2rem', md: '2.5rem' }, color: '#FFFFFF' }}>
+              {t('home.becomeBand.heading', 'Interested in becoming a Mason?')}
+            </Typography>
+            <Typography variant="body1" sx={{ color: 'rgba(255,255,255,0.8)', maxWidth: '52ch' }}>
+              {t('home.becomeBand.description', 'Freemasonry is open to men of good character who wish to grow in knowledge, fellowship, and service. Learn what membership involves at the Grand Lodge of Ontario.')}
+            </Typography>
+            <Box sx={{ mt: 0.5 }}>
+              <Button
+                component="a"
+                href="https://ontariomasons.ca/becoming-a-mason/"
+                target="_blank"
+                rel="noopener noreferrer"
+                sx={{
+                  ...PRIMARY_BTN,
+                  backgroundColor: 'accent.goldOnDark',
+                  color: '#14253C',
+                  '&:hover': { backgroundColor: '#E4C574' },
+                }}
+              >
+                {t('home.becomeBand.buttonText', 'Become a Mason')}
+              </Button>
+            </Box>
+          </Box>
+        </Container>
       </Box>
     </>
   );
