@@ -144,6 +144,41 @@ Set these in a `.env` file locally or in the Netlify dashboard for production:
 | `npm run build` | Production build via `react-router build` |
 | `npm run start` | Serve the production build locally |
 | `npm run typecheck` | Generate route types and run TypeScript compiler |
+| `npm test` | Run the Vitest suite once (CI mode) |
+| `npm run test:watch` | Run Vitest in interactive watch mode |
+
+---
+
+## Testing
+
+The project uses [Vitest](https://vitest.dev/) with React Testing Library and
+[vitest-axe](https://github.com/chaance/vitest-axe) for accessibility checks.
+Tests run in a `jsdom` environment and cover three areas:
+
+- **Functional** — user flows such as contact-form validation/submission and
+  mobile-drawer navigation.
+- **Accessibility** — every rendered page/component is asserted to have no
+  `axe` violations via `expect(...).toHaveNoViolations()`.
+- **Responsive behaviour** — `test/utils.tsx` exposes `setViewportWidth()` to
+  drive `useMediaQuery`-based rendering; mobile navigation is covered through
+  the drawer.
+
+Test files live next to the code as `*.test.ts(x)`. Shared helpers are in
+`test/`: `setup.ts` (matchers + jsdom polyfills) and `utils.tsx`
+(`renderWithProviders`, which wraps a component in the same i18n / theme /
+react-query / router providers used in `app/root.tsx`).
+
+```bash
+npm test          # run once
+npm run test:watch
+```
+
+Tests also run automatically on every push and pull request via
+`.github/workflows/test.yml`, acting as a regression guard so new features
+can't silently break existing behaviour.
+
+> Note: `npm run typecheck` currently reports a few pre-existing errors in the
+> portal/photos routes that are unrelated to the test setup.
 
 ---
 
