@@ -112,9 +112,14 @@ export default function Footer() {
             gap: 1,
           }}
         >
-          <Typography sx={{ fontSize: 12.5, color: 'rgba(255,255,255,0.65)' }}>
-            {t('footer.copyright', { year: currentYear })}
-          </Typography>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.25 }}>
+            <Typography sx={{ fontSize: 12.5, color: 'rgba(255,255,255,0.65)' }}>
+              {t('footer.copyright', { year: currentYear })}
+            </Typography>
+            <Typography sx={{ fontSize: 12.5, color: 'rgba(255,255,255,0.5)' }}>
+              {t('footer.builtBy')}
+            </Typography>
+          </Box>
           <Box component={Link} to="/login" sx={{ fontSize: 12.5, color: 'rgba(255,255,255,0.65)', textDecoration: 'none', display: 'flex', alignItems: 'center', minHeight: 44, '&:hover': { color: '#FFFFFF' } }}>
             {t('nav.login')}
           </Box>

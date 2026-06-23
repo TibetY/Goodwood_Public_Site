@@ -2,6 +2,7 @@
   "name": "goodwood-public-site",
   "private": true,
   "type": "module",
+  "author": "Tibet Y",
   "scripts": {
     "build": "react-router build && node scripts/prerender.mjs",
     "prerender": "node scripts/prerender.mjs",

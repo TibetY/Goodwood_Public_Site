@@ -296,6 +296,10 @@ build/
 
 ---
 
+## Credits
+
+Designed and developed by **Tibet Y**.
+
 ## License
 
 Private repository. All rights reserved, Goodwood Lodge No. 159.
