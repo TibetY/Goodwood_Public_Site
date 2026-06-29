@@ -130,8 +130,20 @@ Set these in a `.env` file locally or in the Netlify dashboard for production:
 | `RESEND_API_KEY` | Resend API key for contact-form emails (secret) | `submit-contact.ts` |
 | `CONTACT_EMAIL_TO` | Address that receives contact-form submissions | `submit-contact.ts` |
 | `CONTACT_EMAIL_FROM` | Optional verified Resend sender (defaults to `onboarding@resend.dev`) | `submit-contact.ts` |
+| `VITE_TURNSTILE_SITE_KEY` | Cloudflare Turnstile public site key (anti-spam) | Contact form (client) |
+| `TURNSTILE_SECRET_KEY` | Cloudflare Turnstile secret key (secret) | `submit-contact.ts` |
 
 > **Note:** `VITE_SUPABASE_SERVICE_ROLE_KEY` and `VITE_ANTHROPIC_API_KEY` are server-side secrets — they are only accessed in Netlify Functions via `process.env`, never exposed to the browser.
+
+### Spam protection
+
+The contact form is protected by [Cloudflare Turnstile](https://www.cloudflare.com/products/turnstile/),
+verified server-side in `submit-contact.ts` **before** any email is sent, so bot
+submissions never consume the Resend quota. A hidden honeypot field and a
+submission-timing trap provide additional, zero-friction defense. Protection
+activates once both `VITE_TURNSTILE_SITE_KEY` and `TURNSTILE_SECRET_KEY` are set;
+until then the function logs a warning and skips verification (the form still
+works for local development).
 
 ---
 
