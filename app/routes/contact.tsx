@@ -1,8 +1,22 @@
 import type { Route } from "./+types/contact";
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { Container, Typography, Box, Button, CircularProgress } from '@mui/material';
+
+// Minimal typing for the Cloudflare Turnstile script loaded at runtime.
+interface TurnstileApi {
+    render: (el: HTMLElement, options: Record<string, unknown>) => string;
+    reset: (widgetId?: string) => void;
+    remove: (widgetId?: string) => void;
+}
+declare global {
+    interface Window {
+        turnstile?: TurnstileApi;
+    }
+}
+
+const TURNSTILE_SCRIPT_SRC = 'https://challenges.cloudflare.com/turnstile/v0/api.js';
 
 export function meta({ }: Route.MetaArgs) {
     return [
@@ -86,7 +100,45 @@ export default function Contact() {
         email: '',
         message: ''
     });
-    const [errors, setErrors] = useState({ phone: '', email: '' });
+    const [errors, setErrors] = useState({ phone: '', email: '', captcha: '' });
+
+    // Cloudflare Turnstile (anti-spam). Only active when a site key is
+    // configured — otherwise the widget is skipped so local dev / tests work.
+    const siteKey = import.meta.env.VITE_TURNSTILE_SITE_KEY as string | undefined;
+    const [token, setToken] = useState('');
+    const widgetRef = useRef<HTMLDivElement | null>(null);
+    const widgetIdRef = useRef<string | null>(null);
+    const loadedAtRef = useRef(Date.now());
+
+    useEffect(() => {
+        if (!siteKey) return;
+
+        const renderWidget = () => {
+            if (!window.turnstile || !widgetRef.current || widgetIdRef.current) return;
+            widgetIdRef.current = window.turnstile.render(widgetRef.current, {
+                sitekey: siteKey,
+                callback: (t: string) => setToken(t),
+                'expired-callback': () => setToken(''),
+                'error-callback': () => setToken(''),
+            });
+        };
+
+        if (window.turnstile) {
+            renderWidget();
+            return;
+        }
+
+        let script = document.querySelector<HTMLScriptElement>(`script[src="${TURNSTILE_SCRIPT_SRC}"]`);
+        if (!script) {
+            script = document.createElement('script');
+            script.src = TURNSTILE_SCRIPT_SRC;
+            script.async = true;
+            script.defer = true;
+            document.head.appendChild(script);
+        }
+        script.addEventListener('load', renderWidget);
+        return () => script?.removeEventListener('load', renderWidget);
+    }, [siteKey]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         setFormData({
@@ -104,11 +156,13 @@ export default function Contact() {
 
         const emailValid = EMAIL_PATTERN.test(formData.email.trim());
         const phoneValid = isValidPhone(formData.phone);
+        const captchaValid = !siteKey || Boolean(token);
         setErrors({
             email: emailValid ? '' : t('contact.errors.email', 'Enter a valid email address.'),
             phone: phoneValid ? '' : t('contact.errors.phone', 'Enter a valid 10-digit phone number.'),
+            captcha: captchaValid ? '' : t('contact.errors.captcha', 'Please complete the verification.'),
         });
-        if (!emailValid || !phoneValid) {
+        if (!emailValid || !phoneValid || !captchaValid) {
             return;
         }
 
@@ -121,6 +175,8 @@ export default function Contact() {
                 body: JSON.stringify({
                     ...formData,
                     botField: (e.currentTarget.elements.namedItem('bot-field') as HTMLInputElement | null)?.value || '',
+                    turnstileToken: token,
+                    elapsedMs: Date.now() - loadedAtRef.current,
                 })
             });
             if (!res.ok) {
@@ -129,6 +185,11 @@ export default function Contact() {
             navigate('/thank-you');
         } catch (error) {
             console.error('Error submitting form:', error);
+            // Reset the widget so the single-use token can be re-issued.
+            if (widgetIdRef.current && window.turnstile) {
+                window.turnstile.reset(widgetIdRef.current);
+            }
+            setToken('');
             alert(t('contact.submitError', 'There was an error submitting the form. Please try again.'));
             setSubmitting(false);
         }
@@ -186,6 +247,13 @@ export default function Contact() {
                                     <Typography component="span" sx={fieldLabelSx}>{t('contact.message')} *</Typography>
                                     <Box component="textarea" required name="message" rows={6} value={formData.message} onChange={handleChange} disabled={submitting} placeholder={t('contact.messagePlaceholder', "Tell us a little about yourself and what you'd like to know…")} sx={{ ...inputSx, resize: 'vertical' }} />
                                 </Box>
+
+                                {siteKey && (
+                                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                                        <Box ref={widgetRef} />
+                                        {errors.captcha && <Typography sx={errorTextSx}>{errors.captcha}</Typography>}
+                                    </Box>
+                                )}
 
                                 <Box>
                                     <Button

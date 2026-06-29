@@ -5,9 +5,12 @@ import type { Handler } from '@netlify/functions';
 //   RESEND_API_KEY    — API key from resend.com
 //   CONTACT_EMAIL_TO  — address that receives the submissions
 // Optional:
-//   CONTACT_EMAIL_FROM — verified sender (defaults to onboarding@resend.dev,
-//                        which only delivers to the Resend account owner's
-//                        address until a domain is verified)
+//   CONTACT_EMAIL_FROM   — verified sender (defaults to onboarding@resend.dev,
+//                          which only delivers to the Resend account owner's
+//                          address until a domain is verified)
+//   TURNSTILE_SECRET_KEY — Cloudflare Turnstile secret; when set, submissions
+//                          must carry a valid Turnstile token (anti-spam). When
+//                          unset, verification is skipped (a warning is logged).
 
 interface ContactPayload {
   firstName?: string;
@@ -16,6 +19,39 @@ interface ContactPayload {
   email?: string;
   message?: string;
   botField?: string;
+  turnstileToken?: string;
+  elapsedMs?: number;
+}
+
+// Submissions faster than this are almost certainly automated. Lenient enough
+// that a real person reading and filling the form is never caught.
+const MIN_FILL_MS = 1500;
+
+// Verify a Cloudflare Turnstile token server-side. Returns true when the token
+// is valid, or when no secret is configured (so the form keeps working before
+// the key is set — a warning is logged in that case).
+async function verifyTurnstile(token: string, remoteip?: string): Promise<boolean> {
+  const secret = process.env.TURNSTILE_SECRET_KEY;
+  if (!secret) {
+    console.warn('submit-contact: TURNSTILE_SECRET_KEY is not set — skipping spam verification');
+    return true;
+  }
+  if (!token) return false;
+
+  try {
+    const body = new URLSearchParams({ secret, response: token });
+    if (remoteip) body.set('remoteip', remoteip);
+    const res = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body,
+    });
+    const result = (await res.json()) as { success?: boolean };
+    return result.success === true;
+  } catch (err) {
+    console.error('submit-contact: Turnstile verification request failed', err);
+    return false;
+  }
 }
 
 const escapeHtml = (s: string) =>
@@ -45,6 +81,21 @@ export const handler: Handler = async (event) => {
   // Honeypot — silently accept bot submissions without sending anything.
   if (payload.botField) {
     return { statusCode: 200, headers, body: JSON.stringify({ ok: true }) };
+  }
+
+  // Timing trap — a near-instant submit is a bot. Silently accept (like the
+  // honeypot) so the bot gets no signal, but send no email.
+  if (typeof payload.elapsedMs === 'number' && payload.elapsedMs < MIN_FILL_MS) {
+    return { statusCode: 200, headers, body: JSON.stringify({ ok: true }) };
+  }
+
+  // Cloudflare Turnstile — reject unverified submissions before sending email,
+  // so spam never costs Resend quota.
+  const remoteip =
+    event.headers['x-nf-client-connection-ip'] || event.headers['x-forwarded-for'] || undefined;
+  const humanVerified = await verifyTurnstile((payload.turnstileToken || '').trim(), remoteip);
+  if (!humanVerified) {
+    return { statusCode: 400, headers, body: JSON.stringify({ error: 'Verification failed' }) };
   }
 
   const firstName = (payload.firstName || '').trim();

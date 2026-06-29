@@ -1,7 +1,7 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import userEvent from '@testing-library/user-event';
 import { axe } from 'vitest-axe';
-import { screen, waitFor } from '@testing-library/react';
+import { screen, waitFor, act } from '@testing-library/react';
 import { renderWithProviders, LocationProbe } from '../../test/utils';
 import Contact from './contact';
 
@@ -107,5 +107,71 @@ describe('Contact form', () => {
     });
 
     expect(await screen.findByTestId('location-pathname')).toHaveTextContent('/thank-you');
+  });
+});
+
+describe('Contact form — Turnstile spam gate (site key configured)', () => {
+  let turnstileCallback: ((token: string) => void) | undefined;
+
+  beforeEach(() => {
+    vi.restoreAllMocks();
+    vi.stubEnv('VITE_TURNSTILE_SITE_KEY', 'test-site-key');
+    turnstileCallback = undefined;
+    // Stub the Turnstile script API so the widget "renders" synchronously and
+    // the test can drive its success callback.
+    window.turnstile = {
+      render: (_el: HTMLElement, opts: Record<string, unknown>) => {
+        turnstileCallback = opts.callback as (token: string) => void;
+        return 'widget-test-id';
+      },
+      reset: vi.fn(),
+      remove: vi.fn(),
+    };
+  });
+
+  afterEach(() => {
+    vi.unstubAllEnvs();
+    delete window.turnstile;
+  });
+
+  async function fillValidFields() {
+    await fillField(/first name/i, 'John');
+    await fillField(/last name/i, 'Smith');
+    await fillField(/email/i, 'john@example.com');
+    await fillField(/phone/i, '6135550123');
+    await fillField(/message/i, 'Hello there, I would like to learn more.');
+  }
+
+  it('blocks submission until the captcha is completed', async () => {
+    const fetchSpy = vi.spyOn(global, 'fetch');
+    const user = userEvent.setup();
+    renderWithProviders(<Contact />, { route: '/contact' });
+
+    await fillValidFields();
+    await user.click(screen.getByRole('button', { name: /send/i }));
+
+    expect(await screen.findByText(/complete the verification/i)).toBeInTheDocument();
+    expect(fetchSpy).not.toHaveBeenCalled();
+  });
+
+  it('submits with the turnstile token once the captcha succeeds', async () => {
+    const fetchSpy = vi
+      .spyOn(global, 'fetch')
+      .mockResolvedValue(new Response(JSON.stringify({ ok: true }), { status: 200 }));
+    const user = userEvent.setup();
+    renderWithProviders(<Contact />, { route: '/contact' });
+
+    await fillValidFields();
+
+    // Cloudflare invokes the success callback with a token.
+    expect(turnstileCallback).toBeTypeOf('function');
+    act(() => turnstileCallback!('turnstile-token-abc'));
+
+    await user.click(screen.getByRole('button', { name: /send/i }));
+
+    await waitFor(() => expect(fetchSpy).toHaveBeenCalled());
+    const body = JSON.parse((fetchSpy.mock.calls[0][1] as RequestInit).body as string);
+    expect(body).toMatchObject({ turnstileToken: 'turnstile-token-abc' });
+    expect(typeof body.elapsedMs).toBe('number');
   });
 });
