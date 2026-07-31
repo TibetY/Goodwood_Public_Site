@@ -7,3 +7,6 @@
 /.react-router/
 /build/
 /.netlify/
+
+# Roots stock watcher run state
+scripts/roots-stock-watch/.watch-state.json
