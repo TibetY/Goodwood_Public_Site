@@ -309,6 +309,10 @@
         "payDues": {
             "title": "Pay Dues",
             "description": "Pay your annual lodge dues online"
+        },
+        "eventPayments": {
+            "title": "Event Payments",
+            "description": "Sell tickets and track who paid, how much, and how"
         }
     },
     "manageMembers": {

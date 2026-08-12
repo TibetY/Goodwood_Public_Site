@@ -14,12 +14,13 @@ import PeopleIcon from '@mui/icons-material/People';
 import GroupsIcon from '@mui/icons-material/Groups';
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import PhotoLibraryIcon from '@mui/icons-material/PhotoLibrary';
+import ConfirmationNumberIcon from '@mui/icons-material/ConfirmationNumber';
 import { useAuth } from '../../context/auth-context';
 import { useTranslation } from 'react-i18next';
 
 export default function Portal() {
     const { t } = useTranslation();
-    const { user, loading } = useAuth();
+    const { user, loading, hasRole } = useAuth();
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -66,13 +67,15 @@ export default function Portal() {
             icon: <PhotoLibraryIcon sx={{ fontSize: 60 }} />,
             path: '/portal/photos',
         },
-        // {
-        //     title: t('portal.manageEvents.title'),
-        //     description: t('portal.manageEvents.description'),
-        //     icon: <EventIcon sx={{ fontSize: 60 }} />,
-        //     path: '/portal/events',
-        // }
-
+        // Payment records hold buyer names, emails and amounts, so this tile is
+        // shown only to event admins. The tile being hidden is cosmetic — the
+        // functions behind it check the role server-side too.
+        ...(hasRole('event_admin') ? [{
+            title: t('portal.eventPayments.title'),
+            description: t('portal.eventPayments.description'),
+            icon: <ConfirmationNumberIcon sx={{ fontSize: 60 }} />,
+            path: '/portal/events',
+        }] : []),
     ];
 
     return (

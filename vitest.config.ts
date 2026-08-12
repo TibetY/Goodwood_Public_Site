@@ -14,7 +14,13 @@ export default defineConfig({
     environment: 'jsdom',
     setupFiles: ['./test/setup.ts'],
     css: false,
-    include: ['app/**/*.{test,spec}.{ts,tsx}', 'test/**/*.{test,spec}.{ts,tsx}'],
+    // netlify/** holds the server-side helpers behind the ticketing functions.
+    // Those files run under Node, so they carry `// @vitest-environment node`.
+    include: [
+      'app/**/*.{test,spec}.{ts,tsx}',
+      'test/**/*.{test,spec}.{ts,tsx}',
+      'netlify/**/*.{test,spec}.ts',
+    ],
     // Provide the env vars app/utils/supabase.ts requires at import time so the
     // module doesn't throw when a route pulls it into the test graph.
     env: {

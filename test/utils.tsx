@@ -1,4 +1,5 @@
 import type { ReactElement, ReactNode } from 'react';
+import { vi } from 'vitest';
 import { render, type RenderOptions } from '@testing-library/react';
 import { I18nextProvider } from 'react-i18next';
 import { MemoryRouter, useLocation } from 'react-router';
@@ -39,6 +40,51 @@ export function renderWithProviders(ui: ReactElement, options: ProvidersOptions 
   }
 
   return { queryClient, ...render(ui, { wrapper: Wrapper, ...renderOptions }) };
+}
+
+/**
+ * Build a stub auth context value for portal pages.
+ *
+ * The real AuthProvider talks to Supabase on mount, so portal tests mock the
+ * `useAuth` hook instead of wrapping in a provider:
+ *
+ *   vi.mock('../../context/auth-context', () => ({
+ *     useAuth: () => makeAuth({ roles: ['event_admin'] }),
+ *   }));
+ */
+export function makeAuth(overrides: {
+  roles?: string[];
+  loading?: boolean;
+  signedIn?: boolean;
+} = {}) {
+  const { roles = [], loading = false, signedIn = true } = overrides;
+  return {
+    user: signedIn ? { id: 'test-user', email: 'test@example.com', user_metadata: { display_name: 'Test User' } } : null,
+    session: signedIn ? { access_token: 'test-token' } : null,
+    loading,
+    roles,
+    hasRole: (role: string) => roles.includes(role),
+    signOut: async () => {},
+  };
+}
+
+/**
+ * Route `fetch` by URL substring, for pages that issue more than one request.
+ * Any URL with no entry resolves to `{}` with a 200, so a page that gains an
+ * extra call doesn't silently fail an unrelated assertion.
+ */
+export function mockFetchRoutes(routes: Record<string, unknown>) {
+  return vi.spyOn(global, 'fetch').mockImplementation(((input: RequestInfo | URL) => {
+    const url = typeof input === 'string' ? input : input instanceof URL ? input.href : input.url;
+    const match = Object.keys(routes).find((key) => url.includes(key));
+    const body = match ? routes[match] : {};
+    return Promise.resolve(
+      new Response(JSON.stringify(body), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' },
+      }),
+    );
+  }) as typeof fetch);
 }
 
 /** Renders the current pathname so tests can assert navigation occurred. */
