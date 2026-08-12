@@ -22,6 +22,8 @@ The external-facing website for **Goodwood Lodge No. 159**, A.F. & A.M., Grand L
   - [Photo Gallery](#photo-gallery)
   - [AI Chatbot](#ai-chatbot)
 - [Netlify Functions (API)](#netlify-functions-api)
+- [Roles](#roles)
+- [Event Ticketing & Payments](#event-ticketing--payments)
 - [Deployment](#deployment)
 
 ---
@@ -130,10 +132,18 @@ Set these in a `.env` file locally or in the Netlify dashboard for production:
 | `RESEND_API_KEY` | Resend API key for contact-form emails (secret) | `submit-contact.ts` |
 | `CONTACT_EMAIL_TO` | Address that receives contact-form submissions | `submit-contact.ts` |
 | `CONTACT_EMAIL_FROM` | Optional verified Resend sender (defaults to `onboarding@resend.dev`) | `submit-contact.ts` |
-| `VITE_TURNSTILE_SITE_KEY` | Cloudflare Turnstile public site key (anti-spam) | Contact form (client) |
-| `TURNSTILE_SECRET_KEY` | Cloudflare Turnstile secret key (secret) | `submit-contact.ts` |
+| `VITE_TURNSTILE_SITE_KEY` | Cloudflare Turnstile public site key (anti-spam) | Contact form + ticket purchase (client) |
+| `TURNSTILE_SECRET_KEY` | Cloudflare Turnstile secret key (secret) | `submit-contact.ts`, `create-order.ts` |
+| `STRIPE_SECRET_KEY` | Stripe secret key (secret). **Card payments stay off until this is set.** | `create-order.ts`, `stripe-webhook.ts` |
+| `STRIPE_WEBHOOK_SECRET` | Stripe webhook signing secret (secret) | `stripe-webhook.ts` |
+| `TICKETS_ETRANSFER_EMAIL` | Default e-Transfer address offered to ticket buyers | `admin-upsert-ticketed-event.ts` |
+| `TICKETS_EMAIL_FROM` | Optional verified Resend sender for ticket emails (falls back to `CONTACT_EMAIL_FROM`) | Ticketing functions |
+| `TICKETS_EMAIL_TO` | Optional address notified of new orders (falls back to `CONTACT_EMAIL_TO`) | `create-order.ts` |
+| `PUBLIC_SITE_URL` | Optional site origin for ticket links and Stripe redirects (defaults to Netlify's `URL`) | Ticketing functions |
 
 > **Note:** `VITE_SUPABASE_SERVICE_ROLE_KEY` and `VITE_ANTHROPIC_API_KEY` are server-side secrets — they are only accessed in Netlify Functions via `process.env`, never exposed to the browser.
+
+> **Do not add `STRIPE_SECRET_KEY` to `SECRETS_SCAN_OMIT_KEYS` in `netlify.toml`.** That list is only for `VITE_`-prefixed values that Vite deliberately inlines into the client bundle. Every ticketing secret is server-only and never reaches build output.
 
 ### Spam protection
 
@@ -309,6 +319,121 @@ All functions live in `netlify/functions/` and follow a common pattern: create a
 | `delete-photo` | POST | Yes | Delete photo(s) from the gallery storage bucket |
 | `chat-function` | POST | No | AI chatbot — proxies to Claude API |
 | `keep-alive` | GET | No | Health check / keep-alive ping |
+| `set-member-roles` | POST | `site_admin` | Grant or revoke roles on a member |
+| `list-ticketed-events` | GET | No | Published ticketed events + seats remaining (no buyer data) |
+| `get-ticketed-event` | GET | No | One ticketed event by slug |
+| `create-order` | POST | No | Buy tickets. Turnstile + honeypot + timing trap |
+| `get-order` | GET | Token | Order status by check-in token, for the buyer |
+| `ticket-qr` | GET | Token | PNG QR code for a ticket |
+| `stripe-webhook` | POST | Signature | Authoritative Stripe payment state |
+| `admin-list-ticketed-events` | GET | `event_admin` | All events with sales totals |
+| `admin-upsert-ticketed-event` | POST | `event_admin` | Create or update a ticketed event |
+| `admin-delete-ticketed-event` | DELETE | `event_admin` | Delete an event (refused once it has orders) |
+| `admin-list-orders` | GET | `event_admin` | Orders for one event, with totals by method |
+| `admin-create-order` | POST | `event_admin` | Record a payment taken offline (cash, cheque, stray e-transfer) |
+| `admin-update-order` | POST | `event_admin` | Mark paid, cancel, refund, resend email |
+| `admin-check-in` | POST | `event_admin` | Admit a guest at the door (idempotent) |
+| `admin-export-orders` | GET | `event_admin` | CSV export for the Treasurer |
+| `expire-holds` | Scheduled | — | Hourly: releases lapsed seat holds |
+
+---
+
+## Roles
+
+`profiles.roles` is a `text[]` holding any of two **independent** roles — neither
+implies the other:
+
+| Role | Grants |
+| --- | --- |
+| `site_admin` | Website management, and the only role that can grant or revoke roles |
+| `event_admin` | Ticketed events and payment data (buyer names, emails, amounts) |
+
+Roles are assigned from **Portal → Manage Members → Manage Roles**. Bootstrap the
+first `site_admin` with the SQL at the bottom of `sql/001_roles.sql`.
+
+Client-side checks (`hasRole()` from `auth-context`) only hide controls the user
+cannot use. Authorization is enforced server-side in every function via
+`netlify/shared/auth.ts` — the UI gate is not a security boundary.
+
+> The **pre-existing** portal functions (officers, committees, photos, members)
+> still authorize on "is any authenticated user", which is how they have always
+> worked. Only the ticketing endpoints are role-gated. Tightening the rest is a
+> known follow-up, deliberately kept out of this change.
+
+---
+
+## Event Ticketing & Payments
+
+Lodge events come from Google Calendar and have nowhere to store a price, so a
+*ticketed event* is a separate record in Supabase that may optionally link back
+to a calendar entry via `gcal_event_id` (which adds a **Tickets** button to that
+row on `/events`). Ticketed events also appear in their own band on `/events`,
+so the calendar link is a convenience, not a dependency.
+
+**Money can arrive three ways, and all three land in the same ledger:**
+
+| Method | Flow |
+| --- | --- |
+| Interac e-Transfer | Seat is held (72h by default); buyer is emailed the address and told to put their reference in the memo. An event admin confirms receipt in the portal, which emails the ticket. |
+| Cash at the door | Seat is held until the event. Settled at the door, or recorded directly with **Record Payment**. |
+| Credit/debit card | Stripe hosted Checkout. The webhook — not the success redirect — marks the order paid and emails the ticket. |
+
+E-Transfer reconciliation is irreducibly manual: Interac has no API at this
+scale. The order reference in the memo is the whole matching mechanism, so it is
+generated from an alphabet with no ambiguous characters (no `O`/`0`, `I`/`1`/`L`,
+`U`) and shown in bold everywhere. The tracker also searches on name, email and
+phone for transfers that arrive without a memo.
+
+### Setup
+
+1. Run `sql/001_roles.sql` and `sql/002_ticketing.sql` in the Supabase SQL
+   Editor — see `sql/README.md`.
+2. Grant yourself `site_admin`, then grant `event_admin` to the Secretary or
+   Treasurer.
+3. Create an event under **Portal → Event Payments**, set the price, capacity and
+   e-Transfer address, and publish it.
+
+The lodge can sell tickets and track every payment at this point, with no Stripe
+account. To add card payments later, set `STRIPE_SECRET_KEY` and
+`STRIPE_WEBHOOK_SECRET`, then tick **Card (Stripe)** on the event. Point the
+Stripe webhook at `https://<site>/.netlify/functions/stripe-webhook` subscribed
+to `checkout.session.completed`, `checkout.session.expired`, `charge.refunded`
+and `payment_intent.payment_failed`. Refunds are issued in the Stripe dashboard
+and sync back into the tracker automatically.
+
+Local Stripe testing:
+
+```bash
+stripe listen --forward-to localhost:8888/.netlify/functions/stripe-webhook
+# the local signing secret differs from production
+```
+
+### Check-in
+
+Each paid order gets a QR encoding `/t/<token>` — an opaque random token, not the
+order id, so it carries no personal data and can be reissued. Any phone's camera
+opens it, so the doorkeeper needs no app.
+
+**Portal → Event Payments → Door check-in** loads the attendee list once and
+caches it in `localStorage`, so search and check-in keep working when the signal
+drops; check-ins taken offline are queued and sync automatically. There is a
+print button for when the phone dies.
+
+### Card data
+
+Stripe hosted Checkout is a redirect, so no card details ever touch this site —
+which keeps the lodge at PCI SAQ A, the lightest tier. **Never add a card input
+field to this site**, and do not adopt Stripe Elements without re-reading the
+SAQ A-EP requirements.
+
+### Not handled
+
+- **Tax.** No GST/HST is calculated; prices are tax-inclusive. If the lodge is
+  registered, confirm the treatment before the first sale — retrofitting tax onto
+  issued receipts is unpleasant.
+- **Processing fees.** Stripe's ~2.9% + $0.30 is absorbed, not passed on. The
+  fee and net amount are recorded per order for reconciliation.
+- **Waitlists.** Sold-out events direct buyers to the Secretary.
 
 ---
 
