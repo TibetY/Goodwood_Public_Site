@@ -10,7 +10,7 @@ interface OrderRow {
   quantity: number;
   amount_cents: number;
   refunded_amount_cents: number;
-  payment_method: 'stripe' | 'etransfer' | 'cash';
+  payment_method: 'zeffy' | 'etransfer' | 'cash';
   payment_status: string;
   hold_expires_at: string | null;
   checked_in_at: string | null;
@@ -58,10 +58,10 @@ export const handler: Handler = async (event: HandlerEvent) => {
     outstandingCents: 0,
     refundedCents: 0,
     byMethod: {
-      stripe: { orders: 0, seats: 0, paidCents: 0, outstandingCents: 0 },
+      zeffy: { orders: 0, seats: 0, paidCents: 0, outstandingCents: 0 },
       etransfer: { orders: 0, seats: 0, paidCents: 0, outstandingCents: 0 },
       cash: { orders: 0, seats: 0, paidCents: 0, outstandingCents: 0 },
-    } as Record<'stripe' | 'etransfer' | 'cash', { orders: number; seats: number; paidCents: number; outstandingCents: number }>,
+    } as Record<'zeffy' | 'etransfer' | 'cash', { orders: number; seats: number; paidCents: number; outstandingCents: number }>,
   };
 
   for (const o of rows) {

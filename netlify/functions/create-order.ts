@@ -2,16 +2,15 @@ import type { Handler, HandlerEvent } from '@netlify/functions';
 import { getServiceClient } from '../shared/supabase';
 import { badRequest, json, methodNotAllowed, notFound, ok, parseBody, serverError } from '../shared/http';
 import { clientIp, looksAutomated, verifyTurnstile } from '../shared/spam';
-import { holdMinutes, isValidEmail, makeReference, mapOrderRpcError, siteUrl } from '../shared/orders';
+import { holdMinutes, isValidEmail, makeReference, mapOrderRpcError } from '../shared/orders';
 import { notifyLodge, sendOrderEmail, type OrderRecord, type TicketedEventRecord } from '../shared/tickets';
-import { createCheckoutSession, isStripeConfigured } from '../shared/stripe';
 
 // The single public write path on the ticketing system, and the only place a
 // member of the public can create a row in event_orders.
 //
-// PCI NOTE: card details never touch this origin. Stripe hosted Checkout is a
-// redirect, which keeps the lodge at SAQ A — the lightest self-assessment tier.
-// Do not add a card input field to this site.
+// PCI NOTE: card details never touch this origin. Zeffy hosts the payment form
+// and we only ever link to it, which keeps the lodge at SAQ A — the lightest
+// self-assessment tier. Do not add a card input field to this site.
 
 interface Payload {
   eventId?: string;
@@ -20,7 +19,7 @@ interface Payload {
   buyerEmail?: string;
   buyerPhone?: string;
   notes?: string;
-  paymentMethod?: 'stripe' | 'etransfer' | 'cash';
+  paymentMethod?: 'zeffy' | 'etransfer' | 'cash';
   botField?: string;
   turnstileToken?: string;
   elapsedMs?: number;
@@ -55,11 +54,8 @@ export const handler: Handler = async (event: HandlerEvent) => {
     return badRequest('Please choose a valid number of tickets');
   }
   if (notes.length > 1000) return badRequest('That note is too long');
-  if (!method || !['stripe', 'etransfer', 'cash'].includes(method)) {
+  if (!method || !['zeffy', 'etransfer', 'cash'].includes(method)) {
     return badRequest('Please choose how you would like to pay');
-  }
-  if (method === 'stripe' && !isStripeConfigured()) {
-    return json(409, { error: 'Card payment is not available yet', code: 'methodUnavailable' });
   }
 
   const supabase = getServiceClient();
@@ -71,6 +67,10 @@ export const handler: Handler = async (event: HandlerEvent) => {
     .single();
 
   if (eventError || !ticketedEvent) return notFound('Event not found');
+
+  if (method === 'zeffy' && !ticketedEvent.zeffy_form_url) {
+    return json(409, { error: 'Card payment is not available for this event', code: 'methodUnavailable' });
+  }
 
   // Price, capacity and the sales window are all validated inside the RPC, under
   // a row lock — never here, and never from the request body.
@@ -107,37 +107,31 @@ export const handler: Handler = async (event: HandlerEvent) => {
   const order = created as OrderRecord;
   const eventRecord = ticketedEvent as TicketedEventRecord;
 
-  // ── Card: hand off to Stripe ──────────────────────────────────────────────
-  if (method === 'stripe') {
-    try {
-      const session = await createCheckoutSession({
-        orderId: order.id,
-        reference: order.reference,
-        buyerEmail: order.buyer_email,
-        quantity: order.quantity,
-        unitPriceCents: (order as any).unit_price_cents,
-        eventId: eventRecord.id,
-        eventTitle: eventRecord.title,
-        eventLocation: eventRecord.location,
-        successUrl: `${siteUrl()}/tickets/confirmation?t=${order.checkin_token}`,
-        cancelUrl: `${siteUrl()}/events/${eventRecord.slug}/tickets?cancelled=1`,
-      });
+  // ── Card: hand off to the lodge's hosted Zeffy form ───────────────────────
+  //
+  // Zeffy's API is read-only, so there is no session to create — we hold the
+  // seat, send the buyer to Zeffy, and reconcile afterwards from the webhook
+  // and the hourly sync (netlify/shared/reconcile.ts).
+  //
+  // The buyer's email is prefilled where Zeffy accepts it, because payer email
+  // is the primary key the matcher uses to attribute the payment back to this
+  // order.
+  if (method === 'zeffy') {
+    const url = new URL((ticketedEvent as any).zeffy_form_url);
+    url.searchParams.set('email', order.buyer_email);
+    if (order.buyer_name) url.searchParams.set('name', order.buyer_name);
 
-      await supabase
-        .from('event_orders')
-        .update({ stripe_session_id: session.id })
-        .eq('id', order.id);
+    await supabase.from('event_order_audit').insert({
+      order_id: order.id,
+      kind: 'note',
+      detail: 'Sent to Zeffy to pay by card',
+    });
 
-      return ok({ checkoutUrl: session.url, reference: order.reference, token: order.checkin_token });
-    } catch (err) {
-      console.error('create-order: Stripe session creation failed', err);
-      // Release the seat rather than leaving a phantom hold behind.
-      await supabase
-        .from('event_orders')
-        .update({ payment_status: 'cancelled', hold_expires_at: null })
-        .eq('id', order.id);
-      return serverError('Could not start the card payment. Please try again or choose another method.');
-    }
+    return ok({
+      checkoutUrl: url.toString(),
+      reference: order.reference,
+      token: order.checkin_token,
+    });
   }
 
   // ── E-transfer / cash: reserve the seat and tell the buyer what to do ──────

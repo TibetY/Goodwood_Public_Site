@@ -14,7 +14,8 @@ function makeEvent(overrides: Partial<TicketedEvent> = {}): TicketedEvent {
         starts_at: '2026-02-14T23:30:00.000Z', ends_at: null, gcal_event_id: null,
         price_cents: 4500, currency: 'cad', capacity: null, max_per_order: 10,
         sales_open_at: null, sales_close_at: null,
-        allow_stripe: false, allow_etransfer: true, allow_cash: true,
+        allow_zeffy: false, zeffy_form_url: null, zeffy_campaign_id: null,
+        allow_etransfer: true, allow_cash: true,
         etransfer_email: null, etransfer_instructions: '', etransfer_hold_hours: 72,
         refund_policy: '', published: true,
         ...overrides,
@@ -102,7 +103,7 @@ describe('isOnSale', () => {
 
 describe('availableMethods', () => {
     it('lists only the methods the event permits, card first', () => {
-        expect(availableMethods(makeEvent({ allow_stripe: true }))).toEqual(['stripe', 'etransfer', 'cash']);
+        expect(availableMethods(makeEvent({ allow_zeffy: true }))).toEqual(['zeffy', 'etransfer', 'cash']);
         expect(availableMethods(makeEvent({ allow_cash: false }))).toEqual(['etransfer']);
     });
 

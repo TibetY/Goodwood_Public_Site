@@ -16,7 +16,7 @@ interface Payload {
   orderId?: string;
   action?: Action;
   paymentReference?: string;
-  paymentMethod?: 'stripe' | 'etransfer' | 'cash';
+  paymentMethod?: 'zeffy' | 'etransfer' | 'cash';
   notes?: string;
   refundedAmountCents?: number;
   sendEmail?: boolean;
@@ -139,7 +139,7 @@ export const handler: Handler = async (event: HandlerEvent) => {
         console.error('admin-update-order: refund failed', error);
         return serverError(error.message);
       }
-      // Card refunds are issued in the Stripe dashboard, where the money
+      // Card refunds are issued in the Zeffy dashboard, where the money
       // actually is; this only records that it happened.
       await audit('refunded', `${(amount / 100).toFixed(2)} recorded by ${auth.user.email}`);
       return ok({ order: updated });

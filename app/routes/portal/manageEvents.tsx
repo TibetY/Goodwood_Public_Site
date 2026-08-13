@@ -41,7 +41,9 @@ interface FormState {
     etransfer_instructions: string;
     etransfer_hold_hours: string;
     refund_policy: string;
-    allow_stripe: boolean;
+    allow_zeffy: boolean;
+    zeffy_form_url: string;
+    zeffy_campaign_id: string;
     allow_etransfer: boolean;
     allow_cash: boolean;
     published: boolean;
@@ -52,7 +54,8 @@ const EMPTY_FORM: FormState = {
     priceDollars: '', capacity: '', max_per_order: '10', sales_close_at: '',
     gcal_event_id: '', etransfer_email: '', etransfer_instructions: '',
     etransfer_hold_hours: '72', refund_policy: '',
-    allow_stripe: false, allow_etransfer: true, allow_cash: true, published: false,
+    zeffy_form_url: '', zeffy_campaign_id: '',
+    allow_zeffy: false, allow_etransfer: true, allow_cash: true, published: false,
 };
 
 export default function ManageEvents() {
@@ -109,7 +112,9 @@ export default function ManageEvents() {
                     etransfer_instructions: state.etransfer_instructions,
                     etransfer_hold_hours: Number(state.etransfer_hold_hours || 72),
                     refund_policy: state.refund_policy,
-                    allow_stripe: state.allow_stripe,
+                    allow_zeffy: state.allow_zeffy,
+                    zeffy_form_url: state.zeffy_form_url,
+                    zeffy_campaign_id: state.zeffy_campaign_id,
                     allow_etransfer: state.allow_etransfer,
                     allow_cash: state.allow_cash,
                     published: state.published,
@@ -167,7 +172,9 @@ export default function ManageEvents() {
             etransfer_instructions: ev.etransfer_instructions || '',
             etransfer_hold_hours: String(ev.etransfer_hold_hours ?? 72),
             refund_policy: ev.refund_policy || '',
-            allow_stripe: ev.allow_stripe,
+            allow_zeffy: ev.allow_zeffy,
+            zeffy_form_url: ev.zeffy_form_url || '',
+            zeffy_campaign_id: ev.zeffy_campaign_id || '',
             allow_etransfer: ev.allow_etransfer,
             allow_cash: ev.allow_cash,
             published: ev.published,
@@ -375,8 +382,8 @@ export default function ManageEvents() {
                         </Grid>
                         <Grid size={{ xs: 12, sm: 4 }}>
                             <FormControlLabel
-                                control={<Checkbox checked={form.allow_stripe} onChange={(e) => set('allow_stripe', e.target.checked)} />}
-                                label="Card (Stripe)" />
+                                control={<Checkbox checked={form.allow_zeffy} onChange={(e) => set('allow_zeffy', e.target.checked)} />}
+                                label="Card (Zeffy)" />
                         </Grid>
                         <Grid size={{ xs: 12, sm: 4 }}>
                             <FormControlLabel
@@ -388,13 +395,27 @@ export default function ManageEvents() {
                                 control={<Checkbox checked={form.allow_cash} onChange={(e) => set('allow_cash', e.target.checked)} />}
                                 label="Cash at the door" />
                         </Grid>
-                        {form.allow_stripe && (
-                            <Grid size={12}>
-                                <Alert severity="info" sx={{ mt: -1 }}>
-                                    Card payments only appear on the website once STRIPE_SECRET_KEY is set in
-                                    Netlify. Until then this checkbox has no visible effect.
-                                </Alert>
-                            </Grid>
+                        {form.allow_zeffy && (
+                            <>
+                                <Grid size={12}>
+                                    <Alert severity={form.zeffy_form_url ? 'info' : 'warning'} sx={{ mt: -1 }}>
+                                        {form.zeffy_form_url
+                                            ? 'Buyers who choose card are sent to this Zeffy form. Payments are matched back to orders by payer email, so ask buyers to use the same address on both.'
+                                            : 'Add the Zeffy form link below — without it the card option stays hidden, because there would be nowhere to send buyers.'}
+                                    </Alert>
+                                </Grid>
+                                <Grid size={{ xs: 12, sm: 7 }}>
+                                    <TextField fullWidth label="Zeffy form link" value={form.zeffy_form_url}
+                                        onChange={(e) => set('zeffy_form_url', e.target.value)} margin="dense"
+                                        placeholder="https://www.zeffy.com/ticketing/..."
+                                        helperText="Copy the campaign link from your Zeffy dashboard" />
+                                </Grid>
+                                <Grid size={{ xs: 12, sm: 5 }}>
+                                    <TextField fullWidth label="Zeffy campaign ID" value={form.zeffy_campaign_id}
+                                        onChange={(e) => set('zeffy_campaign_id', e.target.value)} margin="dense"
+                                        helperText="Needed for automatic matching" />
+                                </Grid>
+                            </>
                         )}
 
                         <Grid size={{ xs: 12, sm: 6 }}>

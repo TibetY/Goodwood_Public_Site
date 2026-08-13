@@ -52,13 +52,11 @@ export const handler: Handler = async (event) => {
     }
   }
 
-  const stripeLive = Boolean(process.env.STRIPE_SECRET_KEY);
-
   const payload = (events || []).map((e) => ({
     ...e,
-    // Never advertise card payment when the key is absent — the buyer would hit
-    // a dead end at checkout.
-    allow_stripe: e.allow_stripe && stripeLive,
+    // Never advertise card payment without a Zeffy form to send the buyer to —
+    // they would otherwise hit a dead end at checkout.
+    allow_zeffy: e.allow_zeffy && Boolean(e.zeffy_form_url),
     seats_remaining: e.capacity === null ? null : Math.max(0, e.capacity - (seatsByEvent.get(e.id) || 0)),
   }));
 

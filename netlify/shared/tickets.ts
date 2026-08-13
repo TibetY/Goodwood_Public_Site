@@ -23,7 +23,7 @@ export interface OrderRecord {
   buyer_email: string;
   quantity: number;
   amount_cents: number;
-  payment_method: 'stripe' | 'etransfer' | 'cash';
+  payment_method: 'zeffy' | 'etransfer' | 'cash';
   payment_status: string;
   checkin_token: string;
   hold_expires_at: string | null;
@@ -53,7 +53,7 @@ const formatWhen = (iso: string) =>
   });
 
 const METHOD_LABELS: Record<OrderRecord['payment_method'], string> = {
-  stripe: 'Credit/debit card',
+  zeffy: 'Credit/debit card (Zeffy)',
   etransfer: 'Interac e-Transfer',
   cash: 'Cash at the door',
 };

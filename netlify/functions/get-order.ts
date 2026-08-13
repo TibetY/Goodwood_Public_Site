@@ -1,13 +1,14 @@
 import type { Handler } from '@netlify/functions';
 import { getServiceClient } from '../shared/supabase';
 import { badRequest, methodNotAllowed, notFound, ok, serverError } from '../shared/http';
-import { getStripe, isStripeConfigured } from '../shared/stripe';
+import { confirmPayment, isZeffyConfigured } from '../shared/zeffy';
+import { reconcilePayment } from '../shared/reconcile';
 
 // Token-gated order lookup, used by the confirmation page and the ticket page.
 //
 // Returns a NARROW projection: enough for the buyer to see their own order, and
-// nothing else. No Stripe ids, no internal ids, no other buyer's data. Unknown
-// tokens always 404, with no distinction between "wrong" and "missing".
+// nothing else. No payment-provider ids, no internal ids, no other buyer's data.
+// Unknown tokens always 404, with no distinction between "wrong" and "missing".
 
 export const handler: Handler = async (event) => {
   if (event.httpMethod !== 'GET') return methodNotAllowed();
@@ -35,31 +36,41 @@ export const handler: Handler = async (event) => {
     .eq('id', order.event_id)
     .single();
 
-  // Reconciliation safety net: if a card order is still pending shortly after
-  // creation, ask Stripe directly. mark_order_paid is idempotent, so this is
-  // free — and it means a misconfigured webhook degrades to "a bit slower"
-  // rather than "silently broken".
+  // Reconciliation safety net: a card buyer often lands back here seconds after
+  // paying, before the webhook or the hourly sync has attributed the payment. If
+  // a payment is already recorded against this order's email, reconcile it now
+  // so the page can show "paid" instead of leaving them wondering.
   let current = order;
   if (
     current.payment_status === 'pending' &&
-    current.payment_method === 'stripe' &&
-    current.stripe_session_id &&
-    isStripeConfigured() &&
-    Date.now() - new Date(current.created_at).getTime() > 10_000
+    current.payment_method === 'zeffy' &&
+    isZeffyConfigured() &&
+    Date.now() - new Date(current.created_at).getTime() > 5_000
   ) {
     try {
-      const session = await getStripe().checkout.sessions.retrieve(current.stripe_session_id);
-      if (session.payment_status === 'paid') {
-        const { data: updated } = await supabase.rpc('mark_order_paid', {
-          p_order_id: current.id,
-          p_actor: null,
-          p_reference: '',
-          p_detail: 'Reconciled from Stripe on order lookup',
-        });
-        if (updated) current = updated;
+      const { data: candidate } = await supabase
+        .from('zeffy_payments')
+        .select('id')
+        .is('order_id', null)
+        .eq('ignored', false)
+        .ilike('payer_email', current.buyer_email)
+        .order('received_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      if (candidate?.id) {
+        const payment = await confirmPayment(candidate.id);
+        if (payment) {
+          const outcome = await reconcilePayment(supabase, payment, 'sync');
+          if (outcome.matched && outcome.orderId === current.id) {
+            const { data: refreshed } = await supabase
+              .from('event_orders').select('*').eq('id', current.id).single();
+            if (refreshed) current = refreshed;
+          }
+        }
       }
     } catch (err) {
-      console.error('get-order: Stripe reconciliation failed', err);
+      console.error('get-order: Zeffy reconciliation failed', err);
     }
   }
 

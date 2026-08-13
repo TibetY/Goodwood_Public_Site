@@ -41,7 +41,7 @@ const EMAIL_PATTERN =
     /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+$/;
 
 const METHOD_COPY: Record<PaymentMethod, { label: string; hint: string }> = {
-    stripe: { label: 'Credit / debit card', hint: 'Pay now on a secure Stripe page. Your ticket arrives by email straight away.' },
+    zeffy: { label: 'Credit / debit card', hint: 'Pay now on the lodge’s secure Zeffy page. Your ticket is emailed once the payment clears — usually within a minute.' },
     etransfer: { label: 'Interac e-Transfer', hint: 'We hold your seat and email you where to send it. Your ticket arrives once we confirm receipt.' },
     cash: { label: 'Cash at the door', hint: 'We hold your seat. Bring cash on the night and we will check you in.' },
 };
@@ -104,7 +104,7 @@ export default function BuyTickets() {
             const data = await res.json();
             if (!res.ok) throw new Error(data.error || 'Something went wrong. Please try again.');
 
-            // Card: hand off to Stripe's hosted page. Everything else: confirmation.
+            // Card: hand off to Zeffy's hosted form. Everything else: confirmation.
             if (data.checkoutUrl) {
                 window.location.href = data.checkoutUrl;
                 return;
@@ -309,7 +309,7 @@ export default function BuyTickets() {
                                 '&:hover': { backgroundColor: 'primary.main' },
                             }}
                         >
-                            {submitting ? 'Please wait…' : method === 'stripe' ? 'Continue to payment' : 'Reserve tickets'}
+                            {submitting ? 'Please wait…' : method === 'zeffy' ? 'Continue to payment' : 'Reserve tickets'}
                         </Button>
 
                         <Typography sx={{ fontSize: 13, color: 'section.subtle', mt: 2, lineHeight: 1.6 }}>

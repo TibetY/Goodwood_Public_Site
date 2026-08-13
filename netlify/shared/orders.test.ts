@@ -78,9 +78,10 @@ describe('mapOrderRpcError', () => {
 describe('holdMinutes', () => {
     const starts = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
 
-    it('holds a card order for exactly the Stripe session lifetime', () => {
-        // Longer than 30 minutes would hold a seat past the session that can claim it.
-        expect(holdMinutes('stripe', { starts_at: starts })).toBe(30);
+    it('holds a card order long enough to finish the Zeffy form', () => {
+        // Zeffy gives us no session to expire, so this hold is the only thing
+        // that frees the seat after an abandoned checkout.
+        expect(holdMinutes('zeffy', { starts_at: starts })).toBe(45);
     });
 
     it('uses the event’s configured e-transfer window', () => {

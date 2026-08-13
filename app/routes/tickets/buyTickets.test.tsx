@@ -17,7 +17,8 @@ function makeEvent(overrides: Partial<TicketedEvent> = {}): TicketedEvent {
         location: 'Lodge Hall', starts_at: new Date(Date.now() + 7 * 864e5).toISOString(), ends_at: null,
         gcal_event_id: null, price_cents: 4500, currency: 'cad', capacity: null, max_per_order: 10,
         sales_open_at: null, sales_close_at: null,
-        allow_stripe: false, allow_etransfer: true, allow_cash: true,
+        allow_zeffy: false, zeffy_form_url: null, zeffy_campaign_id: null,
+        allow_etransfer: true, allow_cash: true,
         etransfer_email: 'treasurer@goodwood159.ca', etransfer_instructions: '', etransfer_hold_hours: 72,
         refund_policy: '', published: true, seats_remaining: null,
         ...overrides,
@@ -42,14 +43,14 @@ describe('Buy tickets page', () => {
     });
 
     it('hides the card option when the event does not allow it', async () => {
-        renderPage(makeEvent({ allow_stripe: false }));
+        renderPage(makeEvent({ allow_zeffy: false }));
 
         await screen.findByText('Burns Night Dinner');
         expect(screen.queryByRole('button', { name: /Credit \/ debit card/i })).not.toBeInTheDocument();
     });
 
     it('offers the card option when the event allows it', async () => {
-        renderPage(makeEvent({ allow_stripe: true }));
+        renderPage(makeEvent({ allow_zeffy: true, zeffy_form_url: 'https://www.zeffy.com/ticketing/burns-night' }));
 
         expect(await screen.findByRole('button', { name: /Credit \/ debit card/i })).toBeInTheDocument();
     });

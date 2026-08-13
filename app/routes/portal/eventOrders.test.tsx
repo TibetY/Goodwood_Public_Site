@@ -25,7 +25,8 @@ const event: TicketedEvent = {
     starts_at: '2026-02-14T23:30:00.000Z', ends_at: null, gcal_event_id: null,
     price_cents: 4500, currency: 'cad', capacity: 60, max_per_order: 10,
     sales_open_at: null, sales_close_at: null,
-    allow_stripe: false, allow_etransfer: true, allow_cash: true,
+    allow_zeffy: false, zeffy_form_url: null, zeffy_campaign_id: null,
+    allow_etransfer: true, allow_cash: true,
     etransfer_email: null, etransfer_instructions: '', etransfer_hold_hours: 72,
     refund_policy: '', published: true,
 };
@@ -47,7 +48,7 @@ const summary: OrderSummary = {
     orderCount: 2, seatsTaken: 4, seatsPaid: 2, checkedIn: 0,
     paidCents: 9000, outstandingCents: 9000, refundedCents: 0,
     byMethod: {
-        stripe: { orders: 0, seats: 0, paidCents: 0, outstandingCents: 0 },
+        zeffy: { orders: 0, seats: 0, paidCents: 0, outstandingCents: 0 },
         etransfer: { orders: 1, seats: 2, paidCents: 0, outstandingCents: 9000 },
         cash: { orders: 1, seats: 2, paidCents: 9000, outstandingCents: 0 },
     },

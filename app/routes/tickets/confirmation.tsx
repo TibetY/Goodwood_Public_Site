@@ -7,10 +7,13 @@ import { fetchOrder, formatMoney, formatEventDate } from '../../utils/tickets';
 
 // Shown straight after a purchase.
 //
-// For a card payment this page is reached by Stripe's success redirect, which
-// can land BEFORE the webhook that actually marks the order paid. So while the
-// order is still pending we say "confirming your payment" and keep polling —
-// never "payment failed", which would be both wrong and alarming.
+// A card buyer arrives here from Zeffy's hosted form, usually before the payment
+// has been reconciled back to their order. So while the order is still pending we
+// say "confirming your payment" and keep polling — never "payment failed", which
+// would be both wrong and alarming. Zeffy is also slower to reconcile than a
+// Stripe-style webhook, since attribution is by payer email rather than a shared
+// session id, so the copy sets the expectation that the email may arrive shortly
+// after they leave the page.
 
 const MAX_POLLS = 15;
 
@@ -27,7 +30,7 @@ export default function TicketConfirmation() {
             const status = query.state.data?.order.payment_status;
             const method = query.state.data?.order.payment_method;
             // Only a card payment is expected to flip status on its own.
-            if (status === 'pending' && method === 'stripe' && query.state.dataUpdateCount < MAX_POLLS) {
+            if (status === 'pending' && method === 'zeffy' && query.state.dataUpdateCount < MAX_POLLS) {
                 return 2000;
             }
             return false;
@@ -62,7 +65,7 @@ export default function TicketConfirmation() {
 
     const { order, event } = data;
     const isPaid = order.payment_status === 'paid';
-    const isCard = order.payment_method === 'stripe';
+    const isCard = order.payment_method === 'zeffy';
     const stillConfirming = !isPaid && isCard && failureCount === 0;
 
     return (
@@ -76,8 +79,9 @@ export default function TicketConfirmation() {
 
             {stillConfirming && (
                 <Alert severity="info" icon={<CircularProgress size={18} />} sx={{ mb: 3 }}>
-                    We’re confirming your payment with our processor. This usually takes a few seconds —
-                    you can safely leave this page, your confirmation email is on its way.
+                    We’re confirming your payment with Zeffy. You can safely leave this page — your
+                    ticket will be emailed to you as soon as it clears, usually within a minute. Keep
+                    your reference below in case you need to ask us about it.
                 </Alert>
             )}
 

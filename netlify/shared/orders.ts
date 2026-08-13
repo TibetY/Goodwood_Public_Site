@@ -51,7 +51,7 @@ export function mapOrderRpcError(message: string): { status: number; code: strin
   return { status: 500, code: 'generic', message: 'Could not create the order' };
 }
 
-/** Public site origin, used for links in emails and Stripe redirect URLs. */
+/** Public site origin, used for links in emails and ticket QR codes. */
 export function siteUrl(): string {
   return (
     process.env.PUBLIC_SITE_URL ||
@@ -62,13 +62,14 @@ export function siteUrl(): string {
 
 /** How long a seat is held for an unpaid order, in minutes. */
 export function holdMinutes(
-  method: 'stripe' | 'etransfer' | 'cash',
+  method: 'zeffy' | 'etransfer' | 'cash',
   event: { etransfer_hold_hours?: number | null; starts_at: string },
 ): number {
-  if (method === 'stripe') {
-    // Matches Stripe's minimum Checkout Session lifetime exactly, so a seat is
-    // never held longer than the session that could claim it.
-    return 30;
+  if (method === 'zeffy') {
+    // Long enough for someone to finish Zeffy's hosted form without losing their
+    // seat, short enough that an abandoned checkout frees it quickly. Zeffy
+    // gives us no session to expire, so this is the only release mechanism.
+    return 45;
   }
   if (method === 'etransfer') {
     return (event.etransfer_hold_hours ?? 72) * 60;

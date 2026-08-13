@@ -13,6 +13,9 @@ import PaidIcon from '@mui/icons-material/Paid';
 import EmailIcon from '@mui/icons-material/Email';
 import CancelIcon from '@mui/icons-material/Cancel';
 import QrCodeScannerIcon from '@mui/icons-material/QrCodeScanner';
+import SyncIcon from '@mui/icons-material/Sync';
+import LinkIcon from '@mui/icons-material/Link';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '../../context/auth-context';
 import {
@@ -22,10 +25,20 @@ import {
 } from '../../utils/tickets';
 
 const METHOD_CHIP_COLOR: Record<PaymentMethod, 'primary' | 'warning' | 'success'> = {
-    stripe: 'primary',
+    zeffy: 'primary',
     etransfer: 'warning',
     cash: 'success',
 };
+
+interface ZeffyPaymentRow {
+    id: string;
+    payer_name: string | null;
+    payer_email: string | null;
+    amount_cents: number;
+    status: string | null;
+    paid_at: string | null;
+    received_at: string;
+}
 
 interface OrdersResponse {
     event: TicketedEvent;
@@ -75,6 +88,8 @@ export default function EventOrders() {
     const [payMethod, setPayMethod] = useState<PaymentMethod>('etransfer');
     const [cancelTarget, setCancelTarget] = useState<Order | null>(null);
     const [addOpen, setAddOpen] = useState(false);
+    const [matchTarget, setMatchTarget] = useState<ZeffyPaymentRow | null>(null);
+    const [matchOrderId, setMatchOrderId] = useState('');
     const [addForm, setAddForm] = useState({
         buyerName: '', buyerEmail: '', buyerPhone: '', quantity: '1',
         paymentMethod: 'cash' as PaymentMethod, paymentReference: '', markPaid: true, notes: '',
@@ -158,7 +173,47 @@ export default function EventOrders() {
         onError: (err: any) => setError(err.message),
     });
 
+    // Zeffy hosts its own form, so a card payment does not carry our order
+    // reference. Most are matched automatically on payer email and amount; what
+    // lands here is the remainder that needs a human.
+    const { data: zeffyData } = useQuery<{ payments: ZeffyPaymentRow[]; configured: boolean }>({
+        queryKey: ['zeffy-unmatched'],
+        queryFn: async () => {
+            const res = await fetch('/.netlify/functions/admin-zeffy-payments', {
+                headers: { Authorization: `Bearer ${session?.access_token}` },
+            });
+            if (!res.ok) throw new Error((await res.json()).error || 'Failed to load Zeffy payments');
+            return res.json();
+        },
+        enabled: !!user && !!session && isEventAdmin,
+    });
+
+    const zeffyMutation = useMutation({
+        mutationFn: async (body: Record<string, unknown>) => {
+            const res = await fetch('/.netlify/functions/admin-zeffy-payments', {
+                method: 'POST', headers: authHeaders, body: JSON.stringify(body),
+            });
+            if (!res.ok) throw new Error((await res.json()).error || 'Zeffy action failed');
+            return res.json();
+        },
+        onSuccess: (result, variables) => {
+            queryClient.invalidateQueries({ queryKey: ['zeffy-unmatched'] });
+            queryClient.invalidateQueries({ queryKey: ['event-orders', eventId] });
+            const action = (variables as { action?: string }).action;
+            setSuccess(
+                action === 'refresh'
+                    ? `Checked Zeffy: ${result.seen ?? 0} payment(s) seen, ${result.matched ?? 0} matched`
+                    : action === 'match' ? 'Payment matched and the buyer has been emailed their ticket'
+                    : 'Payment set aside',
+            );
+            setMatchTarget(null);
+            setMatchOrderId('');
+        },
+        onError: (err: any) => { setError(err.message); setMatchTarget(null); },
+    });
+
     const orders = data?.orders ?? [];
+    const unmatchedZeffy = zeffyData?.payments ?? [];
 
     const visibleOrders = useMemo(() => {
         const needle = search.trim().toLowerCase();
@@ -283,12 +338,89 @@ export default function EventOrders() {
                         <SummaryCard
                             label="By method"
                             value={formatMoney(
-                                summary.byMethod.etransfer.paidCents + summary.byMethod.cash.paidCents + summary.byMethod.stripe.paidCents,
+                                summary.byMethod.etransfer.paidCents + summary.byMethod.cash.paidCents + summary.byMethod.zeffy.paidCents,
                             )}
-                            hint={`Card ${formatMoney(summary.byMethod.stripe.paidCents)} · E-T ${formatMoney(summary.byMethod.etransfer.paidCents)} · Cash ${formatMoney(summary.byMethod.cash.paidCents)}`}
+                            hint={`Card ${formatMoney(summary.byMethod.zeffy.paidCents)} · E-T ${formatMoney(summary.byMethod.etransfer.paidCents)} · Cash ${formatMoney(summary.byMethod.cash.paidCents)}`}
                         />
                     </Grid>
                 </Grid>
+            )}
+
+            {/* Unmatched Zeffy payments — money received that we could not attribute */}
+            {(unmatchedZeffy.length > 0 || data?.event.zeffy_campaign_id) && (
+                <Paper
+                    elevation={0}
+                    sx={{
+                        mb: 3, p: 2.5,
+                        backgroundColor: 'section.neutral',
+                        border: (theme) => `1px solid ${theme.palette.section.border}`,
+                    }}
+                >
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flexWrap: 'wrap', mb: unmatchedZeffy.length ? 2 : 0 }}>
+                        <Box sx={{ flex: 1, minWidth: 220 }}>
+                            <Typography sx={{ fontSize: 11, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'accent.gold' }}>
+                                Zeffy payments to reconcile
+                            </Typography>
+                            <Typography sx={{ fontSize: 14, color: 'section.subtle', mt: 0.5 }}>
+                                {unmatchedZeffy.length === 0
+                                    ? 'Everything received from Zeffy has been matched to an order.'
+                                    : 'Card payments we received but could not attribute automatically — usually because the buyer paid with a different email address.'}
+                            </Typography>
+                        </Box>
+                        <Button
+                            startIcon={zeffyMutation.isPending ? <CircularProgress size={16} /> : <SyncIcon />}
+                            disabled={zeffyMutation.isPending}
+                            onClick={() => { setError(null); setSuccess(null); zeffyMutation.mutate({ action: 'refresh', eventId }); }}
+                        >
+                            Check Zeffy now
+                        </Button>
+                    </Box>
+
+                    {unmatchedZeffy.length > 0 && (
+                        <TableContainer>
+                            <Table size="small">
+                                <TableHead>
+                                    <TableRow>
+                                        <TableCell><strong>Received</strong></TableCell>
+                                        <TableCell><strong>Payer</strong></TableCell>
+                                        <TableCell align="right"><strong>Amount</strong></TableCell>
+                                        <TableCell align="right"><strong>Actions</strong></TableCell>
+                                    </TableRow>
+                                </TableHead>
+                                <TableBody>
+                                    {unmatchedZeffy.map((p) => (
+                                        <TableRow key={p.id} hover>
+                                            <TableCell>{new Date(p.received_at).toLocaleDateString('en-CA')}</TableCell>
+                                            <TableCell>
+                                                <Typography variant="body2" sx={{ fontWeight: 600 }}>{p.payer_name || 'Unknown'}</Typography>
+                                                <Typography variant="body2" color="text.secondary">{p.payer_email || '—'}</Typography>
+                                            </TableCell>
+                                            <TableCell align="right">{formatMoney(p.amount_cents)}</TableCell>
+                                            <TableCell align="right" sx={{ whiteSpace: 'nowrap' }}>
+                                                <Tooltip title="Match to an order">
+                                                    <IconButton
+                                                        size="small" color="primary"
+                                                        onClick={() => { setError(null); setSuccess(null); setMatchOrderId(''); setMatchTarget(p); }}
+                                                    >
+                                                        <LinkIcon fontSize="small" />
+                                                    </IconButton>
+                                                </Tooltip>
+                                                <Tooltip title="Not for this event — hide it">
+                                                    <IconButton
+                                                        size="small"
+                                                        onClick={() => zeffyMutation.mutate({ action: 'ignore', paymentId: p.id })}
+                                                    >
+                                                        <VisibilityOffIcon fontSize="small" />
+                                                    </IconButton>
+                                                </Tooltip>
+                                            </TableCell>
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
+                        </TableContainer>
+                    )}
+                </Paper>
             )}
 
             {/* Filters */}
@@ -444,7 +576,7 @@ export default function EventOrders() {
                     >
                         <MenuItem value="etransfer">Interac e-Transfer</MenuItem>
                         <MenuItem value="cash">Cash</MenuItem>
-                        <MenuItem value="stripe">Card</MenuItem>
+                        <MenuItem value="zeffy">Card (Zeffy)</MenuItem>
                     </TextField>
                     <TextField
                         fullWidth margin="dense" label="Payment reference (optional)"
@@ -526,7 +658,7 @@ export default function EventOrders() {
                                 onChange={(e) => setAddForm({ ...addForm, paymentMethod: e.target.value as PaymentMethod })}>
                                 <MenuItem value="cash">Cash</MenuItem>
                                 <MenuItem value="etransfer">Interac e-Transfer</MenuItem>
-                                <MenuItem value="stripe">Card</MenuItem>
+                                <MenuItem value="zeffy">Card (Zeffy)</MenuItem>
                             </TextField>
                         </Grid>
                         <Grid size={{ xs: 12, sm: 6 }}>
@@ -557,6 +689,48 @@ export default function EventOrders() {
                         sx={{ backgroundColor: 'accent.navy', '&:hover': { backgroundColor: 'primary.main' } }}
                     >
                         {addMutation.isPending ? 'Saving...' : 'Record'}
+                    </Button>
+                </DialogActions>
+            </Dialog>
+
+            {/* Match a Zeffy payment to an order */}
+            <Dialog open={Boolean(matchTarget)} onClose={() => !zeffyMutation.isPending && setMatchTarget(null)} maxWidth="sm" fullWidth>
+                <DialogTitle>Match Zeffy payment</DialogTitle>
+                <DialogContent>
+                    <Typography sx={{ mb: 2 }}>
+                        {matchTarget?.payer_name || 'Unknown'} paid {matchTarget && formatMoney(matchTarget.amount_cents)}
+                        {matchTarget?.payer_email ? ` from ${matchTarget.payer_email}` : ''}. Which order is this?
+                    </Typography>
+                    <TextField
+                        select fullWidth margin="dense" label="Order"
+                        value={matchOrderId}
+                        onChange={(e) => setMatchOrderId(e.target.value)}
+                        helperText="Only unpaid orders for this event are listed"
+                    >
+                        {orders
+                            .filter((o) => o.payment_status === 'pending')
+                            .map((o) => (
+                                <MenuItem key={o.id} value={o.id}>
+                                    {o.reference} — {o.buyer_name} — {formatMoney(o.amount_cents)}
+                                </MenuItem>
+                            ))}
+                    </TextField>
+                    <Alert severity="info" sx={{ mt: 2 }}>
+                        This marks the order paid and emails the buyer their ticket and QR code.
+                    </Alert>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setMatchTarget(null)} disabled={zeffyMutation.isPending}>Cancel</Button>
+                    <Button
+                        variant="contained"
+                        disabled={zeffyMutation.isPending || !matchOrderId}
+                        startIcon={zeffyMutation.isPending ? <CircularProgress size={16} /> : <LinkIcon />}
+                        onClick={() => matchTarget && zeffyMutation.mutate({
+                            action: 'match', paymentId: matchTarget.id, orderId: matchOrderId,
+                        })}
+                        sx={{ backgroundColor: 'accent.navy', '&:hover': { backgroundColor: 'primary.main' } }}
+                    >
+                        {zeffyMutation.isPending ? 'Matching...' : 'Match & Mark Paid'}
                     </Button>
                 </DialogActions>
             </Dialog>

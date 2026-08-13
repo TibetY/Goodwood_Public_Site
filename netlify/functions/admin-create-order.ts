@@ -16,7 +16,7 @@ interface Payload {
   buyerPhone?: string;
   notes?: string;
   quantity?: number;
-  paymentMethod?: 'stripe' | 'etransfer' | 'cash';
+  paymentMethod?: 'zeffy' | 'etransfer' | 'cash';
   markPaid?: boolean;
   paymentReference?: string;
   sendEmail?: boolean;
@@ -40,7 +40,7 @@ export const handler: Handler = async (event: HandlerEvent) => {
   if (!buyerName) return badRequest('Buyer name is required');
   if (buyerEmail && !isValidEmail(buyerEmail)) return badRequest('That email address does not look right');
   if (!Number.isFinite(quantity) || quantity < 1) return badRequest('Quantity must be at least 1');
-  if (!['stripe', 'etransfer', 'cash'].includes(method)) return badRequest('Unknown payment method');
+  if (!['zeffy', 'etransfer', 'cash'].includes(method)) return badRequest('Unknown payment method');
 
   const supabase = getServiceClient();
 

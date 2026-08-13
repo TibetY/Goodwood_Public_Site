@@ -134,16 +134,16 @@ Set these in a `.env` file locally or in the Netlify dashboard for production:
 | `CONTACT_EMAIL_FROM` | Optional verified Resend sender (defaults to `onboarding@resend.dev`) | `submit-contact.ts` |
 | `VITE_TURNSTILE_SITE_KEY` | Cloudflare Turnstile public site key (anti-spam) | Contact form + ticket purchase (client) |
 | `TURNSTILE_SECRET_KEY` | Cloudflare Turnstile secret key (secret) | `submit-contact.ts`, `create-order.ts` |
-| `STRIPE_SECRET_KEY` | Stripe secret key (secret). **Card payments stay off until this is set.** | `create-order.ts`, `stripe-webhook.ts` |
-| `STRIPE_WEBHOOK_SECRET` | Stripe webhook signing secret (secret) | `stripe-webhook.ts` |
+| `ZEFFY_API_KEY` | Zeffy API key (secret). Without it payments are recorded but never matched automatically. | `zeffy-webhook.ts`, `sync-zeffy-payments.ts` |
+| `ZEFFY_WEBHOOK_SECRET` | Shared secret you append to the webhook URL as `?key=…` | `zeffy-webhook.ts` |
 | `TICKETS_ETRANSFER_EMAIL` | Default e-Transfer address offered to ticket buyers | `admin-upsert-ticketed-event.ts` |
 | `TICKETS_EMAIL_FROM` | Optional verified Resend sender for ticket emails (falls back to `CONTACT_EMAIL_FROM`) | Ticketing functions |
 | `TICKETS_EMAIL_TO` | Optional address notified of new orders (falls back to `CONTACT_EMAIL_TO`) | `create-order.ts` |
-| `PUBLIC_SITE_URL` | Optional site origin for ticket links and Stripe redirects (defaults to Netlify's `URL`) | Ticketing functions |
+| `PUBLIC_SITE_URL` | Optional site origin for ticket links and QR codes (defaults to Netlify's `URL`) | Ticketing functions |
 
 > **Note:** `VITE_SUPABASE_SERVICE_ROLE_KEY` and `VITE_ANTHROPIC_API_KEY` are server-side secrets — they are only accessed in Netlify Functions via `process.env`, never exposed to the browser.
 
-> **Do not add `STRIPE_SECRET_KEY` to `SECRETS_SCAN_OMIT_KEYS` in `netlify.toml`.** That list is only for `VITE_`-prefixed values that Vite deliberately inlines into the client bundle. Every ticketing secret is server-only and never reaches build output.
+> **Do not add `ZEFFY_API_KEY` to `SECRETS_SCAN_OMIT_KEYS` in `netlify.toml`.** That list is only for `VITE_`-prefixed values that Vite deliberately inlines into the client bundle. Every ticketing secret is server-only and never reaches build output.
 
 ### Spam protection
 
@@ -325,7 +325,9 @@ All functions live in `netlify/functions/` and follow a common pattern: create a
 | `create-order` | POST | No | Buy tickets. Turnstile + honeypot + timing trap |
 | `get-order` | GET | Token | Order status by check-in token, for the buyer |
 | `ticket-qr` | GET | Token | PNG QR code for a ticket |
-| `stripe-webhook` | POST | Signature | Authoritative Stripe payment state |
+| `zeffy-webhook` | POST | URL secret + API re-read | Notification that a Zeffy payment completed |
+| `sync-zeffy-payments` | Scheduled | — | Hourly: pulls recent Zeffy payments and reconciles them |
+| `admin-zeffy-payments` | GET/POST | `event_admin` | Reconcile queue: list, match, ignore, refresh |
 | `admin-list-ticketed-events` | GET | `event_admin` | All events with sales totals |
 | `admin-upsert-ticketed-event` | POST | `event_admin` | Create or update a ticketed event |
 | `admin-delete-ticketed-event` | DELETE | `event_admin` | Delete an event (refused once it has orders) |
@@ -376,7 +378,7 @@ so the calendar link is a convenience, not a dependency.
 | --- | --- |
 | Interac e-Transfer | Seat is held (72h by default); buyer is emailed the address and told to put their reference in the memo. An event admin confirms receipt in the portal, which emails the ticket. |
 | Cash at the door | Seat is held until the event. Settled at the door, or recorded directly with **Record Payment**. |
-| Credit/debit card | Stripe hosted Checkout. The webhook — not the success redirect — marks the order paid and emails the ticket. |
+| Credit/debit card | Handled by [Zeffy](https://www.zeffy.com/) — Canadian, and free for nonprofits. The buyer is sent to the lodge's hosted Zeffy form; the payment is reconciled back to their order automatically. |
 
 E-Transfer reconciliation is irreducibly manual: Interac has no API at this
 scale. The order reference in the memo is the whole matching mechanism, so it is
@@ -384,29 +386,61 @@ generated from an alphabet with no ambiguous characters (no `O`/`0`, `I`/`1`/`L`
 `U`) and shown in bold everywhere. The tracker also searches on name, email and
 phone for transfers that arrive without a memo.
 
+### Why Zeffy, and what that costs us
+
+Zeffy charges nonprofits nothing — no platform, transaction or card fees — where
+a conventional processor takes roughly 2.9% + $0.30 per ticket. It funds itself
+by asking buyers for a voluntary contribution at checkout. Eligibility is broad:
+a registered charity, an incorporated nonprofit, or an unincorporated association
+operating on a non-commercial basis, provided it has a bank account in the
+organisation's name.
+
+The trade-off is that **Zeffy's public API is read-only**. We cannot create a
+checkout session, so Zeffy hosts the payment form and we reconcile afterwards.
+Two consequences shape the design:
+
+- **Payments do not carry our order reference.** Attribution is by payer email
+  plus amount. Most match automatically; the rest land in a reconcile queue in
+  the portal for a one-click manual match. Nothing is ever dropped — an
+  unattributed payment stays visible until someone resolves it.
+- **The webhook is unsigned.** Zeffy documents no signing secret, so the webhook
+  body is untrusted input. `zeffy-webhook.ts` trusts it for exactly one thing —
+  the payment id — then re-reads that payment from the authenticated API before
+  acting on it. A forged request names a payment that does not exist and does
+  nothing. `ZEFFY_WEBHOOK_SECRET` in the URL is a cheap first gate, not the
+  actual control.
+
+Because attribution is heuristic, `sync-zeffy-payments` also polls the API hourly.
+That is what guarantees the lodge eventually sees every payment even if the
+webhook was never configured or silently stopped delivering.
+
 ### Setup
 
-1. Run `sql/001_roles.sql` and `sql/002_ticketing.sql` in the Supabase SQL
-   Editor — see `sql/README.md`.
+1. Run `sql/001_roles.sql`, `sql/002_ticketing.sql` and `sql/003_zeffy.sql` in
+   the Supabase SQL Editor — see `sql/README.md`.
 2. Grant yourself `site_admin`, then grant `event_admin` to the Secretary or
    Treasurer.
 3. Create an event under **Portal → Event Payments**, set the price, capacity and
    e-Transfer address, and publish it.
 
-The lodge can sell tickets and track every payment at this point, with no Stripe
-account. To add card payments later, set `STRIPE_SECRET_KEY` and
-`STRIPE_WEBHOOK_SECRET`, then tick **Card (Stripe)** on the event. Point the
-Stripe webhook at `https://<site>/.netlify/functions/stripe-webhook` subscribed
-to `checkout.session.completed`, `checkout.session.expired`, `charge.refunded`
-and `payment_intent.payment_failed`. Refunds are issued in the Stripe dashboard
-and sync back into the tracker automatically.
+The lodge can sell tickets and track every payment at this point, with no Zeffy
+account at all. To add card payments:
 
-Local Stripe testing:
+1. Register the lodge at [zeffy.com](https://www.zeffy.com/) and create a
+   **ticketing campaign** for the event.
+2. In Zeffy, go to **Settings → Integrations**, copy the API key into
+   `ZEFFY_API_KEY`, and point a webhook at
+   `https://<site>/.netlify/functions/zeffy-webhook?key=<ZEFFY_WEBHOOK_SECRET>`
+   subscribed to `payment.completed`.
+3. Edit the event in the portal, tick **Card (Zeffy)**, and paste in the campaign
+   link and campaign ID.
 
-```bash
-stripe listen --forward-to localhost:8888/.netlify/functions/stripe-webhook
-# the local signing secret differs from production
-```
+Ask buyers to use the same email address on the Zeffy form as on ours — that is
+what lets the payment match itself. The purchase form prefills it, so this only
+matters when someone deliberately changes it.
+
+Refunds are issued in the Zeffy dashboard, where the money actually is, then
+recorded in the tracker with the **Refund** action.
 
 ### Check-in
 
@@ -421,18 +455,19 @@ print button for when the phone dies.
 
 ### Card data
 
-Stripe hosted Checkout is a redirect, so no card details ever touch this site —
-which keeps the lodge at PCI SAQ A, the lightest tier. **Never add a card input
-field to this site**, and do not adopt Stripe Elements without re-reading the
-SAQ A-EP requirements.
+Zeffy hosts the payment form and we only ever link to it, so no card details ever
+touch this site — which keeps the lodge at PCI SAQ A, the lightest tier. **Never
+add a card input field to this site.**
 
 ### Not handled
 
 - **Tax.** No GST/HST is calculated; prices are tax-inclusive. If the lodge is
   registered, confirm the treatment before the first sale — retrofitting tax onto
   issued receipts is unpleasant.
-- **Processing fees.** Stripe's ~2.9% + $0.30 is absorbed, not passed on. The
-  fee and net amount are recorded per order for reconciliation.
+- **Zeffy tips.** A buyer may add a voluntary contribution to Zeffy on top of the
+  ticket price. The tracker matches on "paid at least the ticket price" and
+  records the ticket price as the order amount, so the tip is Zeffy's, not
+  lodge revenue.
 - **Waitlists.** Sold-out events direct buyers to the Secretary.
 
 ---

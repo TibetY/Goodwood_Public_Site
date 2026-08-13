@@ -4,7 +4,7 @@
 // the money and availability rules — the parts a mistake actually costs money —
 // are unit-testable without a network or a database.
 
-export type PaymentMethod = 'stripe' | 'etransfer' | 'cash';
+export type PaymentMethod = 'zeffy' | 'etransfer' | 'cash';
 export type PaymentStatus = 'pending' | 'paid' | 'refunded' | 'cancelled' | 'expired';
 
 export interface TicketedEvent {
@@ -22,7 +22,9 @@ export interface TicketedEvent {
     max_per_order: number;
     sales_open_at: string | null;
     sales_close_at: string | null;
-    allow_stripe: boolean;
+    allow_zeffy: boolean;
+    zeffy_form_url: string | null;
+    zeffy_campaign_id: string | null;
     allow_etransfer: boolean;
     allow_cash: boolean;
     etransfer_email: string | null;
@@ -142,7 +144,7 @@ export function isOnSale(ev: TicketedEvent, now: Date = new Date()): boolean {
 /** Payment methods a buyer may choose for this event, in display order. */
 export function availableMethods(ev: TicketedEvent): PaymentMethod[] {
     const methods: PaymentMethod[] = [];
-    if (ev.allow_stripe) methods.push('stripe');
+    if (ev.allow_zeffy) methods.push('zeffy');
     if (ev.allow_etransfer) methods.push('etransfer');
     if (ev.allow_cash) methods.push('cash');
     return methods;
@@ -156,7 +158,7 @@ export function maxSelectableQuantity(ev: TicketedEvent): number {
 }
 
 export const PAYMENT_METHOD_LABELS: Record<PaymentMethod, string> = {
-    stripe: 'Card',
+    zeffy: 'Card',
     etransfer: 'E-Transfer',
     cash: 'Cash',
 };

@@ -10,7 +10,12 @@ idempotent (`if not exists` / `create or replace`), so re-running one is safe.
 |---|---|
 | `001_roles.sql` | Adds `profiles.roles` and the `site_admin` / `event_admin` role model. |
 | `002_ticketing.sql` | Ticketed events, orders, audit trail, seat accounting, and the order-creation RPC. |
+| `003_zeffy.sql` | Swaps the card provider from Stripe to Zeffy; adds the imported-payments table and the matcher. |
 | `backfill-profiles.sql` (repo root) | Pre-existing one-off backfill of `profiles` from `auth.users`. |
+
+`002` creates Stripe-shaped columns that `003` immediately renames or drops. That
+is deliberate: these files are the migration history, not a schema snapshot. On a
+fresh project just run them in order and the end state is correct.
 
 ## First-time setup
 

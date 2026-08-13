@@ -42,7 +42,7 @@ export const handler: Handler = async (event) => {
   return ok({
     event: {
       ...ticketedEvent,
-      allow_stripe: ticketedEvent.allow_stripe && Boolean(process.env.STRIPE_SECRET_KEY),
+      allow_zeffy: ticketedEvent.allow_zeffy && Boolean(ticketedEvent.zeffy_form_url),
       seats_remaining: seatsRemaining,
     },
   });

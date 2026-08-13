@@ -20,7 +20,9 @@ interface Payload {
   max_per_order?: number;
   sales_open_at?: string | null;
   sales_close_at?: string | null;
-  allow_stripe?: boolean;
+  allow_zeffy?: boolean;
+  zeffy_form_url?: string | null;
+  zeffy_campaign_id?: string | null;
   allow_etransfer?: boolean;
   allow_cash?: boolean;
   etransfer_email?: string | null;
@@ -95,7 +97,9 @@ export const handler: Handler = async (event: HandlerEvent) => {
     max_per_order: maxPerOrder,
     sales_open_at: payload.sales_open_at || null,
     sales_close_at: payload.sales_close_at || null,
-    allow_stripe: Boolean(payload.allow_stripe),
+    allow_zeffy: Boolean(payload.allow_zeffy),
+    zeffy_form_url: payload.zeffy_form_url?.trim() || null,
+    zeffy_campaign_id: payload.zeffy_campaign_id?.trim() || null,
     allow_etransfer: payload.allow_etransfer !== false,
     allow_cash: payload.allow_cash !== false,
     etransfer_email: payload.etransfer_email?.trim() || process.env.TICKETS_ETRANSFER_EMAIL || null,
