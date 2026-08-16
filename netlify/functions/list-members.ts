@@ -83,6 +83,7 @@ export const handler: Handler = async (event: HandlerEvent) => {
         position: profile.position || '',
         dues_paid: profile.dues_paid || false,
         dues_paid_date: profile.dues_paid_date || null,
+        roles: profile.roles || [],
         member_number: profile.member_number || '',
         join_date: profile.join_date || null,
         created_at: profile.created_at,

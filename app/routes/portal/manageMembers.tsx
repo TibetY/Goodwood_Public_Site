@@ -21,14 +21,18 @@ import {
     Alert,
     Chip,
     CircularProgress,
-    Tooltip
+    Tooltip,
+    Checkbox,
+    FormGroup,
+    FormControlLabel
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EmailIcon from '@mui/icons-material/Email';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import LockResetIcon from '@mui/icons-material/LockReset';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import { useAuth } from '../../context/auth-context';
+import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
+import { useAuth, type Role } from '../../context/auth-context';
 import { useTranslation } from 'react-i18next';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
@@ -46,11 +50,25 @@ interface Member {
     created_at: string;
     last_sign_in_at: string | null;
     email_confirmed_at: string | null;
+    roles: Role[];
 }
+
+const ROLE_LABELS: Record<Role, string> = {
+    site_admin: 'Site Admin',
+    event_admin: 'Event Admin',
+};
+
+const ROLE_DESCRIPTIONS: Record<Role, string> = {
+    site_admin: 'Manages the website and is the only role that can grant roles.',
+    event_admin: 'Manages ticketed events and sees who paid, how much, and how.',
+};
+
+const ALL_ROLES = Object.keys(ROLE_LABELS) as Role[];
 
 export default function ManageMembers() {
     const { t } = useTranslation();
-    const { user, loading: authLoading, session } = useAuth();
+    const { user, loading: authLoading, session, hasRole } = useAuth();
+    const isSiteAdmin = hasRole('site_admin');
     const navigate = useNavigate();
     const queryClient = useQueryClient();
     const [error, setError] = useState<string | null>(null);
@@ -65,6 +83,10 @@ export default function ManageMembers() {
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [memberToDelete, setMemberToDelete] = useState<Member | null>(null);
 
+    // Roles dialog state
+    const [rolesDialogMember, setRolesDialogMember] = useState<Member | null>(null);
+    const [draftRoles, setDraftRoles] = useState<Role[]>([]);
+
     useEffect(() => {
         if (!authLoading && !user) {
             navigate('/login');
@@ -72,7 +94,7 @@ export default function ManageMembers() {
     }, [user, authLoading, navigate]);
 
     // React Query: Fetch members
-    const { data: members = [], isLoading: loading } = useQuery({
+    const { data: members = [], isLoading: loading } = useQuery<Member[]>({
         queryKey: ['members'],
         queryFn: async () => {
             const response = await fetch('/.netlify/functions/list-members', {
@@ -145,6 +167,46 @@ export default function ManageMembers() {
             setError(err.message || 'Failed to delete member');
         },
     });
+
+    // React Query: Set roles mutation
+    const rolesMutation = useMutation({
+        mutationFn: async ({ memberId, roles }: { memberId: string; roles: Role[] }) => {
+            const response = await fetch('/.netlify/functions/set-member-roles', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${session?.access_token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ memberId, roles })
+            });
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || 'Failed to update roles');
+            }
+            return response.json();
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['members'] });
+            setSuccess(`Roles updated for ${rolesDialogMember?.display_name || rolesDialogMember?.email}`);
+            setRolesDialogMember(null);
+        },
+        onError: (err: any) => {
+            setError(err.message || 'Failed to update roles');
+        },
+    });
+
+    const openRolesDialog = (member: Member) => {
+        setError(null);
+        setSuccess(null);
+        setDraftRoles(member.roles || []);
+        setRolesDialogMember(member);
+    };
+
+    const toggleDraftRole = (role: Role) => {
+        setDraftRoles((current) =>
+            current.includes(role) ? current.filter((r) => r !== role) : [...current, role],
+        );
+    };
 
     const handleInviteMember = () => {
         if (!newMemberEmail) {
@@ -257,6 +319,7 @@ export default function ManageMembers() {
                             <TableCell><strong>Email</strong></TableCell>
                             <TableCell><strong>Phone</strong></TableCell>
                             <TableCell><strong>Status</strong></TableCell>
+                            <TableCell><strong>Roles</strong></TableCell>
                             <TableCell><strong>Last Sign In</strong></TableCell>
                             <TableCell align="right"><strong>Actions</strong></TableCell>
                         </TableRow>
@@ -264,7 +327,7 @@ export default function ManageMembers() {
                     <TableBody>
                         {members.length === 0 ? (
                             <TableRow>
-                                <TableCell colSpan={6} align="center" sx={{ py: 4 }}>
+                                <TableCell colSpan={7} align="center" sx={{ py: 4 }}>
                                     <Typography color="text.secondary">
                                         No members found. Click "Invite Member" to add members.
                                     </Typography>
@@ -284,11 +347,39 @@ export default function ManageMembers() {
                                         )}
                                     </TableCell>
                                     <TableCell>
+                                        {member.roles?.length ? (
+                                            <Box sx={{ display: 'flex', gap: 0.5, flexWrap: 'wrap' }}>
+                                                {member.roles.map((role) => (
+                                                    <Chip
+                                                        key={role}
+                                                        label={ROLE_LABELS[role] ?? role}
+                                                        size="small"
+                                                        variant="outlined"
+                                                        color={role === 'site_admin' ? 'primary' : 'default'}
+                                                    />
+                                                ))}
+                                            </Box>
+                                        ) : (
+                                            <Typography variant="body2" color="text.secondary">Member</Typography>
+                                        )}
+                                    </TableCell>
+                                    <TableCell>
                                         {member.last_sign_in_at
                                             ? new Date(member.last_sign_in_at).toLocaleDateString()
                                             : 'Never'}
                                     </TableCell>
                                     <TableCell align="right">
+                                        {isSiteAdmin && (
+                                            <Tooltip title="Manage Roles">
+                                                <IconButton
+                                                    size="small"
+                                                    color="primary"
+                                                    onClick={() => openRolesDialog(member)}
+                                                >
+                                                    <AdminPanelSettingsIcon />
+                                                </IconButton>
+                                            </Tooltip>
+                                        )}
                                         <Tooltip title="Send Password Reset">
                                             <IconButton
                                                 size="small"
@@ -378,6 +469,69 @@ export default function ManageMembers() {
                         startIcon={deleteMutation.isPending ? <CircularProgress size={16} /> : <DeleteIcon />}
                     >
                         {deleteMutation.isPending ? 'Deleting...' : 'Delete'}
+                    </Button>
+                </DialogActions>
+            </Dialog>
+
+            {/* Roles Dialog — site admins only */}
+            <Dialog
+                open={Boolean(rolesDialogMember)}
+                onClose={() => !rolesMutation.isPending && setRolesDialogMember(null)}
+                maxWidth="sm"
+                fullWidth
+            >
+                <DialogTitle>
+                    Roles for {rolesDialogMember?.display_name || rolesDialogMember?.email}
+                </DialogTitle>
+                <DialogContent>
+                    <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                        Roles are independent — granting one does not grant the other.
+                    </Typography>
+                    <FormGroup>
+                        {ALL_ROLES.map((role) => (
+                            <FormControlLabel
+                                key={role}
+                                control={
+                                    <Checkbox
+                                        checked={draftRoles.includes(role)}
+                                        onChange={() => toggleDraftRole(role)}
+                                        disabled={rolesMutation.isPending}
+                                    />
+                                }
+                                label={
+                                    <Box sx={{ py: 0.5 }}>
+                                        <Typography variant="body1">{ROLE_LABELS[role]}</Typography>
+                                        <Typography variant="body2" color="text.secondary">
+                                            {ROLE_DESCRIPTIONS[role]}
+                                        </Typography>
+                                    </Box>
+                                }
+                                sx={{ alignItems: 'flex-start', mb: 1 }}
+                            />
+                        ))}
+                    </FormGroup>
+                    {rolesDialogMember?.id === user.id && !draftRoles.includes('site_admin') && (
+                        <Alert severity="warning" sx={{ mt: 1 }}>
+                            You are removing your own Site Admin role. If you are the only site admin
+                            this will be rejected.
+                        </Alert>
+                    )}
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setRolesDialogMember(null)} disabled={rolesMutation.isPending}>
+                        Cancel
+                    </Button>
+                    <Button
+                        onClick={() =>
+                            rolesDialogMember &&
+                            rolesMutation.mutate({ memberId: rolesDialogMember.id, roles: draftRoles })
+                        }
+                        variant="contained"
+                        disabled={rolesMutation.isPending}
+                        startIcon={rolesMutation.isPending ? <CircularProgress size={16} /> : undefined}
+                        sx={{ backgroundColor: 'accent.navy', '&:hover': { backgroundColor: 'primary.main' } }}
+                    >
+                        {rolesMutation.isPending ? 'Saving...' : 'Save Roles'}
                     </Button>
                 </DialogActions>
             </Dialog>

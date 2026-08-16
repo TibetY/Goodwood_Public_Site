@@ -307,6 +307,10 @@
         "payDues": {
             "title": "Payer les Cotisations",
             "description": "Payez vos cotisations annuelles de loge en ligne"
+        },
+        "eventPayments": {
+            "title": "Paiements d'Événements",
+            "description": "Vendre des billets et suivre qui a payé, combien et comment"
         }
     },
     "manageMembers": {

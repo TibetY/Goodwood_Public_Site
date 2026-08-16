@@ -2,10 +2,21 @@ import { createContext, useContext, useEffect, useState } from 'react';
 import { type User, type Session } from '@supabase/supabase-js';
 import { supabase } from '../utils/supabase';
 
+export type Role = 'site_admin' | 'event_admin';
+
 interface AuthContextType {
     user: User | null;
     session: Session | null;
     loading: boolean;
+    /** Roles from the signed-in user's profile row. Empty until loaded. */
+    roles: Role[];
+    /**
+     * Convenience gate for the UI. This is COSMETIC ONLY — it hides controls the
+     * user cannot use. Every privileged Netlify Function re-checks the role
+     * server-side (netlify/shared/auth.ts); never remove those checks on the
+     * grounds that the UI already hides the button.
+     */
+    hasRole: (role: Role) => boolean;
     signOut: () => Promise<void>;
 }
 
@@ -13,6 +24,8 @@ const AuthContext = createContext<AuthContextType>({
     user: null,
     session: null,
     loading: true,
+    roles: [],
+    hasRole: () => false,
     signOut: async () => { },
 });
 
@@ -39,6 +52,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [user, setUser] = useState<User | null>(null);
     const [session, setSession] = useState<Session | null>(null);
     const [loading, setLoading] = useState(true);
+    const [roles, setRoles] = useState<Role[]>([]);
 
     useEffect(() => {
         const applySession = (newSession: Session | null, event?: string) => {
@@ -73,6 +87,36 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         return () => subscription.unsubscribe();
     }, []);
 
+    // Load the signed-in user's own roles. The `profiles_select_own` RLS policy
+    // (sql/001_roles.sql) is what makes this readable with the anon key, and it
+    // scopes the read to this user's row only.
+    useEffect(() => {
+        const userId = session?.user?.id;
+        if (!userId) {
+            setRoles([]);
+            return;
+        }
+
+        let cancelled = false;
+        supabase
+            .from('profiles')
+            .select('roles')
+            .eq('id', userId)
+            .single()
+            .then(({ data, error }) => {
+                if (cancelled) return;
+                if (error) {
+                    // Not fatal — the user simply sees no privileged UI.
+                    console.error('Failed to load profile roles:', error.message);
+                    setRoles([]);
+                    return;
+                }
+                setRoles((data?.roles ?? []) as Role[]);
+            });
+
+        return () => { cancelled = true; };
+    }, [session?.user?.id]);
+
     useEffect(() => {
         if (!session) return;
 
@@ -93,8 +137,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         await supabase.auth.signOut();
     };
 
+    const hasRole = (role: Role) => roles.includes(role);
+
     return (
-        <AuthContext.Provider value={{ user, session, loading, signOut }}>
+        <AuthContext.Provider value={{ user, session, loading, roles, hasRole, signOut }}>
             {children}
         </AuthContext.Provider>
     );
