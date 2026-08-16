@@ -202,7 +202,16 @@ export default function EventOrders() {
             const action = (variables as { action?: string }).action;
             setSuccess(
                 action === 'refresh'
-                    ? `Checked Zeffy: ${result.seen ?? 0} payment(s) seen, ${result.matched ?? 0} matched`
+                    ? [
+                        // A re-read of stored payments happens either way, so say so —
+                        // otherwise "0 seen" reads as "nothing happened" on a run that
+                        // just recovered a dozen missing buyer names.
+                        result.configured === false
+                            ? 'Zeffy is not connected, so only stored payments were re-read'
+                            : `Checked Zeffy: ${result.seen ?? 0} payment(s) seen`,
+                        `${result.reparsed ?? 0} updated from their original payload`,
+                        `${result.matched ?? 0} matched to an order`,
+                      ].join(' · ')
                     : action === 'match' ? 'Payment matched and the buyer has been emailed their ticket'
                     : 'Payment set aside',
             );
@@ -392,8 +401,15 @@ export default function EventOrders() {
                                         <TableRow key={p.id} hover>
                                             <TableCell>{new Date(p.received_at).toLocaleDateString('en-CA')}</TableCell>
                                             <TableCell>
-                                                <Typography variant="body2" sx={{ fontWeight: 600 }}>{p.payer_name || 'Unknown'}</Typography>
-                                                <Typography variant="body2" color="text.secondary">{p.payer_email || '—'}</Typography>
+                                                {/* Zeffy does not always give us a name. The email identifies
+                                                    the payer just as well, so promote it rather than showing
+                                                    "Unknown" above the very thing that answers the question. */}
+                                                <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                                                    {p.payer_name || p.payer_email || 'No name from Zeffy'}
+                                                </Typography>
+                                                {p.payer_name && (
+                                                    <Typography variant="body2" color="text.secondary">{p.payer_email || '—'}</Typography>
+                                                )}
                                             </TableCell>
                                             <TableCell align="right">{formatMoney(p.amount_cents)}</TableCell>
                                             <TableCell align="right" sx={{ whiteSpace: 'nowrap' }}>
@@ -698,8 +714,8 @@ export default function EventOrders() {
                 <DialogTitle>Match Zeffy payment</DialogTitle>
                 <DialogContent>
                     <Typography sx={{ mb: 2 }}>
-                        {matchTarget?.payer_name || 'Unknown'} paid {matchTarget && formatMoney(matchTarget.amount_cents)}
-                        {matchTarget?.payer_email ? ` from ${matchTarget.payer_email}` : ''}. Which order is this?
+                        {matchTarget?.payer_name || matchTarget?.payer_email || 'Someone'} paid {matchTarget && formatMoney(matchTarget.amount_cents)}
+                        {matchTarget?.payer_name && matchTarget?.payer_email ? ` from ${matchTarget.payer_email}` : ''}. Which order is this?
                     </Typography>
                     <TextField
                         select fullWidth margin="dense" label="Order"

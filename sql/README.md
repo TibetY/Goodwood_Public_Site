@@ -45,3 +45,24 @@ select * from public.mark_order_paid('<order-id>', null, 'ref-1', 'manual test')
 select * from public.mark_order_paid('<order-id>', null, 'ref-2', 'manual test');
 select kind, detail, created_at from public.event_order_audit where order_id = '<order-id>';
 ```
+
+## When a Zeffy payment shows no buyer name
+
+Zeffy's API is in beta and its exact field names are not something we control,
+so `netlify/shared/zeffy.ts` reads tolerantly and keeps the untouched payload in
+`zeffy_payments.raw`. That column exists for exactly this moment — a blank name
+is diagnosable rather than a guess:
+
+```sql
+select id, payer_name, payer_email, amount_cents, jsonb_pretty(raw)
+  from public.zeffy_payments
+ order by received_at desc
+ limit 3;
+```
+
+Whatever key holds the name in `raw`, add it to `pickPersonName()` (or
+`pickPersonEmail()`) in `netlify/shared/zeffy.ts`. Existing rows do **not** need
+re-importing: the hourly sync and the portal's **Check Zeffy now** button both
+replay normalisation over stored payloads, so the fix reaches payments received
+before it shipped. Matching is retried at the same time, since a payment whose
+email we could not read could never have been matched to an order.

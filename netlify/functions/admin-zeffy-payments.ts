@@ -3,7 +3,7 @@ import { requireRole } from '../shared/auth';
 import { getServiceClient } from '../shared/supabase';
 import { badRequest, json, methodNotAllowed, notFound, ok, parseBody, serverError } from '../shared/http';
 import { isZeffyConfigured, listPayments } from '../shared/zeffy';
-import { reconcilePayment } from '../shared/reconcile';
+import { reconcilePayment, reparseStoredPayments, retryUnmatchedPayments } from '../shared/reconcile';
 
 // The reconcile queue.
 //
@@ -49,12 +49,15 @@ export const handler: Handler = async (event: HandlerEvent) => {
   if (!payload?.action) return badRequest('action is required');
 
   switch (payload.action) {
-    // Pull straight from the API on demand, for when someone does not want to
-    // wait for the next hourly sync.
+    // Re-read what we already hold, then pull anything new from the API.
+    //
+    // The reparse pass runs first and runs unconditionally. Zeffy's field names
+    // are not ours to control, so when the reader learns a spelling it did not
+    // know before, the rows already in the table are still parsed the old way —
+    // replaying them from the untouched `raw` payload is what makes a fix reach
+    // payments received before it shipped. It needs no API key, which is why it
+    // sits above the configured check rather than behind it.
     case 'refresh': {
-      if (!isZeffyConfigured()) {
-        return json(409, { error: 'ZEFFY_API_KEY is not set', code: 'notConfigured' });
-      }
       if (!payload.eventId) return badRequest('eventId is required');
 
       const { data: ticketedEvent } = await supabase
@@ -63,7 +66,24 @@ export const handler: Handler = async (event: HandlerEvent) => {
         .eq('id', payload.eventId)
         .single();
 
-      if (!ticketedEvent?.zeffy_campaign_id) {
+      const campaignId = ticketedEvent?.zeffy_campaign_id ?? null;
+
+      const reparsed = await reparseStoredPayments(supabase);
+      const retried = await retryUnmatchedPayments(supabase, campaignId);
+
+      // Without a key there is nothing to pull, but the reparse above may still
+      // have filled in the missing buyer names — report that rather than
+      // failing outright, which would throw away work already done.
+      if (!isZeffyConfigured()) {
+        return ok({
+          configured: false,
+          reparsed: reparsed.updated,
+          seen: 0,
+          matched: retried.matched,
+        });
+      }
+
+      if (!campaignId) {
         return json(409, {
           error: 'This event is not linked to a Zeffy campaign yet',
           code: 'noCampaign',
@@ -72,15 +92,20 @@ export const handler: Handler = async (event: HandlerEvent) => {
 
       try {
         const payments = await listPayments({
-          campaignId: ticketedEvent.zeffy_campaign_id,
+          campaignId,
           since: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
         });
-        let matched = 0;
+        let matched = retried.matched;
         for (const payment of payments) {
           const outcome = await reconcilePayment(supabase, payment, 'sync');
           if (outcome.matched) matched++;
         }
-        return ok({ seen: payments.length, matched });
+        return ok({
+          configured: true,
+          reparsed: reparsed.updated,
+          seen: payments.length,
+          matched,
+        });
       } catch (err: any) {
         console.error('admin-zeffy-payments: refresh failed', err);
         return serverError(err.message || 'Could not reach Zeffy');

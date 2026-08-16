@@ -1,7 +1,7 @@
 import { schedule } from '@netlify/functions';
 import { getServiceClient } from '../shared/supabase';
 import { isZeffyConfigured, listPayments } from '../shared/zeffy';
-import { reconcilePayment } from '../shared/reconcile';
+import { reconcilePayment, reparseStoredPayments, retryUnmatchedPayments } from '../shared/reconcile';
 
 // Pulls recent Zeffy payments and reconciles them, hourly.
 //
@@ -15,17 +15,29 @@ import { reconcilePayment } from '../shared/reconcile';
 const LOOKBACK_HOURS = 48;
 
 export const handler = schedule('41 * * * *', async () => {
-  if (!isZeffyConfigured()) {
-    // Nothing to do until the lodge adds its API key — not an error.
-    return { statusCode: 200 };
-  }
-
   let supabase;
   try {
     supabase = getServiceClient();
   } catch (err) {
     console.error('sync-zeffy-payments: Supabase is not configured', err);
     return { statusCode: 500 };
+  }
+
+  // Re-read what we already hold before fetching anything new. Zeffy's field
+  // names are not ours to control, so when the reader learns a spelling it did
+  // not know before, this is what carries the fix back to payments received
+  // under the old one. It needs no API key, hence its place above the check.
+  const reparsed = await reparseStoredPayments(supabase);
+  const retried = await retryUnmatchedPayments(supabase);
+  if (reparsed.updated || retried.matched) {
+    console.log(
+      `sync-zeffy-payments: reparsed ${reparsed.updated} stored payment(s), matched ${retried.matched} on retry`,
+    );
+  }
+
+  if (!isZeffyConfigured()) {
+    // Nothing more to do until the lodge adds its API key — not an error.
+    return { statusCode: 200 };
   }
 
   const since = new Date(Date.now() - LOOKBACK_HOURS * 60 * 60 * 1000);

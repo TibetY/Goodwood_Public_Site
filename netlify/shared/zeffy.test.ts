@@ -77,6 +77,65 @@ describe('normalizePayment', () => {
         });
     });
 
+    // The payer's name arrived blank in production because the reader took
+    // `firstName` on its own and never looked inside a container. These are the
+    // shapes that used to yield nothing or half a name.
+    it('joins a name split across first and last', () => {
+        const payment = normalizePayment({
+            id: 'pay_789',
+            firstName: 'Anne',
+            lastName: 'Tremblay',
+            email: 'anne@example.com',
+            amount: 30,
+        });
+
+        expect(payment!.payerName).toBe('Anne Tremblay');
+        expect(payment!.payerEmail).toBe('anne@example.com');
+    });
+
+    it('finds a split name nested under the payer', () => {
+        const payment = normalizePayment({
+            id: 'pay_790',
+            donor: { first_name: 'Luc', last_name: 'Gagnon', emailAddress: 'LUC@example.com' },
+            amount: 30,
+        });
+
+        expect(payment!.payerName).toBe('Luc Gagnon');
+        expect(payment!.payerEmail).toBe('luc@example.com');
+    });
+
+    it('still yields a usable name when only one half is present', () => {
+        expect(normalizePayment({ id: 'p', firstName: 'Madonna' })!.payerName).toBe('Madonna');
+        expect(normalizePayment({ id: 'p', payer: { lastName: 'Cher' } })!.payerName).toBe('Cher');
+    });
+
+    it('prefers a whole name over the split halves', () => {
+        const payment = normalizePayment({
+            id: 'p',
+            fullName: 'Jean-Guy St-Pierre',
+            firstName: 'Jean',
+            lastName: 'St-Pierre',
+        });
+
+        expect(payment!.payerName).toBe('Jean-Guy St-Pierre');
+    });
+
+    it('never returns an object where a name is expected', () => {
+        // A `name` that is itself {first, last} must not stringify to
+        // "[object Object]" in the reconcile queue.
+        const payment = normalizePayment({
+            id: 'p',
+            contact: { name: { first: 'Ada', last: 'Lovelace' }, firstName: 'Ada', lastName: 'Lovelace' },
+        });
+
+        expect(payment!.payerName).toBe('Ada Lovelace');
+    });
+
+    it('reports no name rather than inventing one', () => {
+        expect(normalizePayment({ id: 'p', amount: 45 })!.payerName).toBeNull();
+        expect(normalizePayment({ id: 'p', amount: 45 })!.payerEmail).toBeNull();
+    });
+
     it('prefers an explicit cents field over a dollars field', () => {
         // Both present: the cents field wins, so a $12.50 payment is never read
         // as $1250.
