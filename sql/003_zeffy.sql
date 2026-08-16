@@ -179,3 +179,90 @@ end $$;
 
 revoke all on function public.match_zeffy_payment(text, uuid, text, uuid)
   from public, anon, authenticated;
+
+
+-- ─────────────────────────────────────────────────────────────────────────────
+-- create_ticket_order — re-created for the enum rename above.
+--
+-- The original in 002_ticketing.sql guards its method check against the 'stripe'
+-- enum value and the allow_stripe column. This migration renamed both, so the
+-- old function body now references a value and a column that no longer exist:
+-- every order created with status 'pending' — which is every public purchase —
+-- reaches that line and errors. Only an admin's 'paid' door sale skips it. This
+-- replaces the body verbatim except that the card check now reads 'zeffy' and
+-- allow_zeffy.
+-- ─────────────────────────────────────────────────────────────────────────────
+
+create or replace function public.create_ticket_order(
+  p_event_id       uuid,
+  p_buyer_name     text,
+  p_buyer_email    text,
+  p_buyer_phone    text,
+  p_notes          text,
+  p_quantity       integer,
+  p_payment_method public.payment_method,
+  p_payment_status public.payment_status,
+  p_reference      text,
+  p_hold_minutes   integer,
+  p_actor          uuid
+) returns public.event_orders
+language plpgsql security definer set search_path = public as $$
+declare
+  v_event public.ticketed_events;
+  v_taken integer;
+  v_order public.event_orders;
+begin
+  select * into v_event from public.ticketed_events where id = p_event_id for update;
+
+  if not found then raise exception 'EVENT_NOT_FOUND'; end if;
+
+  -- An admin recording a door sale bypasses the on-sale window; the public path
+  -- never passes a status of 'paid'.
+  if p_payment_status <> 'paid' then
+    if not v_event.published then raise exception 'EVENT_NOT_ON_SALE'; end if;
+    if v_event.sales_open_at is not null and now() < v_event.sales_open_at then
+      raise exception 'EVENT_NOT_ON_SALE';
+    end if;
+    if v_event.sales_close_at is not null and now() > v_event.sales_close_at then
+      raise exception 'EVENT_SALES_CLOSED';
+    end if;
+
+    if p_payment_method = 'zeffy'     and not v_event.allow_zeffy     then raise exception 'METHOD_UNAVAILABLE'; end if;
+    if p_payment_method = 'etransfer' and not v_event.allow_etransfer then raise exception 'METHOD_UNAVAILABLE'; end if;
+    if p_payment_method = 'cash'      and not v_event.allow_cash      then raise exception 'METHOD_UNAVAILABLE'; end if;
+  end if;
+
+  if p_quantity < 1 or p_quantity > v_event.max_per_order then
+    raise exception 'INVALID_QUANTITY';
+  end if;
+
+  if v_event.capacity is not null then
+    v_taken := public.seats_taken(p_event_id);
+    if v_taken + p_quantity > v_event.capacity then raise exception 'SOLD_OUT'; end if;
+  end if;
+
+  insert into public.event_orders (
+    event_id, reference, buyer_name, buyer_email, buyer_phone, notes,
+    quantity, unit_price_cents, amount_cents, currency,
+    payment_method, payment_status, hold_expires_at, paid_at, marked_paid_by
+  ) values (
+    p_event_id, p_reference, p_buyer_name, lower(p_buyer_email), p_buyer_phone, coalesce(p_notes, ''),
+    p_quantity, v_event.price_cents, p_quantity * v_event.price_cents, v_event.currency,
+    p_payment_method, p_payment_status,
+    case when p_payment_status = 'paid' then null
+         else now() + make_interval(mins => p_hold_minutes) end,
+    case when p_payment_status = 'paid' then now()   else null end,
+    case when p_payment_status = 'paid' then p_actor else null end
+  ) returning * into v_order;
+
+  -- Same transaction as the order: an order can never exist unaudited.
+  insert into public.event_order_audit (order_id, kind, detail, actor_id)
+  values (v_order.id, 'created', p_payment_method::text, p_actor);
+
+  return v_order;
+end $$;
+
+revoke all on function public.create_ticket_order(
+  uuid, text, text, text, text, integer,
+  public.payment_method, public.payment_status, text, integer, uuid
+) from public, anon, authenticated;

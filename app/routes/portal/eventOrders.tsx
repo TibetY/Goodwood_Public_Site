@@ -15,6 +15,7 @@ import CancelIcon from '@mui/icons-material/Cancel';
 import QrCodeScannerIcon from '@mui/icons-material/QrCodeScanner';
 import SyncIcon from '@mui/icons-material/Sync';
 import LinkIcon from '@mui/icons-material/Link';
+import ConfirmationNumberIcon from '@mui/icons-material/ConfirmationNumber';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '../../context/auth-context';
@@ -213,6 +214,8 @@ export default function EventOrders() {
                         `${result.matched ?? 0} matched to an order`,
                       ].join(' · ')
                     : action === 'match' ? 'Payment matched and the buyer has been emailed their ticket'
+                    : action === 'createOrder'
+                        ? `Order created${result.emailed === false ? ' — but the ticket email could not be sent' : ' and the ticket emailed to the buyer'}`
                     : 'Payment set aside',
             );
             setMatchTarget(null);
@@ -413,13 +416,24 @@ export default function EventOrders() {
                                             </TableCell>
                                             <TableCell align="right">{formatMoney(p.amount_cents)}</TableCell>
                                             <TableCell align="right" sx={{ whiteSpace: 'nowrap' }}>
-                                                <Tooltip title="Match to an order">
+                                                <Tooltip title="Match to an existing order">
                                                     <IconButton
                                                         size="small" color="primary"
                                                         onClick={() => { setError(null); setSuccess(null); setMatchOrderId(''); setMatchTarget(p); }}
                                                     >
                                                         <LinkIcon fontSize="small" />
                                                     </IconButton>
+                                                </Tooltip>
+                                                <Tooltip title="Create a paid order from this payment and email the ticket">
+                                                    <span>
+                                                        <IconButton
+                                                            size="small" color="primary"
+                                                            disabled={zeffyMutation.isPending || !p.payer_email}
+                                                            onClick={() => { setError(null); setSuccess(null); zeffyMutation.mutate({ action: 'createOrder', paymentId: p.id, eventId }); }}
+                                                        >
+                                                            <ConfirmationNumberIcon fontSize="small" />
+                                                        </IconButton>
+                                                    </span>
                                                 </Tooltip>
                                                 <Tooltip title="Not for this event — hide it">
                                                     <IconButton
