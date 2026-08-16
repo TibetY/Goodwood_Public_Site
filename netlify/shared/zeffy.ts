@@ -107,6 +107,49 @@ function pickPersonName(source: Json): string | null {
   return null;
 }
 
+/**
+ * When the payment was made, as an ISO string.
+ *
+ * Most fields are already ISO, but Zeffy's `created` is a Unix timestamp in
+ * seconds — stored straight into a timestamptz column it would land in 1970 or
+ * error, so a numeric value is converted here.
+ */
+function pickPaidAt(source: Json): string | null {
+  const value = pick(source, ['paidAt', 'paid_at', 'createdAt', 'created_at', 'created', 'date']);
+  if (value === undefined || value === null || value === '') return null;
+
+  if (typeof value === 'number') {
+    // Seconds vs milliseconds: anything before ~2001 in ms is really seconds.
+    const ms = value < 1e12 ? value * 1000 : value;
+    const d = new Date(ms);
+    return Number.isNaN(d.getTime()) ? null : d.toISOString();
+  }
+
+  const d = new Date(String(value));
+  return Number.isNaN(d.getTime()) ? String(value) : d.toISOString();
+}
+
+/**
+ * How many tickets a payment covers.
+ *
+ * Zeffy itemises a ticketing payment, so the seat count is the number of
+ * ticket line items rather than a guess. Falls back to 1 when the payload
+ * carries no itemisation, which is the safe floor for attributing a seat.
+ */
+export function ticketQuantity(raw: Json): number {
+  const items = pick(raw, ['items', 'lineItems', 'line_items']);
+  if (Array.isArray(items)) {
+    const tickets = items.filter((it) => {
+      const type = it && typeof it === 'object' ? String(it.type ?? '').toLowerCase() : '';
+      // A ticket line may carry its own quantity; sum those when present.
+      return type === 'ticket' || type === 'ticketing' || type === '';
+    });
+    const total = tickets.reduce((sum, it) => sum + (Number(it.quantity) || 1), 0);
+    if (total > 0) return total;
+  }
+  return 1;
+}
+
 /** The payer's email — the key the matcher attributes payments by. */
 function pickPersonEmail(source: Json): string | null {
   for (const c of PERSON_CONTAINERS) {
@@ -143,7 +186,7 @@ export function normalizePayment(raw: Json): ZeffyPayment | null {
     amountCents,
     currency: String(pick(raw, ['currency']) ?? 'cad').toLowerCase(),
     status: pick(raw, ['status', 'paymentStatus', 'state']) ?? null,
-    paidAt: pick(raw, ['paidAt', 'paid_at', 'createdAt', 'created_at', 'date']) ?? null,
+    paidAt: pickPaidAt(raw),
     raw,
   };
 }

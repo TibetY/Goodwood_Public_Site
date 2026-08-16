@@ -2,7 +2,7 @@
 import { describe, it, expect } from 'vitest';
 import {
     toCents, normalizePayment, paymentFromWebhook, isCompleted, matchPaymentToOrder,
-    type MatchCandidate, type ZeffyPayment,
+    ticketQuantity, type MatchCandidate, type ZeffyPayment,
 } from './zeffy';
 
 // Zeffy's API is in beta and we do not control its payload shape, so the reader
@@ -151,6 +151,62 @@ describe('normalizePayment', () => {
     it('keeps the untouched payload for debugging', () => {
         const raw = { id: 'p', amount: 45, somethingNew: { we: 'do not know about' } };
         expect(normalizePayment(raw)!.raw).toEqual(raw);
+    });
+
+    // A real Zeffy payment, copied from production: the buyer is nested under
+    // `buyer`, the name is split, the amount is a genuinely free ticket, and the
+    // timestamp is Unix seconds. This is the shape that first came back blank.
+    it('reads a real Zeffy ticketing payment', () => {
+        const payment = normalizePayment({
+            id: 'c2463266-80e3-45b3-9bdd-84c0a9e3f54e',
+            type: 'online',
+            buyer: { email: 'john.mason@test-goodwood.ca', last_name: 'Mason', first_name: 'John' },
+            items: [{ type: 'ticket', amount: 0 }],
+            amount: 0,
+            status: 'succeeded',
+            created: 1786883039,
+            currency: 'cad',
+            campaign_id: 'baef7108-6916-4bd4-bb4d-a329e56a8f48',
+        });
+
+        expect(payment).toMatchObject({
+            id: 'c2463266-80e3-45b3-9bdd-84c0a9e3f54e',
+            payerName: 'John Mason',
+            payerEmail: 'john.mason@test-goodwood.ca',
+            amountCents: 0,
+            campaignId: 'baef7108-6916-4bd4-bb4d-a329e56a8f48',
+            status: 'succeeded',
+        });
+    });
+
+    it('converts a Unix-seconds timestamp to ISO', () => {
+        // 1786883039 is 2026-08-16T... — stored raw it would be a 1970 date.
+        expect(normalizePayment({ id: 'p', created: 1786883039 })!.paidAt)
+            .toBe(new Date(1786883039 * 1000).toISOString());
+    });
+
+    it('passes an ISO timestamp through', () => {
+        expect(normalizePayment({ id: 'p', paidAt: '2026-02-01T12:00:00.000Z' })!.paidAt)
+            .toBe('2026-02-01T12:00:00.000Z');
+    });
+});
+
+describe('ticketQuantity', () => {
+    it('counts the ticket line items', () => {
+        expect(ticketQuantity({ items: [{ type: 'ticket' }, { type: 'ticket' }] })).toBe(2);
+    });
+
+    it('sums a per-line quantity when Zeffy carries one', () => {
+        expect(ticketQuantity({ items: [{ type: 'ticket', quantity: 3 }] })).toBe(3);
+    });
+
+    it('falls back to one seat when there is no itemisation', () => {
+        expect(ticketQuantity({ amount: 0 })).toBe(1);
+        expect(ticketQuantity({ items: [] })).toBe(1);
+    });
+
+    it('ignores non-ticket line items like donations', () => {
+        expect(ticketQuantity({ items: [{ type: 'ticket' }, { type: 'donation' }] })).toBe(1);
     });
 });
 
