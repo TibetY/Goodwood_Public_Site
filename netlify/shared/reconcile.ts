@@ -4,7 +4,12 @@
 // the sync is not a lesser fallback, it is the same code on a timer.
 
 import type { SupabaseClient } from '@supabase/supabase-js';
-import { matchPaymentToOrder, type MatchCandidate, type ZeffyPayment } from './zeffy';
+import {
+  matchPaymentToOrder,
+  normalizePayment,
+  type MatchCandidate,
+  type ZeffyPayment,
+} from './zeffy';
 import { sendOrderEmail, type OrderRecord, type TicketedEventRecord } from './tickets';
 
 export interface ReconcileOutcome {
@@ -13,6 +18,102 @@ export interface ReconcileOutcome {
   matched: boolean;
   orderId?: string;
   reason?: string;
+}
+
+/**
+ * Re-read stored payments from their untouched `raw` payload.
+ *
+ * Zeffy's field names are not something we control, so when the reader learns a
+ * new spelling the rows already in the table are still parsed the old way. This
+ * replays normalisation over them — which is the entire reason `raw` is kept —
+ * so a fix reaches payments received before it shipped, not just after.
+ *
+ * Only fills gaps and corrects the derived columns; never touches order_id,
+ * matched_at or ignored, so an admin's reconciliation decisions are preserved.
+ */
+export async function reparseStoredPayments(
+  supabase: SupabaseClient,
+  limit = 500,
+): Promise<{ examined: number; updated: number }> {
+  const { data: rows, error } = await supabase
+    .from('zeffy_payments')
+    .select('id, payer_name, payer_email, amount_cents, status, paid_at, raw')
+    .order('received_at', { ascending: false })
+    .limit(limit);
+
+  if (error) {
+    console.error('reconcile: reparse query failed', error);
+    return { examined: 0, updated: 0 };
+  }
+
+  let updated = 0;
+
+  for (const row of rows || []) {
+    const parsed = normalizePayment((row.raw || {}) as Record<string, any>);
+    if (!parsed) continue;
+
+    const patch: Record<string, unknown> = {};
+    if (parsed.payerName && parsed.payerName !== row.payer_name) patch.payer_name = parsed.payerName;
+    if (parsed.payerEmail && parsed.payerEmail !== row.payer_email) patch.payer_email = parsed.payerEmail;
+    // A stored zero is the signature of an amount field we failed to read.
+    if (parsed.amountCents > 0 && parsed.amountCents !== row.amount_cents) patch.amount_cents = parsed.amountCents;
+    if (parsed.status && parsed.status !== row.status) patch.status = parsed.status;
+    if (parsed.paidAt && !row.paid_at) patch.paid_at = parsed.paidAt;
+
+    if (!Object.keys(patch).length) continue;
+
+    const { error: updateError } = await supabase
+      .from('zeffy_payments')
+      .update(patch)
+      .eq('id', row.id);
+
+    if (updateError) console.error(`reconcile: reparse update failed for ${row.id}`, updateError);
+    else updated++;
+  }
+
+  return { examined: (rows || []).length, updated };
+}
+
+/**
+ * Re-run matching over payments still sitting in the reconcile queue.
+ *
+ * Reparsing alone only fixes what the portal *displays*. A payment whose email
+ * we failed to read could never be matched — the matcher keys on it — so once
+ * reparsing recovers that field the queue deserves a second pass. Without this,
+ * a reader fix would leave real, already-received money sitting unattributed.
+ *
+ * Ignored payments are left alone: an admin set those aside deliberately.
+ */
+export async function retryUnmatchedPayments(
+  supabase: SupabaseClient,
+  campaignId?: string | null,
+  limit = 200,
+): Promise<{ examined: number; matched: number }> {
+  let query = supabase
+    .from('zeffy_payments')
+    .select('id, raw')
+    .is('order_id', null)
+    .eq('ignored', false)
+    .order('received_at', { ascending: false })
+    .limit(limit);
+
+  if (campaignId) query = query.eq('campaign_id', campaignId);
+
+  const { data: rows, error } = await query;
+  if (error) {
+    console.error('reconcile: retry query failed', error);
+    return { examined: 0, matched: 0 };
+  }
+
+  let matched = 0;
+  for (const row of rows || []) {
+    const payment = normalizePayment((row.raw || {}) as Record<string, any>);
+    if (!payment) continue;
+    const outcome = await reconcilePayment(supabase, payment, 'manual');
+    if (outcome.matched) matched++;
+  }
+
+  return { examined: (rows || []).length, matched };
 }
 
 /**

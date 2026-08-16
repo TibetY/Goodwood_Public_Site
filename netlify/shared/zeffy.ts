@@ -68,6 +68,57 @@ export function toCents(value: unknown, unit: 'dollars' | 'cents'): number {
   return unit === 'cents' ? Math.round(n) : Math.round(n * 100);
 }
 
+/**
+ * Objects a person's details might be nested under. Zeffy wraps the payer
+ * differently depending on the endpoint, so every candidate is checked in turn
+ * rather than assuming one shape.
+ */
+const PERSON_CONTAINERS = [
+  '', 'contact.', 'donor.', 'payer.', 'buyer.', 'user.', 'customer.',
+  'purchaser.', 'ticketHolder.', 'billingAddress.', 'billing.',
+];
+
+/**
+ * The payer's name.
+ *
+ * A single `fullName` field is preferred when present, but Zeffy commonly
+ * stores the name split across `firstName` and `lastName` — reading either half
+ * alone is why this previously came back blank or half-populated. Both halves
+ * are joined, and a row with only one of them still yields something usable.
+ */
+function pickPersonName(source: Json): string | null {
+  for (const c of PERSON_CONTAINERS) {
+    const full = pick(source, [
+      `${c}payerName`, `${c}payer_name`, `${c}donorName`, `${c}contactName`,
+      `${c}fullName`, `${c}full_name`, `${c}displayName`, `${c}name`,
+    ]);
+    if (full && typeof full !== 'object') return String(full).trim();
+  }
+
+  for (const c of PERSON_CONTAINERS) {
+    const first = pick(source, [`${c}firstName`, `${c}first_name`, `${c}givenName`, `${c}given_name`]);
+    const last = pick(source, [`${c}lastName`, `${c}last_name`, `${c}familyName`, `${c}family_name`, `${c}surname`]);
+    if (first || last) {
+      const joined = [first, last].filter(Boolean).map(String).join(' ').trim();
+      if (joined) return joined;
+    }
+  }
+
+  return null;
+}
+
+/** The payer's email — the key the matcher attributes payments by. */
+function pickPersonEmail(source: Json): string | null {
+  for (const c of PERSON_CONTAINERS) {
+    const email = pick(source, [
+      `${c}payerEmail`, `${c}payer_email`, `${c}donorEmail`, `${c}donor_email`,
+      `${c}emailAddress`, `${c}email_address`, `${c}email`,
+    ]);
+    if (email && typeof email !== 'object') return String(email).trim().toLowerCase();
+  }
+  return null;
+}
+
 /** Normalise a raw Zeffy payment object into our shape. */
 export function normalizePayment(raw: Json): ZeffyPayment | null {
   if (!raw || typeof raw !== 'object') return null;
@@ -87,13 +138,8 @@ export function normalizePayment(raw: Json): ZeffyPayment | null {
   return {
     id: String(id),
     campaignId: pick(raw, ['campaignId', 'campaign_id', 'campaign.id', 'formId', 'form_id']) ?? null,
-    payerName: pick(raw, [
-      'payerName', 'payer_name', 'donorName', 'contact.fullName', 'contact.name',
-      'contactName', 'firstName',
-    ]) ?? null,
-    payerEmail: (pick(raw, [
-      'payerEmail', 'payer_email', 'email', 'contact.email', 'donorEmail',
-    ]) ?? null)?.toString().trim().toLowerCase() ?? null,
+    payerName: pickPersonName(raw),
+    payerEmail: pickPersonEmail(raw),
     amountCents,
     currency: String(pick(raw, ['currency']) ?? 'cad').toLowerCase(),
     status: pick(raw, ['status', 'paymentStatus', 'state']) ?? null,
