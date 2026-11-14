@@ -26,6 +26,9 @@ export default defineConfig({
     env: {
       VITE_SUPABASE_URL: 'https://test.supabase.co',
       VITE_SUPABASE_ANON_KEY: 'test-anon-key',
+      // Keep a developer's local .env site key out of the tests: the default
+      // path runs without Turnstile, and the Turnstile tests stub it in.
+      VITE_TURNSTILE_SITE_KEY: '',
       // Pin the timezone so date helpers (which render in local time, i.e.
       // America/Toronto in production) behave deterministically in CI.
       TZ: 'America/Toronto',

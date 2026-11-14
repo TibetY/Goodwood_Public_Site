@@ -8,7 +8,9 @@
 
 [dev]
   command = "npm run dev:vite"
-  targetPort = 5173
+  # Must match server.port in vite.config.ts. Not 5173, so another project's
+  # Vite server on the default port can't be proxied by mistake.
+  targetPort = 5180
   publish = "build/client"
 
 [functions]

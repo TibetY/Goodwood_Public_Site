@@ -1,4 +1,6 @@
 import type { Handler } from '@netlify/functions';
+import { clientIp, looksAutomated, screenContent, verifyTurnstile } from '../shared/spam';
+import { moderateMessage } from '../shared/moderation';
 
 // Receives contact-form submissions and emails them via Resend.
 // Requires two environment variables:
@@ -11,6 +13,9 @@ import type { Handler } from '@netlify/functions';
 //   TURNSTILE_SECRET_KEY — Cloudflare Turnstile secret; when set, submissions
 //                          must carry a valid Turnstile token (anti-spam). When
 //                          unset, verification is skipped (a warning is logged).
+//   ANTHROPIC_API_KEY    — enables the Claude Haiku message screen (falls back
+//                          to VITE_ANTHROPIC_API_KEY, the chatbot's key). When
+//                          unset, AI screening is skipped (a warning is logged).
 
 interface ContactPayload {
   firstName?: string;
@@ -21,37 +26,6 @@ interface ContactPayload {
   botField?: string;
   turnstileToken?: string;
   elapsedMs?: number;
-}
-
-// Submissions faster than this are almost certainly automated. Lenient enough
-// that a real person reading and filling the form is never caught.
-const MIN_FILL_MS = 1500;
-
-// Verify a Cloudflare Turnstile token server-side. Returns true when the token
-// is valid, or when no secret is configured (so the form keeps working before
-// the key is set — a warning is logged in that case).
-async function verifyTurnstile(token: string, remoteip?: string): Promise<boolean> {
-  const secret = process.env.TURNSTILE_SECRET_KEY;
-  if (!secret) {
-    console.warn('submit-contact: TURNSTILE_SECRET_KEY is not set — skipping spam verification');
-    return true;
-  }
-  if (!token) return false;
-
-  try {
-    const body = new URLSearchParams({ secret, response: token });
-    if (remoteip) body.set('remoteip', remoteip);
-    const res = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body,
-    });
-    const result = (await res.json()) as { success?: boolean };
-    return result.success === true;
-  } catch (err) {
-    console.error('submit-contact: Turnstile verification request failed', err);
-    return false;
-  }
 }
 
 const escapeHtml = (s: string) =>
@@ -78,21 +52,15 @@ export const handler: Handler = async (event) => {
     return { statusCode: 400, headers, body: JSON.stringify({ error: 'Invalid JSON body' }) };
   }
 
-  // Honeypot — silently accept bot submissions without sending anything.
-  if (payload.botField) {
-    return { statusCode: 200, headers, body: JSON.stringify({ ok: true }) };
-  }
-
-  // Timing trap — a near-instant submit is a bot. Silently accept (like the
-  // honeypot) so the bot gets no signal, but send no email.
-  if (typeof payload.elapsedMs === 'number' && payload.elapsedMs < MIN_FILL_MS) {
+  // Honeypot + timing trap — silently accept so the bot gets no signal, but
+  // send no email.
+  if (looksAutomated(payload)) {
     return { statusCode: 200, headers, body: JSON.stringify({ ok: true }) };
   }
 
   // Cloudflare Turnstile — reject unverified submissions before sending email,
   // so spam never costs Resend quota.
-  const remoteip =
-    event.headers['x-nf-client-connection-ip'] || event.headers['x-forwarded-for'] || undefined;
+  const remoteip = clientIp(event.headers as Record<string, string | undefined>);
   const humanVerified = await verifyTurnstile((payload.turnstileToken || '').trim(), remoteip);
   if (!humanVerified) {
     return { statusCode: 400, headers, body: JSON.stringify({ error: 'Verification failed' }) };
@@ -109,6 +77,24 @@ export const handler: Handler = async (event) => {
   }
   if (message.length > 5000) {
     return { statusCode: 400, headers, body: JSON.stringify({ error: 'Message too long' }) };
+  }
+
+  // Content screen — profanity / link spam. Dropped silently like the honeypot
+  // so an abusive sender can't iterate around the filter. The reason is logged
+  // (not the content) so false positives can be spotted in the function logs.
+  const rejection = screenContent({ names: [firstName, lastName], message });
+  if (rejection) {
+    console.warn(`submit-contact: dropped submission (${rejection})`);
+    return { statusCode: 200, headers, body: JSON.stringify({ ok: true }) };
+  }
+
+  // AI screen (Claude Haiku) — last, so only messages that passed every free
+  // check cost an API call. Catches abuse the word list can't judge, like
+  // "gay" used as an insult. Fails open: an outage delivers the message.
+  const moderation = await moderateMessage({ name: `${firstName} ${lastName}`, message });
+  if (moderation.verdict === 'block') {
+    console.warn(`submit-contact: dropped submission (ai: ${moderation.reason})`);
+    return { statusCode: 200, headers, body: JSON.stringify({ ok: true }) };
   }
 
   const fullName = `${firstName} ${lastName}`;
